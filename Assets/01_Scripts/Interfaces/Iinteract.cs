@@ -2,8 +2,6 @@ using UnityEngine;
 
 public interface Iinteract
 {
-     void InteractWithItem()
-    {
-        Debug.Log("Interacted");
-    }
+    void Interact();
+    string GetInteractionText(); // e.g. "Open Chest", "Talk", "Pick Up"
 }

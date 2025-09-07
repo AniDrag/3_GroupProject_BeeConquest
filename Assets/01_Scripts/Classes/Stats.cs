@@ -13,7 +13,7 @@ public class Stats : MonoBehaviour,IDamageable
 
     // Level details
     private int characterLevel = 0;
-    private int xpToLevelUp;
+    private int levelUpPrice;
     private float xpToLevelMulti = 1.5f;
 
     // Multipliers
@@ -67,8 +67,8 @@ public class Stats : MonoBehaviour,IDamageable
     public int Agility => agility;
     public int Magic => magic;
 
-    public int Level => characterLevel;
-    public int XpToLevelUp => xpToLevelUp;
+    public int CharacterLevel => characterLevel;
+    public int LevelUpPrice => levelUpPrice;
 
     public string CharacterName => characterName;
     public string CharacterRace => characterRace;
@@ -124,7 +124,7 @@ public class Stats : MonoBehaviour,IDamageable
     {
         Debug.Log("I took Damage");
     }
-    public void UpdateStats()
+    public virtual void UpdateStats()
     {
         int lvl = Mathf.Max(1, characterLevel); // Avoid zero-level problems
 
@@ -141,6 +141,6 @@ public class Stats : MonoBehaviour,IDamageable
         magicDefense = (int)(3 * vitality * magicDefenseMulti) * lvl;
         statusDefense = (int)(3 * vitality * statusDefenseMulti) * lvl;
 
-        xpToLevelUp = (int)(100 * xpToLevelMulti);
+        levelUpPrice = (int)(100 * xpToLevelMulti);
     }
 }

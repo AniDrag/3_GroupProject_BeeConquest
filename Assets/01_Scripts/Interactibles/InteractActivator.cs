@@ -1,31 +1,83 @@
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.EventSystems;
-using static MoveOnInteract;
-[RequireComponent(typeof(SphereCollider))]
+//[RequireComponent(typeof(SphereCollider))]
 
-public class InteractActivator : MonoBehaviour
+public class InteractActivator : MonoBehaviour, Iinteract
 {
     public enum InteractionType
     {
         OnKeyPress,
         WhenInRange,
-        WhenItemPlacedInZone,
-        WhenDestroyed,
+        WhenItemPlacedInZone
+    }
+    // ("===== Text settings ======")]
+    [SerializeField] private string interactionText = "(E) ";
+    [SerializeField] private string objectName = "Test Object";
+    [SerializeField] private string triggerText = "Triggerd this";
+
+    //("===== Events =====")]
+    [SerializeField] public UnityEvent triggerOnInteract;
+    [SerializeField] public UnityEvent onEnterTriggered;
+    [SerializeField] public UnityEvent onExitTriggered;
+
+    // ("===== Settings =====")]
+    [SerializeField] public InteractionType interactionType = InteractionType.OnKeyPress;
+    [Tooltip("time it takes before it can be triggered again")]
+    [SerializeField, Range(0.1f, 60f)] private float retriggerInterval = 2f;
+    [SerializeField] private bool canInteractOnlyOnce;
+
+    private bool interacted;
+    private bool entered;
+
+
+    #region InteractionData
+    public virtual void Interact()// can be overwriten
+    {
+        if (!interacted)
+        {
+            interacted = true;
+            Debug.Log("Door opened!");
+            if (interactionType == InteractionType.WhenItemPlacedInZone)
+            {
+                if (entered)
+                {
+                    entered = false;
+                    onExitTriggered?.Invoke();
+                    interacted = canInteractOnlyOnce;
+                }
+                else
+                {
+                    onEnterTriggered?.Invoke();
+                }
+            }
+            else
+            {
+                triggerOnInteract?.Invoke();
+
+            }
+            if (!canInteractOnlyOnce) Invoke(nameof(ResetTrigger), retriggerInterval);
+        }
     }
 
-    [Header("Settings")]
-    public InteractionType interactionType = InteractionType.OnKeyPress;
+    public string GetInteractionText() => interactionText + objectName;
+
+    #endregion
+    void ResetTrigger()
+    {
+        interacted = false;
+    }
+}
+/*
     [SerializeField] private bool canTriggerMultipleTimes = false;
     [SerializeField] private float interactionRadius = 2f;
     [Tooltip("time it takes before it can be triggered again")]
-    [SerializeField, Range(0.1f,60f)] private float retriggerInterval = 2f;
+    
     [SerializeField] private LayerMask triggerableLayers;
     [SerializeField] private string[] triggerableTags;
 
-    [Header("Events")]
-    public UnityEvent onEnterTriggered;
-    public UnityEvent onExitTriggered;
+    //[Header("Events")]
+    //public UnityEvent onEnterTriggered;
+    //public UnityEvent onExitTriggered;
     private void Awake()
     {
         SphereCollider collider = GetComponent<SphereCollider>();
@@ -33,6 +85,7 @@ public class InteractActivator : MonoBehaviour
     }
     private bool _triggered = false;
 
+   
     public void TRIG_OnEnter(GameObject obj)
     {
         
@@ -90,5 +143,4 @@ public class InteractActivator : MonoBehaviour
         Gizmos.DrawSphere(transform.position, interactionRadius);
 #endif
     }
-}
-
+}*/
