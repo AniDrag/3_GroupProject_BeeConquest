@@ -1246,7 +1246,6 @@ GameObject:
   - component: {fileID: 995451028}
   - component: {fileID: 995451027}
   - component: {fileID: 995451026}
-  - component: {fileID: 995451029}
   m_Layer: 0
   m_Name: Interactible check
   m_TagString: Untagged
@@ -1343,19 +1342,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 995451024}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &995451029
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 995451024}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b3e7e3785169a03488903c6c68813dc6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  interactionText: Test Object
 --- !u!1 &1139892336
 GameObject:
   m_ObjectHideFlags: 0
@@ -2930,6 +2916,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4755649784709649479, guid: b45da92cff28a2447861dfb85b298128, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4780713668297467889, guid: b45da92cff28a2447861dfb85b298128, type: 3}
+      propertyPath: interactionType
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4780713668297467889, guid: b45da92cff28a2447861dfb85b298128, type: 3}
+      propertyPath: retriggerInterval
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4780713668297467889, guid: b45da92cff28a2447861dfb85b298128, type: 3}
+      propertyPath: canInteractOnlyOnce
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
