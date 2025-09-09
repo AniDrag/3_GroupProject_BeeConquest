@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.IO;
-using UnityEditor.Overlays;
 /// <summary>
 /// I should be on a game manager OBJ that is not destroyed... yess
 /// </summary>
@@ -9,8 +8,8 @@ public class Save_System : MonoBehaviour {
     [SerializeField]private string playerName = "Tom"; // folder name and then maybe saves idk
     
     private const string fileName = "_rxe.dlr";
-    private SaveData currentSave;
-    
+
+
     public void Save()
     {
         GameSave gameSave = new GameSave() { playerLevel = 0, playerName = "Thomas", inventory = new string[] { "Sword", "helmet"} };
