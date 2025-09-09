@@ -75,7 +75,7 @@ public class FieldCell : MonoBehaviour
     }
 
 
-    private void Update() // Fixed update better, no?
+    private void FixedUpdate()
     {
         float currentTime = Time.time;
 

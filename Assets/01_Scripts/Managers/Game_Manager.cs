@@ -11,8 +11,9 @@ public class PlayerServerData
 {
     public int playerID;
     public Transform target;
+    public Vector3 lastKnownPosition;
     public PlayerCore playerCore;
-    public Dictionary<BeeCore, Vector3> beePositionTracking;
+    public List<BeeCore> playerBees = new List<BeeCore>();
 }
 public class Game_Manager : MonoBehaviour
 {
@@ -23,11 +24,11 @@ public class Game_Manager : MonoBehaviour
     // List of cells that do not have durability
     // List of stuff that holds data for triggering animations and collection of polin (cell ID, player ID)
     // List of users with only their ID and transform
-    private Dictionary<int,PlayerServerData> players = new Dictionary<int, PlayerServerData>();
+    public Dictionary<int,PlayerServerData> players = new Dictionary<int, PlayerServerData>();
     private List<CollectionData> collectionDatas = new List<CollectionData>();
     private Dictionary<string, List<FieldCell>> fields = new Dictionary<string, List<FieldCell>>();
     private Dictionary<int, FieldCell> fieldCells = new Dictionary<int, FieldCell>();
-    private Dictionary<BeeCore, Vector3> allBeesOnServer = new Dictionary<BeeCore, Vector3>();
+    //private Dictionary<BeeCore, Vector3> allBeesOnServer = new Dictionary<BeeCore, Vector3>();
 
 
     private void Awake()
@@ -43,9 +44,23 @@ public class Game_Manager : MonoBehaviour
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
+    private int beeCount;
     void Start()
     {
-        
+        GameObject beeHolder = GameObject.Find("beeholder");
+        foreach (Transform child in beeHolder.transform)
+        {
+            BeeCore beeCore = child.GetComponent<BeeCore>();
+            if (beeCore != null)
+            {
+                beeCount++;
+
+                players[0].playerBees.Add(beeCore);
+            }
+        }
+
+        Debug.Log("Added: " + beeCount + " bees");
+
     }
 
     // Update is called once per frame
@@ -58,6 +73,37 @@ public class Game_Manager : MonoBehaviour
             {
                 CollectPolinTrigger(collectionDatas[i]);
                 collectionDatas.RemoveAt(i);
+            }
+        }
+    }
+
+
+    private float stateUpdateInterval = 3f;        // seconds between calls
+    private float rareTimer = 0f;
+    private float nextRareTime = 0f;
+    private void FixedUpdate()
+    {
+        rareTimer += Time.fixedDeltaTime;
+        if (rareTimer >= nextRareTime)
+        {
+            rareTimer = 0f;
+            nextRareTime = Mathf.Max(0.01f, stateUpdateInterval);
+
+            foreach (int player in players.Keys)
+            {
+                float distance = Vector3.Distance(Game_Manager.instance.players[player].lastKnownPosition, Game_Manager.instance.players[player].target.position);
+                Debug.Log(distance);
+                if (distance > 4)
+                {
+                    players[player].lastKnownPosition = players[player].target.position;
+                    foreach (BeeCore bee in players[player].playerBees)
+                    {
+                        bee.CatchPlayer();
+                    }
+
+                }
+                
+
             }
         }
     }
@@ -96,16 +142,31 @@ public class Game_Manager : MonoBehaviour
         // get the bee 
         PlayerServerData player = players[bee.GetPlayerID];
         FieldCell field = GetPositionToFieldCell(player.target.position);
-        bee.MoveTo(allBeesOnServer[bee], field.transform.position);
-        float travelTime = Vector3.Distance(allBeesOnServer[bee], field.transform.position); // some calculation for time idk
+        bee.MoveTo(field.transform.position);
+        //float travelTime = Vector3.Distance(allBeesOnServer[bee], field.transform.position); // some calculation for time idk
         CollectionData data = new CollectionData() {
             collectAmount = bee.GetCollectionStrenght,
             playerID = player.playerID,
             fieldCellID = field.GetID,
-            triggerTime = travelTime,
+           // triggerTime = travelTime,
         };
         // All logic and info exchange here
         collectionDatas.Add(data);
+    }
+    
+    public void BeeMovementRequest(BeeCore bee)
+    {
+        Transform player = players[bee.GetPlayerID].target;
+        Vector3 randomPosition = GetRandomPointInAnnulusXZ(player.position, 0.5f, 5f);
+        bee.MoveTo(randomPosition);
+    }
+
+    Vector3 GetRandomPointInAnnulusXZ(Vector3 center, float minR, float maxR)
+    {
+        float r = Mathf.Sqrt(Random.value * (maxR * maxR - minR * minR) + minR * minR);
+        float theta = Random.value * Mathf.PI * 2f;
+        Vector2 dir = new Vector2(Mathf.Cos(theta), Mathf.Sin(theta));
+        return center + new Vector3(dir.x * r, 0f, dir.y * r);
     }
 
     /// <summary>

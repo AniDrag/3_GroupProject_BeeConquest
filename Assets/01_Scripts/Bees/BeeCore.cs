@@ -1,10 +1,11 @@
+using System.Collections;
 using UnityEngine;
 
 public class BeeCore : Stats
 {
     public enum BeeClass { Worker, Attacker, Defender }
     public enum BeeAtribute { Red, Blue, Green, Dark, Light }
-    public enum State { Idle, MovingToTarget, CollectingPolin, Attacking }
+    public enum State { Idle, MovingToTarget, CollectingPolin, Attacking, Chasing }
 
     [Header("Settings")]
     [SerializeField, Range(1, 100)] float collectionStrength = 5f;
@@ -15,33 +16,55 @@ public class BeeCore : Stats
 
     public Vector3 Destination { get; private set; }
     private Transform enemy;
-    private bool _atDestination;
+    //private bool _atDestination;
     private int playerID;
     public int GetPlayerID => playerID;
     public float GetCollectionStrenght => collectionStrength;
+    private float heightOffsetY = 0.4f;
+
+    private float stateUpdateInterval = 3f;        // seconds between calls
+    private float rareTimer = 0f;
+    private float nextRareTime = 0f;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+        //if (Game_Manager.instance.players.ContainsKey(playerID)) 
+        // Game_Manager.instance.players[playerID].playerBees.Add(this); // TEMP ADDING ALL BEES TO ONE PLAYER (THE CURRENT ONE)!!
     }
 
     // Update is called once per frame
+    private void FixedUpdate()
+    {
+        rareTimer += Time.fixedDeltaTime;
+        if (rareTimer >= nextRareTime)
+        {
+            rareTimer = 0f;
+            nextRareTime = Mathf.Max(0.01f, stateUpdateInterval);
+            AI();
+            //Debug.Log("Update state bees");
+        }
+
+
+
+    }
+
     private void Update()
+    {
+        ClientSmoothMoving();
+    }
+
+    private void AI()
     {
         switch (beeState)
         {
-            case State.Idle: IdleBehaviour(); break;
+            case State.Idle: IdleTransition(); break;
+            case State.MovingToTarget: MovingBehaviour(); break;
             case State.CollectingPolin: CollectingPolinBehaviour(); break;
             case State.Attacking: AttackingBehaviour(); break;
+            case State.Chasing: ClientSmoothMoving(); break;
         }
-
-        MovementBehaviour();
     }
-    /// <summary>
-    /// This is called by the player when they change location tyep. or the player detects an enemy
-    /// </summary>
-    /// <param name="state"> 1 = Idle, 2 = Collect polin, 3 = Attacking</param>
-    /// 
+
     // ALEX
     // Like we call a method in every players bee to change the state. For example we have this in the playerCore:
     //OnTriggerEnter / Exit
@@ -51,6 +74,11 @@ public class BeeCore : Stats
     //    bee.SetState(playerCurrentState);
     //}
     // Then you don't have to encode it in an int, and just literally set the same state.
+    /// <summary>
+    /// This is called by the player when they change location tyep. or the player detects an enemy
+    /// </summary>
+    /// <param name="state"> 1 = Idle, 2 = Moving to target, 3 = Collect polin, 4 = Attacking</param>
+    /// 
     public void SetState(int state)
     {
         switch (state)
@@ -58,10 +86,22 @@ public class BeeCore : Stats
             case 1:
                 beeState = State.Idle; break;
             case 2:
-                beeState = State.CollectingPolin; break;
+                beeState = State.MovingToTarget; break;
             case 3:
+                beeState = State.CollectingPolin; break;
+            case 4:
                 beeState = State.Attacking; break;
+            case 5:
+                beeState = State.Chasing; break;
         }
+    }
+
+    public void CatchPlayer()
+    {
+        beeState = State.Chasing;
+        MoveTo(Game_Manager.instance.players[playerID].target.position);
+        Debug.Log("I HAVE TO CATCH YOU");
+        AI();
     }
     // Public API
     /// <summary>
@@ -71,46 +111,56 @@ public class BeeCore : Stats
     /// </summary>
     /// <param name="currentPosition"></param>
     /// <param name="targetPosition"></param>
-    public void MoveTo(Vector3 currentPosition, Vector3 targetPosition)
+    public void MoveTo(Vector3 targetPosition)
     {
-        transform.position = currentPosition;
-        Destination = targetPosition;
-        _atDestination = false;
-        beeState = State.MovingToTarget;
+        Destination = targetPosition + new Vector3(Random.Range(-0.5f, 0.5f), heightOffsetY, Random.Range(-0.5f, 0.5f));
     }
 
     /// <summary>
     /// Consistantly called for bee movemant at all times
     /// </summary>
-    private void MovementBehaviour()
+    private void ClientSmoothMoving()
     {
-        if (!_atDestination &&Destination != Vector3.zero)
+        if (Destination != Vector3.zero)
         {
             transform.position = Vector3.MoveTowards(transform.position, Destination, Agility * Time.deltaTime);
 
             if (Vector3.Distance(transform.position, Destination) < 0.1f)
             {
-                _atDestination = true;
                 Destination = Vector3.zero;
-                Game_Manager.instance.BeeCollectionRequest(this);
+                //Game_Manager.instance.BeeCollectionRequest(this);
+                if (beeState == State.Chasing)
+                {
+                    beeState = State.MovingToTarget;
+                    AI();
+                }
+                else
+                    beeState = State.Idle;
             }
         }
     }
-    void IdleBehaviour()
-    {
-        if(_atDestination) {
 
-            PING_DestinationNerePlayer();
+    void IdleTransition()
+    {
+        if (Random.value > .95)
+        {
+            beeState = State.MovingToTarget;
         }
-        // random point around player. Always the same height
+    }
+
+    void MovingBehaviour()
+    {
+  
+        Debug.Log("I REQUEST MOVEMENT POS");
+        PING_DestinationNearPlayer();
+        
+        // random point around player. Always at the hight of the player (around the legs+-)
     }
     void CollectingPolinBehaviour()
     {
-        if (_atDestination)
-        {
             //animation trigger and 
             PING_DestinationToFieldCell();
-        }
+        
         // send request to server for location of polin flower, amount it can collect, time to travel to location
         // Get location
         // travel there
@@ -118,33 +168,31 @@ public class BeeCore : Stats
     }
     void AttackingBehaviour()
     {
-        if (_atDestination)
-        {
+      
             if (enemy != null)
             {
                 PING_DestinationToEnemy();
             }
             else { }// Deal damage to target
             //animation trigger and 
-        }
+        
         // scan for closes target and deal damage to it
         // send data to whitch target we delt damage to server and how much
     }
 
 
-    void PING_DestinationNerePlayer()
+    void PING_DestinationNearPlayer()
     {
-        _atDestination = false;
+        Game_Manager.instance.BeeMovementRequest(this);
+
         // send a ping to server
     }
     void PING_DestinationToFieldCell()
     {
-        _atDestination = false;
         // send a ping to server
     }
     void PING_DestinationToEnemy()
     {
-        _atDestination = false;
         // send a ping to server
     }
 }
