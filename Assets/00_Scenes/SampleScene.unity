@@ -377,14 +377,13 @@ GameObject:
   - component: {fileID: 176238465}
   - component: {fileID: 176238467}
   - component: {fileID: 176238466}
-  - component: {fileID: 176238468}
   m_Layer: 0
   m_Name: Interaction
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &176238465
 Transform:
   m_ObjectHideFlags: 0
@@ -448,22 +447,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &176238468
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 176238464}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 26258671a026e5b408d3ccf0cf567ba7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  interactionRadius: 2
-  interactKey: 101
-  cycleKey: 9
-  input: {fileID: 1624816717}
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
@@ -1177,7 +1160,6 @@ GameObject:
   - component: {fileID: 837777688}
   - component: {fileID: 837777687}
   - component: {fileID: 837777686}
-  - component: {fileID: 837777685}
   - component: {fileID: 837777684}
   m_Layer: 0
   m_Name: Bee
@@ -1198,34 +1180,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3eb0f5d7374c0c6488797be4d923c676, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  collectionStrenght: 4.8
+  collectionStrength: 5
   beeClass: 0
   beeAtribute: 0
   beeState: 0
-  player: {fileID: 0}
-  enemy: {fileID: 0}
-  _destinaton: {x: 0, y: 0, z: 0}
---- !u!65 &837777685
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 837777683}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &837777686
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -2342,9 +2300,10 @@ GameObject:
   - component: {fileID: 1624816714}
   - component: {fileID: 1624816715}
   - component: {fileID: 1624816717}
-  - component: {fileID: 1624816719}
   - component: {fileID: 1624816720}
   - component: {fileID: 1624816721}
+  - component: {fileID: 1624816723}
+  - component: {fileID: 1624816722}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -2513,33 +2472,6 @@ MonoBehaviour:
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
---- !u!54 &1624816719
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1624816713}
-  serializedVersion: 4
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 1
-  m_IsKinematic: 0
-  m_Interpolate: 1
-  m_Constraints: 112
-  m_CollisionDetection: 1
 --- !u!143 &1624816720
 CharacterController:
   m_ObjectHideFlags: 0
@@ -2587,6 +2519,43 @@ CapsuleCollider:
   m_Radius: 0.5
   m_Height: 1
   m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1624816722
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1624816713}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26258671a026e5b408d3ccf0cf567ba7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  interactionRadius: 2
+  interactKey: 101
+  cycleKey: 9
+  input: {fileID: 1624816717}
+--- !u!135 &1624816723
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1624816713}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 2
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1677163540
 GameObject:
