@@ -97,7 +97,7 @@ public class PlayerMovemant : MonoBehaviour
     {
         if (!controller.isGrounded)
         {
-            if (velocity.y > 0f)
+            if (velocity.y > 0f && jumped)
                 currentState = MovementState.Jumping;  // Moving upwards
             else
                 currentState = MovementState.Falling;  // Moving downwards

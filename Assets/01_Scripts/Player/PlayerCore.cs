@@ -16,7 +16,7 @@ public class PlayerCore : MonoBehaviour
     private void Awake()
     {
         PlayerServerData data = new PlayerServerData() {playerID = this.playerID, target = this.transform };
-        Game_Manager.instance.JoinServer(data);
+        Game_Manager.instance.JoinServer(playerID,data);
     }
 
     public int AddPollin(int amount) => polinStorage += amount;
