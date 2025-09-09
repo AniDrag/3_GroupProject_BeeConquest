@@ -108,14 +108,14 @@ public class Stats : MonoBehaviour,IDamageable
     public void SetName(string name) => characterName = name;
     public void SetRace(string race) => characterRace = race;
     public void SetClass(string characterClass) => this.characterClass = characterClass;
-    public void LevelUp()
+    #endregion
+
+    // overwriten by other users
+    public virtual void LevelUp()
     {
         characterLevel++;
         UpdateStats();
     }
-    #endregion
-
-    // overwriten by other users
     public virtual void OnDeath()
     {
         Debug.Log("I died");

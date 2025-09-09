@@ -5,14 +5,14 @@ public class CollectionData
     public float collectAmount;
     public int playerID;
     public int fieldCellID;
-    public float duration;
-    public float triggerTime;// when it should triger
+    public float triggerTime; // when it finishes
 }
 public class PlayerServerData
 {
     public int playerID;
     public Transform target;
     public PlayerCore playerCore;
+    public Dictionary<BeeCore, Vector3> beePositionTracking;
 }
 public class Game_Manager : MonoBehaviour
 {
@@ -23,9 +23,11 @@ public class Game_Manager : MonoBehaviour
     // List of cells that do not have durability
     // List of stuff that holds data for triggering animations and collection of polin (cell ID, player ID)
     // List of users with only their ID and transform
-    private List<PlayerServerData> players = new List<PlayerServerData>();
+    private Dictionary<int,PlayerServerData> players = new Dictionary<int, PlayerServerData>();
     private List<CollectionData> collectionDatas = new List<CollectionData>();
-    private List<FieldCell> fieldCells = new List<FieldCell>();
+    private Dictionary<int, FieldCell> fieldCells = new Dictionary<int, FieldCell>();
+    private Dictionary<BeeCore, Vector3> allBeesOnServer = new Dictionary<BeeCore, Vector3>();
+
 
     private void Awake()
     {
@@ -49,11 +51,12 @@ public class Game_Manager : MonoBehaviour
     void Update()
     {
         // some kind of timer that is here that collects data each second it checks if anything in the list is done
-        for (int i = 0; i < collectionDatas.Count; i++)
+        for (int i = collectionDatas.Count - 1; i >= 0; i--)
         {
             if (collectionDatas[i].triggerTime <= Time.time)
             {
                 CollectPolinTrigger(collectionDatas[i]);
+                collectionDatas.RemoveAt(i);
             }
         }
     }
@@ -63,8 +66,13 @@ public class Game_Manager : MonoBehaviour
         Debug.Log($"Buff {buff.type} expired on cell {cell.name}");
         // TODO: Sync with server, update UI, etc.
     }
+
+
     /// <summary>
-    /// When the timer is 0 it triggers the collection data
+    /// When the timer is 0 it triggers the collection data, transfers polin to player,
+    /// And sends an update to the FieldCell so that the cell can check if it should update visualy
+    /// That is taken care of by the cell it self, since the durability value is the same for all 
+    /// clients we dont need anything else from it.
     /// </summary>
     void CollectPolinTrigger(CollectionData data)
     {
@@ -74,19 +82,49 @@ public class Game_Manager : MonoBehaviour
         fieldCells[data.fieldCellID].DecreseDurability((int)data.collectAmount);
     }
     // Decrese durability and send only that to the world. and buffs. regen happens localy and is sinced anyways since its doen on time.time durability increases unanimously.
-    public void BeeCollectionRequest(Vector3 position, Vector3 playerPos)
+   
+    /// <summary>
+    /// This function is called by a bee when it is ready to collect a new polin.
+    /// This function handles asigning a Call for collecting polin and details sorounding that process.
+    /// Server has info of where the bee is so we also send that info so no inconsistencies occure
+    /// </summary>
+    /// <param name="bee"></param>
+    public void BeeCollectionRequest(BeeCore bee)
     {
-        CollectionData data = new CollectionData();
+        // get a Field cell that is nere player
+        // get the bee 
+        PlayerServerData player = players[bee.GetPlayerID];
+        FieldCell field = GetPositionToFieldCell(player.target.position);
+        bee.MoveTo(allBeesOnServer[bee], field.transform.position);
+        float travelTime = Vector3.Distance(allBeesOnServer[bee], field.transform.position); // some calculation for time idk
+        CollectionData data = new CollectionData() {
+            collectAmount = bee.GetCollectionStrenght,
+            playerID = player.playerID,
+            fieldCellID = field.GetID,
+            triggerTime = travelTime,
+        };
         // All logic and info exchange here
         collectionDatas.Add(data);
     }
-    #endregion
-    public void JoinServer(PlayerServerData data)
+
+    /// <summary>
+    /// Finction in progress. It is ment to get a random point around the player
+    /// then it should find the closest fieldCell and asign it  as the destination for the bee.
+    /// </summary>
+    /// <param name="serchPivot"></param>
+    /// <returns></returns>
+    FieldCell GetPositionToFieldCell(Vector3 serchPivot)
     {
-        players.Add(data);
+        return new FieldCell();
     }
-    public void LeaveServer(PlayerServerData data)
+
+    #endregion
+    public void JoinServer(int ID, PlayerServerData data)
     {
-        players.Remove(data);
+        players.Add(ID,data);
+    }
+    public void LeaveServer(int ID)
+    {
+        players.Remove(ID);
     }
 }

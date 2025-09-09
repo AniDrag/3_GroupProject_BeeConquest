@@ -28,6 +28,7 @@ public class FieldCell : MonoBehaviour
 
     public float GetDurability => durability;
     public float GetPolinMultiplyer => pollinMultiplier;
+    public int GetID => ID;
     public float DecreseDurability(int amount) => durability - amount;
     private List<FieldBuff> activeBuffs = new();
 
