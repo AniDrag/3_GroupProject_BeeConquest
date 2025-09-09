@@ -37,10 +37,20 @@ public class BeeCore : Stats
 
         MovementBehaviour();
     }
-/// <summary>
-/// This is called by the player when they change location tyep. or the player detects an enemy
-/// </summary>
-/// <param name="state"> 1 = Idle, 2 = Collect polin, 3 = Attacking</param>
+    /// <summary>
+    /// This is called by the player when they change location tyep. or the player detects an enemy
+    /// </summary>
+    /// <param name="state"> 1 = Idle, 2 = Collect polin, 3 = Attacking</param>
+    /// 
+    // ALEX
+    // Like we call a method in every players bee to change the state. For example we have this in the playerCore:
+    //OnTriggerEnter / Exit
+    //depending on the trigger we update playerCurrentState, and do:  
+    //foreach (var bee in playerBees)
+    //{
+    //    bee.SetState(playerCurrentState);
+    //}
+    // Then you don't have to encode it in an int, and just literally set the same state.
     public void SetState(int state)
     {
         switch (state)

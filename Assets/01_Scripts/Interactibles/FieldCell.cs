@@ -19,9 +19,15 @@ public class FieldBuff
         return currentTime - startTime >= duration;
     }
 }
+
+// Adding colors to the cells
+public enum CellColor { Red, Blue, Green, Black, White }
+
 public class FieldCell : MonoBehaviour
 {
     private int ID = 0;
+    // We will need color as well
+    private CellColor cellColor;
     private float durability;
     private float durabilityRegen;
     [SerializeField, Range(1, 100)] private float pollinMultiplier;
@@ -30,7 +36,9 @@ public class FieldCell : MonoBehaviour
     public float GetPolinMultiplyer => pollinMultiplier;
     public int GetID => ID;
     public float DecreseDurability(int amount) => durability - amount;
-    private List<FieldBuff> activeBuffs = new();
+    // Adding the opposite option as well.
+    public float IncreaseDurability(int amount) => durability + amount;
+    private List<FieldBuff> activeBuffs = new(); // Uh?
 
     public void BuffFieldCell(FieldBuff buff)
     {
@@ -67,7 +75,7 @@ public class FieldCell : MonoBehaviour
     }
 
 
-    private void Update()
+    private void Update() // Fixed update better, no?
     {
         float currentTime = Time.time;
 

@@ -25,6 +25,7 @@ public class Game_Manager : MonoBehaviour
     // List of users with only their ID and transform
     private Dictionary<int,PlayerServerData> players = new Dictionary<int, PlayerServerData>();
     private List<CollectionData> collectionDatas = new List<CollectionData>();
+    private Dictionary<string, List<FieldCell>> fields = new Dictionary<string, List<FieldCell>>();
     private Dictionary<int, FieldCell> fieldCells = new Dictionary<int, FieldCell>();
     private Dictionary<BeeCore, Vector3> allBeesOnServer = new Dictionary<BeeCore, Vector3>();
 
@@ -115,6 +116,7 @@ public class Game_Manager : MonoBehaviour
     /// <returns></returns>
     FieldCell GetPositionToFieldCell(Vector3 serchPivot)
     {
+        // get player position, check which cells are in range
         return new FieldCell();
     }
 
