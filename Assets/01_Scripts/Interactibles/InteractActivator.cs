@@ -36,7 +36,7 @@ public class InteractActivator : MonoBehaviour, Iinteract
         if (!interacted)
         {
             interacted = true;
-            Debug.Log("Door opened!");
+            Debug.Log(triggerText);
             if (interactionType == InteractionType.WhenItemPlacedInZone)
             {
                 if (entered)

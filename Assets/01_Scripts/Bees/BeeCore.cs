@@ -2,48 +2,95 @@ using UnityEngine;
 
 public class BeeCore : Stats
 {
-    //float xpToLevelMulti = 1;
-    float healthMulti = 1;
-    float staminaMulti = 1;
-    float magicMulti = 1;
-    float physicalDefMulti = 1;
-    float magicDefMulti = 1;
-    float statusDefMulti = 1;
+    public enum BeeClass// probably better to just make a seperate script
+    {
+        Worker,
+        Attacker,
+        Defender
+    }
+    public enum BeeAtribute
+    {
+        Red,
+        Blue,
+        Green,
+        Dark,
+        Light
+    }
 
-    int vit = 1;
-    int str = 1;
-    int dex = 1;
-    int agi = 1;
-    int mag = 1;
+    public enum State
+    {
+        Idle,
+        CollectingPolin,
+        Attacking,
+    }
 
-    private Vector3 target;
+    [Header("Settings")]
+    [SerializeField, Range(1, 100)] float collectionStrenght;
+    public BeeClass beeClass;
+    public BeeAtribute beeAtribute;
+    public State beeState;
+    public Transform player;
+    public Vector3 destinaton;
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Start()
+    {
+        
+    }
 
-    #region Cobat Logic
+    // Update is called once per frame
+    void Update()
+    {
+        switch (beeState)
+        {
+            case State.Idle:
+                IdleBehaviour(); break;
+            case State.CollectingPolin:
+                CollectingPolinBehaviour(); break;
+            case State.Attacking:
+                AttackingBehaviour(); break;
+        }
+    }
 
-    #endregion
-    //----------------------------------------------
-    #region Traversal Logic
-    void GoToDestination()
+    ///<summary>
+    /// Bee movement. is a location to location move transform there with jsut an actual movement
+    /// has atimer to go to a random location around the player
+    /// has 3 states is passive, is on field, attacks
+    /// 
+    /// </summary>
+    /// 
+
+    public void SetState(int state)
+    {
+        switch (state)
+        {
+            case 1:
+                beeState = State.Idle; break;
+            case 2:
+                beeState = State.CollectingPolin; break;
+            case 3:
+                beeState = State.Attacking; break;
+        }
+    }
+
+    void IdleBehaviour()
+    {
+        // random point around player. Always the same height
+    }
+    void CollectingPolinBehaviour()
+    {
+        // send request to server for location of polin flower, amount it can collect, time to travel to location
+        // Get location
+        // travel there
+        // go to idle for a bit and then get new location and repeat
+    }
+    void AttackingBehaviour()
+    {
+        // scan for closes target and deal damage to it
+        // send data to whitch target we delt damage to server and how much
+    }
+
+    void MovementBehaviour()// Maybe this? we use it whenever the bee moves. Gets movement instructions with this.
     {
 
     }
-    #endregion
-    //----------------------------------------------
-    #region OffServer Calculations
-    
-
-    #endregion
-    //----------------------------------------------
-    #region Server Senders
-    void SendRequestCollectPollin()
-    {
-        // get location data and trigger traversal
-    }
-
-    public void SetDestination(Vector3 destination)
-    {
-        target = destination;
-        GoToDestination();
-    }
-    #endregion
 }
