@@ -2,15 +2,15 @@ using UnityEngine;
 
 public class BeeStateMachine : MonoBehaviour
 {
-    public BeeState currentState { get; private set; }
+    public BeeStates currentState { get; private set; }
 
-    public void Initialize(BeeState startingState)
+    public void Initialize(BeeStates startingState)
     {
         currentState = startingState;
         currentState.EnterState();
     }
 
-    public void ChangeState(BeeState newState)
+    public void ChangeState(BeeStates newState)
     {
         currentState.ExitState();
         currentState = newState;
@@ -18,13 +18,13 @@ public class BeeStateMachine : MonoBehaviour
     }
 }
 
-public class BeeState
+public class BeeStates
 {
-    public BeeStates state;
+    public BeeAI.BeeState state;
     protected BeeStateMachine stateMachine;
     protected BeeAI bee;
 
-    public BeeState(BeeStateMachine StateMachine, BeeAI bee)
+    public BeeStates(BeeStateMachine StateMachine, BeeAI bee)
     {
         this.stateMachine = StateMachine;
         this.bee = bee;

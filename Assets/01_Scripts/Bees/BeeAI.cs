@@ -1,10 +1,26 @@
-using TMPro;
+﻿using TMPro;
 using UnityEditor.Playables;
 using UnityEngine;
-public enum BeeStates { Idle, Moving, Collecting, Combat }
+using static BeeCore;
+[RequireComponent(typeof(BeeStateMachine))]
 public class BeeAI : Stats
 {
-   
+    // ───────────── ENUMS ─────────────
+    public enum BeeAttribute { Red, Blue, Green, Dark, Light }
+    public enum BeeState { Idle, Moving, Collecting, Attacking, Following }
+    //public enum BeeClass { Worker, Attacker, Defender }
+
+    // ───────────── FIELDS ─────────────
+    [Header("--------------- Runtime ---------------")]
+    public BeeAttribute beeAttribute;
+    public BeeState beeState;
+    //public BeeClass beeClass;
+
+    [Header("--------------- Settings ---------------")]
+    [SerializeField, Range(1, 100)] public float collectionStrength { get; private set; } = 5f;
+    [SerializeField, Range(0.1f, 5f)] public float heightOffsetY { get; private set; } = 0.4f;
+    [SerializeField, Range(0.1f, 5f)] public float collectionSpeed { get; private set; } = 1;
+    [SerializeField] public float speed { get; private set; } = 3; // levl * speedScale
 
     // Who commanded me last? (server / player)
     public bool PlayerOverride { get; private set; }
@@ -12,9 +28,8 @@ public class BeeAI : Stats
     //-------------------
     //      Bee Info
     //-------------------
-    public BeeStates state;
     public PlayerCore player;//{ get; private set; }
-    public int parentID { get; private set; }
+    public int parentID { get; private set; } = 0;
 
     // -------------------
     // Target management
@@ -32,7 +47,6 @@ public class BeeAI : Stats
     //-------------------
     //      floats Info
     //-------------------
-    [SerializeField] float heightOffsetY = 1;
     public float getTravelingTime { get; private set; }
 
     //-------------------
@@ -40,22 +54,19 @@ public class BeeAI : Stats
     //-------------------
     #region Stats and scalers for stats
     private long currentXP; // when killing enemys and collecting polin mybe minigames and consumable items
-    public float speed { get; private set; } = 3; // levl * speedScale
     private float currentStamina;
-    public float collectionStrenght { get; private set; } = 5;// levl * collectionScale
-    private float collectionSpeed; // levl * speedScale
     private DamageData damage;
 
     // Ability slot
 
-    // Scalers
+    [Header("--------------- Stat modifiers ---------------")]
     [SerializeField] private int staminaScaler = 1;
     [SerializeField] private int damageScaler = 1;
     [SerializeField] private int speedScaler = 1;
     [Tooltip("on max level how much durability it can consume from a flower")]
-    //[SerializeField,Range(10,100)] private int collectionCap = 20;
+    [SerializeField,Range(10,100)] private int collectionCap = 20;
     [SerializeField] private float critDamage = 1;
-    //[SerializeField] private int critChance = 1;
+    [SerializeField] private int critChance = 1;
     #endregion
   
 
@@ -70,13 +81,19 @@ public class BeeAI : Stats
     public BeeCollectingPolinState pollinCollectionState;
     public BeeCombatState combatState;
     #endregion
+    //-------------------
+    //      Tick rate settings
+    //-------------------
+    private float fieldStateUpdateInterval =1.5f;
+    private float fieldRareTimer = 0f;
+    private float fieldNextRareTime = 0f;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         if (Game_Manager.instance.players.ContainsKey(parentID)) 
          Game_Manager.instance.players[parentID].playerBeesTwo.Add(this); // TEMP ADDING ALL BEES TO ONE PLAYER (THE CURRENT ONE)!!
-
+        SetMyParent(player);
         //-------------------
         //      Stat initialization
         //-------------------
@@ -114,22 +131,27 @@ public class BeeAI : Stats
     }
     private void FixedUpdate()
     {
-        stateMachine.currentState.FixedLogicUpdate();
+        fieldRareTimer += Time.fixedDeltaTime;
+        if (fieldRareTimer >= fieldNextRareTime)
+        {
+            float dt = fieldRareTimer;
+            fieldRareTimer = 0f;
+            fieldNextRareTime = Mathf.Max(0.01f, fieldStateUpdateInterval);
+            stateMachine.currentState.FixedLogicUpdate();
 
-        // calculate distance only when bee is supposed to be at destinaion
-        if (Time.time <= getTravelingTime) return;
-        
-        if (recivedPlayerOrder) atDestination = Vector3.Distance(transform.position, player.transform.position) < 2f;
-        else atDestination = Vector3.Distance(transform.position, targetPosition) < 0.1f;
+            getingPollin = player.currentField != null;
+            if (recivedPlayerOrder) atDestination = Vector3.Distance(transform.position, player.transform.position) < 2f;
+            else atDestination = Vector3.Distance(transform.position, targetPosition) < 0.1f;
 
-        if (atDestination)
-        { 
-            if(recivedPlayerOrder) recivedPlayerOrder = false;
-            else GetDestinationData();
-            return;
+            if (atDestination)
+            {
+                if (recivedPlayerOrder) recivedPlayerOrder = false;
+                else GetDestinationData();
+                return;
+            }
+
+
         }
-
-        getTravelingTime = GetTravelTime(targetPosition);
     }
 
     
@@ -183,7 +205,7 @@ public class BeeAI : Stats
         else if (getingPollin)
         {
            // Debug.Log("Pinging a destination to a field cell");
-            Game_Manager.instance.BEE_PollinCollectionRequest(this); // you'll implement this
+            Game_Manager.instance.BEE_PollinCollectionRequest(this, GetTravelTime(targetPosition) +1); // you'll implement this
         }
         else
         {

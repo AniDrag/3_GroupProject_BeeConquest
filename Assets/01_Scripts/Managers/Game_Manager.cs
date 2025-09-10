@@ -6,6 +6,7 @@ public class CollectionData
     public float collectAmount;
     public int playerID;
     public int fieldCellID;
+    public FieldGenerator field;
     public float triggerTime; // when it finishes
 }
 public class PlayerServerData
@@ -16,22 +17,26 @@ public class PlayerServerData
     public PlayerCore playerCore;
     public List<BeeCore> playerBees = new List<BeeCore>();
     public List<BeeAI> playerBeesTwo = new List<BeeAI>();
+    public FieldGenerator currentField;// trigger this
 }
 public class Game_Manager : MonoBehaviour
 {
 
     public static Game_Manager instance;
 
-    // List of cells that have drability
-    // List of cells that do not have durability
-    // List of stuff that holds data for triggering animations and collection of polin (cell ID, player ID)
-    // List of users with only their ID and transform
+    //-------------------
+    //      Player & beee variables
+    //-------------------
     public Dictionary<int,PlayerServerData> players = new Dictionary<int, PlayerServerData>();
     private List<CollectionData> collectionDatas = new List<CollectionData>();
-    private Dictionary<string, List<FieldCell>> fields = new Dictionary<string, List<FieldCell>>();
-    private Dictionary<int, FieldCell> fieldCells = new Dictionary<int, FieldCell>();
-    //private Dictionary<BeeCore, Vector3> allBeesOnServer = new Dictionary<BeeCore, Vector3>();
+
+    //-------------------
+    //      Field data
+    //-------------------
+    private List<FieldGenerator> serverFields = new List<FieldGenerator>();
     public static event Action<float> OnFixedTick;
+
+    private Dictionary<int, FieldCell> fieldCells = new Dictionary<int, FieldCell>();
 
     private void Awake()
     {
@@ -64,21 +69,6 @@ public class Game_Manager : MonoBehaviour
         Debug.Log("Added: " + beeCount + " bees");
 
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        // some kind of timer that is here that collects data each second it checks if anything in the list is done
-        for (int i = collectionDatas.Count - 1; i >= 0; i--)
-        {
-            if (collectionDatas[i].triggerTime <= Time.time)
-            {
-                CollectPolinTrigger(collectionDatas[i]);
-                collectionDatas.RemoveAt(i);
-            }
-        }
-    }
-
 
     private float beeStateUpdateInterval = 3f;        // seconds between calls
     private float beeRareTimer = 0f;
@@ -118,6 +108,13 @@ public class Game_Manager : MonoBehaviour
             fieldRareTimer = 0f;
             fieldNextRareTime = Mathf.Max(0.01f, fieldStateUpdateInterval);
             // Invoke every subscribed tick updater
+            for (int i = 0; i < collectionDatas.Count; i++)
+            {
+                if (collectionDatas[i].triggerTime <= Time.time)
+                {
+                    CollectPolinTrigger(collectionDatas[i]);
+                }
+            }
             OnFixedTick?.Invoke(dt);
         }
     }
@@ -135,12 +132,16 @@ public class Game_Manager : MonoBehaviour
     /// That is taken care of by the cell it self, since the durability value is the same for all 
     /// clients we dont need anything else from it.
     /// </summary>
-    void CollectPolinTrigger(CollectionData data)
+    public void CollectPolinTrigger(CollectionData data)
     {
-        FieldCell cell = fieldCells[data.fieldCellID];
-        int pollin = Mathf.RoundToInt(cell.GetPolinMultiplyer * data.collectAmount);
-        players[data.playerID].playerCore.AddPollin(pollin);
-        fieldCells[data.fieldCellID].DecreseDurability((int)data.collectAmount);
+        FieldGenerator generator = data.field;
+        var cell = generator.GetCellById(data.fieldCellID);
+        int pollin = Mathf.RoundToInt(cell.PollinMultiplier * data.collectAmount);
+        PlayerCore player = players[data.playerID].playerCore;
+        if (player == null) Debug.LogWarning("no player core found");
+        player.AddPollin(pollin);
+        cell.DecreaseDurability(data.collectAmount);
+        collectionDatas.Remove(data);
     }
     // Decrese durability and send only that to the world. and buffs. regen happens localy and is sinced anyways since its doen on time.time durability increases unanimously.
    
@@ -150,36 +151,46 @@ public class Game_Manager : MonoBehaviour
     /// Server has info of where the bee is so we also send that info so no inconsistencies occure
     /// </summary>
     /// <param name="bee"></param>
-    public void BeeCollectionRequest(BeeCore bee)
+    //public void BeeCollectionRequest(BeeAI bee)
+    //{
+    //    // get a Field cell that is nere player
+    //    // get the bee 
+    //    PlayerServerData player = players[bee.GetPlayerID];
+    //    FieldCell field = GetPositionToFieldCell(player.target.position);
+    //    bee.MoveTo(field.transform.position);
+    //    //float travelTime = Vector3.Distance(allBeesOnServer[bee], field.transform.position); // some calculation for time idk
+    //    CollectionData data = new CollectionData() {
+    //        collectAmount = bee.GetCollectionStrenght,
+    //        playerID = player.playerID,
+    //        fieldCellID = field.GetID,
+    //       // triggerTime = travelTime,
+    //    };
+    //    // All logic and info exchange here
+    //    collectionDatas.Add(bee,data);
+    //}
+    public void BEE_PollinCollectionRequest(BeeAI bee, float collectionTime)
     {
-        // get a Field cell that is nere player
-        // get the bee 
-        PlayerServerData player = players[bee.GetPlayerID];
-        FieldCell field = GetPositionToFieldCell(player.target.position);
-        bee.MoveTo(field.transform.position);
-        //float travelTime = Vector3.Distance(allBeesOnServer[bee], field.transform.position); // some calculation for time idk
-        CollectionData data = new CollectionData() {
-            collectAmount = bee.GetCollectionStrenght,
-            playerID = player.playerID,
-            fieldCellID = field.GetID,
-           // triggerTime = travelTime,
-        };
-        // All logic and info exchange here
-        collectionDatas.Add(data);
-    }
-    public void BEE_PollinCollectionRequest(BeeAI bee)
-    {
-       // Debug.Log("Requesting field location from GM");
-        FieldCell field = GetPositionToFieldCell(players[bee.parentID].target.position);
-        bee.SetDestination(field.transform.position);
-        CollectionData data = new CollectionData()
+        Debug.Log("Requesting field location from GM");
+        FieldGenerator generator = players[bee.parentID].currentField;
+        var cell = generator.GetRandomCellInRadius(players[bee.parentID].target.position,5);
+        if (cell != null)
         {
-            collectAmount = bee.collectionStrenght,
-            playerID = bee.parentID,
-            fieldCellID = field.GetID,
-            // triggerTime = travelTime,
-        };
-        collectionDatas.Add(data);
+            bee.SetDestination(cell.transform.position);
+
+            CollectionData data = new CollectionData()
+            {
+                collectAmount = bee.collectionStrength,
+                playerID = bee.parentID,
+                fieldCellID = cell.ID,
+                field = generator,
+                triggerTime = collectionTime,
+            };
+            collectionDatas.Add(data);
+        }
+        else
+        {
+            Debug.Log("no cell found");
+        }
     }
     public void BEE_IdleMoveRequest(BeeAI bee)
     {
@@ -231,5 +242,20 @@ public class Game_Manager : MonoBehaviour
     public void LeaveServer(int ID)
     {
         players.Remove(ID);
+    }
+
+    public void AsignFieldToServer(FieldGenerator generator)
+    {
+        serverFields.Add(generator);
+    }
+    public void AsignCurrentFieldToPlayer(int player, FieldGenerator field)
+    {
+        players[player].currentField = field;
+        players[player].currentField = field;
+    }
+    public void ExitCurrentFieldFromPlayer(PlayerCore player)
+    {
+        players[player.playerID].currentField = null;
+        player.currentField = null;
     }
 }

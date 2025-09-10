@@ -1,16 +1,17 @@
 using UnityEngine;
 
-public class BeeCollectingPolinState : BeeState
+public class BeeCollectingPolinState : BeeStates
 {
     public BeeCollectingPolinState(BeeStateMachine StateMachine, BeeAI Bee) : base(StateMachine, Bee) { }
-
+    
     public override void EnterState() {
-        bee.state = BeeStates.Collecting;
+        bee.beeState = BeeAI.BeeState.Collecting;
+        Debug.Log("Collected polin");
     }
     public override void ExitState() { }
     public override void LogicUpdate()
     {
-
+        stateMachine.ChangeState(bee.idleState);
     }
     public override void LateLogicUpdate() { }
     public override void FixedLogicUpdate() { }

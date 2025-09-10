@@ -1,11 +1,11 @@
 using UnityEngine;
 
-public class BeeCombatState : BeeState
+public class BeeCombatState : BeeStates
 {
     public BeeCombatState(BeeStateMachine StateMachine, BeeAI Bee) : base(StateMachine, Bee) { }
 
     public override void EnterState() {
-        bee.state = BeeStates.Combat;
+        bee.beeState = BeeAI.BeeState.Attacking;
     }
     public override void ExitState() { }
     public override void LogicUpdate()

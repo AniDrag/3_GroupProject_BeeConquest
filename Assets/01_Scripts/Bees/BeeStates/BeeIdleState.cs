@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class BeeIdleState : BeeState
+public class BeeIdleState : BeeStates
 {
     public BeeIdleState(BeeStateMachine stateMachine, BeeAI bee) : base(stateMachine, bee) { }
     
@@ -12,7 +12,7 @@ public class BeeIdleState : BeeState
         //-------------------
         //      Set state enum
         //-------------------
-        bee.state = BeeStates.Idle;
+        bee.beeState = BeeAI.BeeState.Idle;
 
         //-------------------
         //      Timer setup
@@ -23,12 +23,11 @@ public class BeeIdleState : BeeState
         //Debug.Log("Bee is in Idle State, Wait time is:" +waitTime);
     }
     public override void ExitState() { }
-    public override void LogicUpdate() { }
-    public override void LateLogicUpdate() { }
-    public override void FixedLogicUpdate()
-    {
+    public override void LogicUpdate() {
         if (waitTime >= Time.time) return;
-        stateMachine.ChangeState(bee.moveingState);        
+        stateMachine.ChangeState(bee.moveingState);
     }
+    public override void LateLogicUpdate() { }
+    public override void FixedLogicUpdate(){ }
     public override void AnimationTriggerEvent() { }//PlayerMovemant.AnimationTriggers triggerType) { }
 }

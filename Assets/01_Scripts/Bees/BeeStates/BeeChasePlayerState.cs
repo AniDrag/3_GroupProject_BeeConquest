@@ -1,12 +1,12 @@
 using UnityEngine;
 
-public class BeeChasePlayerState : BeeState
+public class BeeChasePlayerState : BeeStates
 {
     public BeeChasePlayerState(BeeStateMachine StateMachine, BeeAI Bee) : base(StateMachine, Bee) { }
 
     public override void EnterState() {
         //Debug.Log("Bee is in chase player moving State");
-        bee.state = BeeStates.Moving;
+        bee.beeState = BeeAI.BeeState.Following;
         bee.PING_CatchPlayer();
         //stateMachine.ChangeState(bee.moveingState);
     }

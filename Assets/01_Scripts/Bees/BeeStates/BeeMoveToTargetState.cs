@@ -1,12 +1,12 @@
 using TMPro;
 using UnityEngine;
 
-public class BeeMoveToTargetState : BeeState
+public class BeeMoveToTargetState : BeeStates
 {
     public BeeMoveToTargetState(BeeStateMachine StateMachine, BeeAI Bee) : base(StateMachine, Bee) { }
     public override void EnterState()
     {
-        bee.state = BeeStates.Moving;
+        bee.beeState = BeeAI.BeeState.Moving;
         //Debug.Log("Bee is in normal moving State");
         
     }
