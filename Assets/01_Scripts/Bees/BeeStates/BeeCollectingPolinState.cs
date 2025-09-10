@@ -4,7 +4,9 @@ public class BeeCollectingPolinState : BeeState
 {
     public BeeCollectingPolinState(BeeStateMachine StateMachine, BeeAI Bee) : base(StateMachine, Bee) { }
 
-    public override void EnterState() { }
+    public override void EnterState() {
+        bee.state = BeeStates.Collecting;
+    }
     public override void ExitState() { }
     public override void LogicUpdate()
     {

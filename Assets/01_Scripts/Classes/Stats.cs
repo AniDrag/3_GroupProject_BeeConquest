@@ -19,7 +19,6 @@ public class Stats : MonoBehaviour,IDamageable
     // Multipliers
     private float healthMulti = 1.2f;
     private float staminaMulti = 1f;
-    private float magicMulti = 1.2f;
     private float physicalDefenseMulti = 1f;
     private float magicDefenseMulti = 1f;
     private float statusDefenseMulti = 1f;
@@ -29,7 +28,6 @@ public class Stats : MonoBehaviour,IDamageable
     private int strength = 1;
     private int dexterity = 1;
     private int agility = 1;
-    private int magic = 1;
 
     // Derived Stats
     private int maxHealth;
@@ -38,9 +36,6 @@ public class Stats : MonoBehaviour,IDamageable
     private int maxStamina;
     private int staminaRegenPerSec;
 
-    private int maxMagicules;
-    private int magiculesRegenPerSec;
-
     private int physicalDefense;
     private int magicDefense;
     private int statusDefense;
@@ -48,14 +43,18 @@ public class Stats : MonoBehaviour,IDamageable
 #endregion
 
     #region Getters (Properties)
+    public int CharacterLevel => characterLevel;
+    public long LevelUpPrice => levelUpPrice;
+
+    public string CharacterName => characterName;
+    public string CharacterRace => characterRace;
+    public string CharacterClass => characterClass;
+
     public int MaxHealth => maxHealth;
     public int HealthRegenPerSec => healthRegenPerSec;
 
     public int MaxStamina => maxStamina;
     public int StaminaRegenPerSec => staminaRegenPerSec;
-
-    public int MaxMagicules => maxMagicules;
-    public int MagiculesRegenPerSec => magiculesRegenPerSec;
 
     public int PhysicalDefense => physicalDefense;
     public int MagicDefense => magicDefense;
@@ -65,24 +64,17 @@ public class Stats : MonoBehaviour,IDamageable
     public int Strength => strength;
     public int Dexterity => dexterity;
     public int Agility => agility;
-    public int Magic => magic;
 
-    public int CharacterLevel => characterLevel;
-    public int LevelUpPrice => levelUpPrice;
 
-    public string CharacterName => characterName;
-    public string CharacterRace => characterRace;
-    public string CharacterClass => characterClass;
     #endregion
     #region Setters
     public void SetMultipliers(
         float xpToLevelMulti = 1, float healthMulti = 1, float staminaMulti = 1,
-        float magicMulti = 1, float physicalDefMulti = 1, float magicDefMulti = 1, float statusDefMulti = 1)
+        float physicalDefMulti = 1, float magicDefMulti = 1, float statusDefMulti = 1)
     {
         this.xpToLevelMulti = xpToLevelMulti;
         this.healthMulti = healthMulti;
         this.staminaMulti = staminaMulti;
-        this.magicMulti = magicMulti;
         this.physicalDefenseMulti = physicalDefMulti;
         this.magicDefenseMulti = magicDefMulti;
         this.statusDefenseMulti = statusDefMulti;
@@ -90,14 +82,12 @@ public class Stats : MonoBehaviour,IDamageable
         UpdateStats();
     }
 
-    public void SetBaseStats(int vit = 1, int str = 1, int dex = 1, int agi = 1, int mag = 1)
+    public void SetBaseStats(int vit = 1, int str = 1, int dex = 1, int agi = 1)
     {
         vitality = vit;
         strength = str;
         dexterity = dex;
         agility = agi;
-        magic = mag;
-
         UpdateStats();
     }
     public void SetLevel(int level)
@@ -133,9 +123,6 @@ public class Stats : MonoBehaviour,IDamageable
 
         maxStamina = (int)(10 * agility * staminaMulti) * lvl;
         staminaRegenPerSec = (int)(1 * staminaMulti) * lvl;
-
-        maxMagicules = (int)(10 * magic * magicMulti) * lvl;
-        magiculesRegenPerSec = (int)(10 * magicMulti) * lvl;
 
         physicalDefense = (int)(3 * vitality * physicalDefenseMulti) * lvl;
         magicDefense = (int)(3 * vitality * magicDefenseMulti) * lvl;

@@ -15,6 +15,7 @@ public class PlayerServerData
     public Vector3 lastKnownPosition;
     public PlayerCore playerCore;
     public List<BeeCore> playerBees = new List<BeeCore>();
+    public List<BeeAI> playerBeesTwo = new List<BeeAI>();
 }
 public class Game_Manager : MonoBehaviour
 {
@@ -166,7 +167,34 @@ public class Game_Manager : MonoBehaviour
         // All logic and info exchange here
         collectionDatas.Add(data);
     }
-    
+    public void BEE_PollinCollectionRequest(BeeAI bee)
+    {
+       // Debug.Log("Requesting field location from GM");
+        FieldCell field = GetPositionToFieldCell(players[bee.parentID].target.position);
+        bee.SetDestination(field.transform.position);
+        CollectionData data = new CollectionData()
+        {
+            collectAmount = bee.collectionStrenght,
+            playerID = bee.parentID,
+            fieldCellID = field.GetID,
+            // triggerTime = travelTime,
+        };
+        collectionDatas.Add(data);
+    }
+    public void BEE_IdleMoveRequest(BeeAI bee)
+    {
+        //Debug.Log("Requesting Idle movemen location from GM");
+        Transform player = players[bee.parentID].target;
+        Vector3 randomPosition = GetRandomPointInAnnulusXZ(player.position, 0.5f, 5f);
+        //Debug.Log("SERVER: " + randomPosition);
+        bee.SetDestination(randomPosition);
+    }
+    public void BEE_PlayerRequestForBeeToFollowPlayer(BeeAI bee)
+    {
+        //Debug.Log("Requesting player  location from GM");
+        bee.SetDestination(players[bee.parentID].target.position);
+    }
+
     public void BeeMovementRequest(BeeCore bee)
     {
         Transform player = players[bee.GetPlayerID].target;
@@ -197,7 +225,8 @@ public class Game_Manager : MonoBehaviour
     #endregion
     public void JoinServer(int ID, PlayerServerData data)
     {
-        players.Add(ID,data);
+        if (!players.ContainsKey(ID)) players.Add(ID, data);
+        else players[ID].target.GetComponent<PlayerCore>().SpawnPlayerBees(players[ID].playerBeesTwo);
     }
     public void LeaveServer(int ID)
     {

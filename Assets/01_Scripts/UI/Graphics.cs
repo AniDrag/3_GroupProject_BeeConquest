@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class Graphics : MonoBehaviour
 {
-    [SerializeField] private TMP_Dropdown dropdown;
+    [SerializeField] private TMP_Dropdown screenRezolutionDropDown;
     private int _rezolutionX = 1920;
     private int _rezolutionY = 1080;
     private Resolution[] resolutions;
@@ -19,7 +19,7 @@ public class Graphics : MonoBehaviour
         _rezolutionX = Screen.width;
         _rezolutionY = Screen.height;
         resolutions = Screen.resolutions;
-        dropdown.ClearOptions();
+        screenRezolutionDropDown.ClearOptions();
 
         int currentIndex = 0;
         var options = new System.Collections.Generic.List<string>();
@@ -37,9 +37,9 @@ public class Graphics : MonoBehaviour
             }
         }
 
-        dropdown.AddOptions(options);
-        dropdown.value = currentIndex;
-        dropdown.RefreshShownValue();
+        screenRezolutionDropDown.AddOptions(options);
+        screenRezolutionDropDown.value = currentIndex;
+        screenRezolutionDropDown.RefreshShownValue();
     }
 
     

@@ -3,15 +3,12 @@ using System.Collections.Generic;
 public class PlayerCore : MonoBehaviour
 {
     //private string playerName = string.Empty;
-    private int playerID = 0;
+    public int playerID { get; private set; } = 0;
 
     private int polinStorage;
 
-    private List<BeeCore> wariorBees = new List<BeeCore> ();
-    private List<BeeCore> defenderBees = new List<BeeCore>();
-    private List<BeeCore> workerBees = new List<BeeCore>();
-
     private Dictionary<int, List<BeeCore>> beeGroups = new Dictionary<int, List<BeeCore>>();// this is a dictionary of 3 squads of warrior and defender bees the player can asign adn then manipulate
+    private List<BeeAI> playerBees = new List<BeeAI> ();
 
     private void Awake()
     {
@@ -21,5 +18,34 @@ public class PlayerCore : MonoBehaviour
 
     public int AddPollin(int amount) => polinStorage += amount;
 
+    public void SpawnPlayerBees(List<BeeAI> beeList)
+    {
+        foreach (var bee in beeList)
+        {
+            playerBees.Add(bee);
+            bee.SetMyParent(this);
+            // bee nees a skin and a type
+            //spawn bee and parent give the be the proper bee data and player data.
+        }
+    }
+
     // Controling bees
+
+    public void SetBeeStatesToFollow(BeeAI orderedBee)
+    {
+        Game_Manager.instance.BEE_PlayerRequestForBeeToFollowPlayer(orderedBee);
+
+    }
+    public void FocusTargetedEnemy()
+    {
+
+    }
+    public void MoveToTargetedSpot()
+    {
+
+    }
+    public void StartComandingBees()
+    {
+
+    }
 }

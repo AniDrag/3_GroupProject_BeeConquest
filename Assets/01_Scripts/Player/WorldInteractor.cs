@@ -15,7 +15,7 @@ public class WorldInteractor : MonoBehaviour
 
     private void Awake()
     {
-        input = transform.parent.GetComponent<PlayerMovemant>().input;
+       // input = transform.parent.GetComponent<PlayerMovemant>().input;
         SphereCollider col = GetComponent<SphereCollider>();
         col.isTrigger = true;
         col.radius = interactionRadius;
