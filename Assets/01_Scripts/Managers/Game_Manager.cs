@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System;
 public class CollectionData
 {
     public float collectAmount;
@@ -29,7 +30,7 @@ public class Game_Manager : MonoBehaviour
     private Dictionary<string, List<FieldCell>> fields = new Dictionary<string, List<FieldCell>>();
     private Dictionary<int, FieldCell> fieldCells = new Dictionary<int, FieldCell>();
     //private Dictionary<BeeCore, Vector3> allBeesOnServer = new Dictionary<BeeCore, Vector3>();
-
+    public static event Action<float> OnFixedTick;
 
     private void Awake()
     {
@@ -78,21 +79,26 @@ public class Game_Manager : MonoBehaviour
     }
 
 
-    private float stateUpdateInterval = 3f;        // seconds between calls
-    private float rareTimer = 0f;
-    private float nextRareTime = 0f;
+    private float beeStateUpdateInterval = 3f;        // seconds between calls
+    private float beeRareTimer = 0f;
+    private float beeNextRareTime = 0f;
+
+    private float fieldStateUpdateInterval = 1.5f;
+    private float fieldRareTimer = 0f;
+    private float fieldNextRareTime = 0f;
     private void FixedUpdate()
     {
-        rareTimer += Time.fixedDeltaTime;
-        if (rareTimer >= nextRareTime)
+        beeRareTimer += Time.fixedDeltaTime;
+        fieldRareTimer += Time.fixedDeltaTime;
+        if (beeRareTimer >= beeNextRareTime)
         {
-            rareTimer = 0f;
-            nextRareTime = Mathf.Max(0.01f, stateUpdateInterval);
+            beeRareTimer = 0f;
+            beeNextRareTime = Mathf.Max(0.01f, beeStateUpdateInterval);
 
             foreach (int player in players.Keys)
             {
                 float distance = Vector3.Distance(Game_Manager.instance.players[player].lastKnownPosition, Game_Manager.instance.players[player].target.position);
-                Debug.Log(distance);
+                //Debug.Log(distance);
                 if (distance > 4)
                 {
                     players[player].lastKnownPosition = players[player].target.position;
@@ -100,11 +106,18 @@ public class Game_Manager : MonoBehaviour
                     {
                         bee.CatchPlayer();
                     }
-
                 }
-                
-
             }
+
+        }
+
+        if (fieldRareTimer >= fieldNextRareTime)
+        {
+            float dt = fieldRareTimer;
+            fieldRareTimer = 0f;
+            fieldNextRareTime = Mathf.Max(0.01f, fieldStateUpdateInterval);
+            // Invoke every subscribed tick updater
+            OnFixedTick?.Invoke(dt);
         }
     }
     #region Field Data and cells
@@ -163,8 +176,8 @@ public class Game_Manager : MonoBehaviour
 
     Vector3 GetRandomPointInAnnulusXZ(Vector3 center, float minR, float maxR)
     {
-        float r = Mathf.Sqrt(Random.value * (maxR * maxR - minR * minR) + minR * minR);
-        float theta = Random.value * Mathf.PI * 2f;
+        float r = Mathf.Sqrt(UnityEngine.Random.value * (maxR * maxR - minR * minR) + minR * minR);
+        float theta = UnityEngine.Random.value * Mathf.PI * 2f;
         Vector2 dir = new Vector2(Mathf.Cos(theta), Mathf.Sin(theta));
         return center + new Vector3(dir.x * r, 0f, dir.y * r);
     }
