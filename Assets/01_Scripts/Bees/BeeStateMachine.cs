@@ -22,13 +22,12 @@ public class BeeState
 {
     public BeeStates state;
     protected BeeStateMachine stateMachine;
-    protected PlayerMovemant player;
+    protected BeeAI bee;
 
-    public BeeState(BeeStateMachine StateMachine, PlayerMovemant player, BeeStates setState)
+    public BeeState(BeeStateMachine StateMachine, BeeAI bee)
     {
-        state = setState;
         this.stateMachine = StateMachine;
-        this.player = player;
+        this.bee = bee;
     }
 
     public virtual void EnterState() { }
