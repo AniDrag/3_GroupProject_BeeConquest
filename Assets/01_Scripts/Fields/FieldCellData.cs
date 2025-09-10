@@ -3,6 +3,7 @@ using UnityEngine;
 
 [Serializable]
 // : MonoBehaviour IS MANDATORY, SO WE CAN COPY/PASTE AND CHANGE DATA
+// TODO ADD RETURNING METHOD FOR POLLIN MULTIPLIER
 public class FieldCellData : MonoBehaviour
 {
     public int ID;
@@ -74,7 +75,7 @@ public class FieldCellData : MonoBehaviour
     public void TickRegeneration(float dt)
     {
         //Debug.Log("Trying to tickRegen");
-        if (dt <= 0f || Mathf.Approximately(RegenPerSecond, 0f)) return;
+        if (dt <= 0f || Mathf.Approximately(RegenPerSecond, 0f) || currentDurability == MaxDurability) return;
         //Debug.Log("Successefull tick Regen");
         currentDurability = Mathf.Clamp(currentDurability + RegenPerSecond * dt, 0f, MaxDurability);
         UpdateBucketIfNeeded();
