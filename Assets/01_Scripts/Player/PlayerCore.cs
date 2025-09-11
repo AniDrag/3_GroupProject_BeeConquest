@@ -25,9 +25,11 @@ public class PlayerCore : MonoBehaviour
     {
         for (int i = 0; i< playerBees.Count;i++)
         {
-            if (Vector3.Distance(playerBees[i].transform.position, transform.position) < 5) continue;
-            Debug.Log("player requested bee to follow");
-            Game_Manager.instance.BEE_PlayerRequestForBeeToFollowPlayer(playerBees[i]);
+            if (Vector3.Distance(playerBees[i].transform.position, transform.position) > 5)
+            {
+                Debug.Log("player requested bee to follow");
+                Game_Manager.instance.BEE_PlayerRequestForBeeToFollowPlayer(playerBees[i]);
+            }
 
         }
     }
