@@ -10,10 +10,17 @@ public class BeeCombatState : BeeStates
     public override void ExitState() { }
     public override void LogicUpdate()
     {
-
+       
     }
     public override void LateLogicUpdate() { }
-    public override void FixedLogicUpdate() { }
+    public override void FixedLogicUpdate()
+    {
+        if ( bee.TargetEnemy == null) stateMachine.ChangeState(bee.idleState);
+
+        else if (bee.atDestination) bee.TargetEnemy.TakeDamage(bee.damage);
+
+        else bee.SetDestination(bee.TargetEnemy.transform.position);
+    }
     public override void AnimationTriggerEvent() { }//PlayerMovemant.AnimationTriggers triggerType) { }
 
 }

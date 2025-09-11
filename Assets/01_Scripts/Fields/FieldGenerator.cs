@@ -111,6 +111,8 @@ public class FieldGenerator : MonoBehaviour
                 view.showGizmos = showGizmosOnHolder;
             }
         }
+        Game_Manager.instance.AsignFieldToServer(this);
+        Game_Manager.instance.AsignCurrentFieldToPlayer(0,this);
     }
 
     private void Update()
@@ -122,7 +124,7 @@ public class FieldGenerator : MonoBehaviour
             if (cam == null) return;
             Ray ray = cam.ScreenPointToRay(Input.mousePosition);
             Plane plane = new Plane(Vector3.up, new Vector3(0, origin.y, 0));
-            if (plane.Raycast(ray, out float enter))
+            if (plane.Raycast(ray, out float enter))// how to acces cell
             {
                 Vector3 hit = ray.GetPoint(enter);
                 var cell = GetCellAtWorldPos(hit);
@@ -130,7 +132,7 @@ public class FieldGenerator : MonoBehaviour
                 {
                     cell.DecreaseDurability(debugDamageAmount);
                     // optional: force update visuals
-                    RefreshCellVisual(cell.ID);
+                    RefreshCellVisual(cell.ID);// moight not be needed
                 }
             }
         }
@@ -285,5 +287,63 @@ public class FieldGenerator : MonoBehaviour
         for (int y = 0; y < height; y++)
             for (int x = 0; x < width; x++)
                 yield return cells[x, y];
+    }
+
+    /// <summary>
+    /// Collects candidate cells inside world circle and returns one chosen at random.
+    /// If weightByPollin==true, chooses with probability proportional to cell.PollinMultiplier (and >0 dur).
+    /// Returns null if none found.
+    /// </summary>
+    public FieldCellData GetRandomCellInRadius(Vector3 worldCenter, float radius, bool onlyPositiveDurability = true, bool weightByPollin = false)
+    {
+        if (cells == null) return null;
+        // convert to local grid coords (assuming Origin and cellSize)
+        Vector3 local = worldCenter - origin;
+        int minX = Mathf.Clamp(Mathf.FloorToInt((local.x - radius) / cellSize), 0, width - 1);
+        int maxX = Mathf.Clamp(Mathf.FloorToInt((local.x + radius) / cellSize), 0, width - 1);
+        int minY = Mathf.Clamp(Mathf.FloorToInt((local.z - radius) / cellSize), 0, height - 1);
+        int maxY = Mathf.Clamp(Mathf.FloorToInt((local.z + radius) / cellSize), 0, height - 1);
+
+        float radiusSqr = radius * radius;
+        var candidates = new List<FieldCellData>();
+
+        for (int y = minY; y <= maxY; y++)
+        {
+            for (int x = minX; x <= maxX; x++)
+            {
+                var c = cells[x, y];
+                if (c == null) continue;
+
+                // quick circle check against cell center
+                Vector3 center = c.WorldPosition; // your FieldCellDataBehaviour uses transform.position; for pure data use stored WorldPosition
+                if ((center - worldCenter).sqrMagnitude > radiusSqr) continue;
+
+                if (onlyPositiveDurability && c.CurrentDurability <= 0f) continue;
+
+                candidates.Add(c);
+            }
+        }
+
+        if (candidates.Count == 0) return null;
+
+        if (!weightByPollin)
+        {
+            // uniform random
+            return candidates[UnityEngine.Random.Range(0, candidates.Count)];
+        }
+        else
+        {
+            // weighted by PollinMultiplier (or fallback to 1)
+            float total = 0f;
+            for (int i = 0; i < candidates.Count; i++) total += Mathf.Max(0.0001f, candidates[i].PollinMultiplier);
+            float r = UnityEngine.Random.value * total;
+            float acc = 0f;
+            for (int i = 0; i < candidates.Count; i++)
+            {
+                acc += Mathf.Max(0.0001f, candidates[i].PollinMultiplier);
+                if (r <= acc) return candidates[i];
+            }
+            return candidates[candidates.Count - 1];
+        }
     }
 }

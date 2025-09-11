@@ -13,11 +13,6 @@ public class BeeMoveToTargetState : BeeStates
     public override void ExitState() { }
     public override void LogicUpdate() 
     {
-        if (bee.targetPosition != null && !bee.atDestination)
-        {
-            //.Log("moving Bee");
-            bee.transform.position = Vector3.MoveTowards(bee.transform.position, bee.targetPosition, bee.speed * Time.deltaTime);
-        }
     }
     public override void LateLogicUpdate() { }
     public override void FixedLogicUpdate()
@@ -30,7 +25,7 @@ public class BeeMoveToTargetState : BeeStates
             //Debug.Log("attacking enemy");
             stateMachine.ChangeState(bee.combatState);
         }
-        else if (bee.getingPollin)
+        else if (bee.player.currentField != null)
         {
             //Debug.Log("getting pollin");
             stateMachine.ChangeState(bee.pollinCollectionState);

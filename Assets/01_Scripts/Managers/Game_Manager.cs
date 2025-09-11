@@ -12,12 +12,19 @@ public class CollectionData
 public class PlayerServerData
 {
     public int playerID;
-    public Transform target;
+    public Transform transform;
     public Vector3 lastKnownPosition;
     public PlayerCore playerCore;
     public List<BeeCore> playerBees = new List<BeeCore>();
     public List<BeeAI> playerBeesTwo = new List<BeeAI>();
     public FieldGenerator currentField;// trigger this
+    public PlayerServerData(int PlayerID, Transform PlayerTransform, PlayerCore Core, List<BeeAI> PlayerBees)
+    {
+        playerID = PlayerID;
+        transform = PlayerTransform;
+        playerCore = Core;
+        playerBeesTwo = PlayerBees;
+    }
 }
 public class Game_Manager : MonoBehaviour
 {
@@ -88,11 +95,11 @@ public class Game_Manager : MonoBehaviour
 
             foreach (int player in players.Keys)
             {
-                float distance = Vector3.Distance(Game_Manager.instance.players[player].lastKnownPosition, Game_Manager.instance.players[player].target.position);
+                float distance = Vector3.Distance(Game_Manager.instance.players[player].lastKnownPosition, Game_Manager.instance.players[player].transform.position);
                 //Debug.Log(distance);
                 if (distance > 4)
                 {
-                    players[player].lastKnownPosition = players[player].target.position;
+                    players[player].lastKnownPosition = players[player].transform.position;
                     foreach (BeeCore bee in players[player].playerBees)
                     {
                         bee.CatchPlayer();
@@ -138,7 +145,7 @@ public class Game_Manager : MonoBehaviour
         var cell = generator.GetCellById(data.fieldCellID);
         int pollin = Mathf.RoundToInt(cell.PollinMultiplier * data.collectAmount);
         PlayerCore player = players[data.playerID].playerCore;
-        if (player == null) Debug.LogWarning("no player core found");
+        if (players[data.playerID].playerCore == null) Debug.LogWarning("no player core found");
         player.AddPollin(pollin);
         cell.DecreaseDurability(data.collectAmount);
         collectionDatas.Remove(data);
@@ -171,8 +178,8 @@ public class Game_Manager : MonoBehaviour
     public void BEE_PollinCollectionRequest(BeeAI bee, float collectionTime)
     {
         Debug.Log("Requesting field location from GM");
-        FieldGenerator generator = players[bee.parentID].currentField;
-        var cell = generator.GetRandomCellInRadius(players[bee.parentID].target.position,5);
+        FieldGenerator generator = players[bee.playerID].currentField;
+        var cell = generator.GetRandomCellInRadius(players[bee.playerID].transform.position,5);
         if (cell != null)
         {
             bee.SetDestination(cell.transform.position);
@@ -180,7 +187,7 @@ public class Game_Manager : MonoBehaviour
             CollectionData data = new CollectionData()
             {
                 collectAmount = bee.collectionStrength,
-                playerID = bee.parentID,
+                playerID = bee.playerID,
                 fieldCellID = cell.ID,
                 field = generator,
                 triggerTime = collectionTime,
@@ -195,20 +202,21 @@ public class Game_Manager : MonoBehaviour
     public void BEE_IdleMoveRequest(BeeAI bee)
     {
         //Debug.Log("Requesting Idle movemen location from GM");
-        Transform player = players[bee.parentID].target;
+        Transform player = players[bee.playerID].transform;
         Vector3 randomPosition = GetRandomPointInAnnulusXZ(player.position, 0.5f, 5f);
         //Debug.Log("SERVER: " + randomPosition);
         bee.SetDestination(randomPosition);
     }
-    public void BEE_PlayerRequestForBeeToFollowPlayer(BeeAI bee)
+    public void BEE_PlayerRequestForBeeToFollowPlayer(BeeAI bee, bool order = false)
     {
         //Debug.Log("Requesting player  location from GM");
-        bee.SetDestination(players[bee.parentID].target.position);
+        bee.SetDestination(players[bee.playerID].transform.position);
+        bee.stateMachine.ChangeState(bee.chaseState);
     }
 
     public void BeeMovementRequest(BeeCore bee)
     {
-        Transform player = players[bee.GetPlayerID].target;
+        Transform player = players[bee.GetPlayerID].transform;
         Vector3 randomPosition = GetRandomPointInAnnulusXZ(player.position, 0.5f, 5f);
         bee.MoveTo(randomPosition);
     }
@@ -237,7 +245,7 @@ public class Game_Manager : MonoBehaviour
     public void JoinServer(int ID, PlayerServerData data)
     {
         if (!players.ContainsKey(ID)) players.Add(ID, data);
-        else players[ID].target.GetComponent<PlayerCore>().SpawnPlayerBees(players[ID].playerBeesTwo);
+        else players[ID].transform.GetComponent<PlayerCore>().SpawnPlayerBees(players[ID].playerBeesTwo);
     }
     public void LeaveServer(int ID)
     {

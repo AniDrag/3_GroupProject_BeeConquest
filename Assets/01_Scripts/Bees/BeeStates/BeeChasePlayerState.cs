@@ -5,25 +5,21 @@ public class BeeChasePlayerState : BeeStates
     public BeeChasePlayerState(BeeStateMachine StateMachine, BeeAI Bee) : base(StateMachine, Bee) { }
 
     public override void EnterState() {
-        //Debug.Log("Bee is in chase player moving State");
+        Debug.Log("Bee is in chase player moving State");
         bee.beeState = BeeAI.BeeState.Following;
-        bee.PING_CatchPlayer();
-        //stateMachine.ChangeState(bee.moveingState);
     }
     public override void ExitState() { }
     public override void LogicUpdate() { }
     public override void LateLogicUpdate() { }
-    public override void FixedLogicUpdate() {
-
-        if (bee.player != null && !bee.atDestination)
-        {
-            //.Log("moving Bee");
-            bee.transform.position = Vector3.MoveTowards(bee.transform.position, bee.targetPosition, bee.speed * Time.deltaTime);
-        }
-        else
+    public override void FixedLogicUpdate() 
+    {
+        if (!bee.playerComand && bee.atDestination)// playe comand prevents it from moving to another state and always follow
         {
             stateMachine.ChangeState(bee.idleState);
+            return;
         }
+
+        bee.SetDestination(bee.player.transform.position);
     }
     public override void AnimationTriggerEvent() { }//PlayerMovemant.AnimationTriggers triggerType) { }
 

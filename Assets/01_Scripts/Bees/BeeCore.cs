@@ -99,7 +99,7 @@ public class BeeCore : Stats
     public void CatchPlayer()
     {
         beeState = State.Chasing;
-        MoveTo(Game_Manager.instance.players[playerID].target.position);
+        MoveTo(Game_Manager.instance.players[playerID].transform.position);
         Debug.Log("I HAVE TO CATCH YOU");
         AI();
     }

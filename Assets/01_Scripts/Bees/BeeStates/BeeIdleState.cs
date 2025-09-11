@@ -23,11 +23,11 @@ public class BeeIdleState : BeeStates
         //Debug.Log("Bee is in Idle State, Wait time is:" +waitTime);
     }
     public override void ExitState() { }
-    public override void LogicUpdate() {
+    public override void LogicUpdate() { }
+    public override void LateLogicUpdate() { }
+    public override void FixedLogicUpdate(){
         if (waitTime >= Time.time) return;
         stateMachine.ChangeState(bee.moveingState);
     }
-    public override void LateLogicUpdate() { }
-    public override void FixedLogicUpdate(){ }
     public override void AnimationTriggerEvent() { }//PlayerMovemant.AnimationTriggers triggerType) { }
 }
