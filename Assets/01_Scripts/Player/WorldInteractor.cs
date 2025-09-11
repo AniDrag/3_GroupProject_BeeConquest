@@ -8,6 +8,7 @@ public class WorldInteractor : MonoBehaviour
     [SerializeField] private float interactionRadius = 2f;
     [SerializeField] private KeyCode interactKey = KeyCode.E;
     [SerializeField] private KeyCode cycleKey = KeyCode.Tab;
+    [SerializeField] PlayerIngameMenu menu;
 
     private readonly List<Iinteract> _nearbyInteractables = new List<Iinteract>();
     private int _currentIndex = 0;
@@ -35,7 +36,7 @@ public class WorldInteractor : MonoBehaviour
                 _currentIndex = 0;
             }
             _nearbyInteractables[_currentIndex].GetInteractionText();
-            UI_Manager.instance.UI_SetInteractText(_nearbyInteractables[_currentIndex].GetInteractionText());
+            menu.UI_SetInteractText(_nearbyInteractables[_currentIndex].GetInteractionText());
             Debug.Log("Swap Text, Index num:" + _currentIndex);
         }
         
@@ -59,8 +60,8 @@ public class WorldInteractor : MonoBehaviour
                 _nearbyInteractables.Add(interactable);
                 Debug.Log(interactable.GetInteractionText());
                 _currentIndex++;
-                UI_Manager.instance.UI_SetInteractText(interactable.GetInteractionText());
-                UI_Manager.instance.UI_ShowOrCloseInteractBpx(true);
+                menu.UI_SetInteractText(interactable.GetInteractionText());
+                menu.UI_ShowOrCloseInteractBox(true);
             }
         }
     }
@@ -75,7 +76,7 @@ public class WorldInteractor : MonoBehaviour
             {
                 // No interactables left, hide UI and reset index
                 _currentIndex = 0;
-                UI_Manager.instance.UI_ShowOrCloseInteractBpx(false);
+                menu.UI_ShowOrCloseInteractBox(false);
                 return;
             }
 
@@ -85,8 +86,7 @@ public class WorldInteractor : MonoBehaviour
                 _currentIndex = _nearbyInteractables.Count - 1;
             }
 
-            UI_Manager.instance.UI_SetInteractText(_nearbyInteractables[_currentIndex].GetInteractionText());
-            //UI_Manager.instance.UI_ShowOrCloseInteractBpx(true);
+            menu.UI_SetInteractText(_nearbyInteractables[_currentIndex].GetInteractionText());
         }
     }
 }

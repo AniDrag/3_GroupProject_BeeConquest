@@ -3,8 +3,14 @@ using UnityEngine.SceneManagement;
 
 public class Scene_Manager : MonoBehaviour
 {
+    public static Scene_Manager instance;
     [Tooltip("Prepared for a loading screen")]
     public GameObject LoadSceneObj;
+    private void Awake()
+    {
+        if (instance != null && instance != this) { Destroy(instance); return; }
+        instance = this;
+    }
     public void SCENE_LoadScene(int sceneIndex)
     {
         //Add a safety Check
