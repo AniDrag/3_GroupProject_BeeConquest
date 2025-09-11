@@ -155,7 +155,7 @@ public class Game_Manager : MonoBehaviour
         if(cell.CurrentDurability < data.collectAmount)
         {
             pollin = Mathf.RoundToInt(cell.PollinMultiplier * cell.CurrentDurability);
-            cell.DecreaseDurability(1);
+            cell.DecreaseDurability(cell.CurrentDurability - 1);
         }
         else
         {
