@@ -47,6 +47,7 @@ public class PlayerCore : MonoBehaviour
 
     public void SetBeeStatesToFollow(BeeAI orderedBee)
     {
+        orderedBee.TargetFollow = this.transform;
         Game_Manager.instance.BEE_PlayerRequestForBeeToFollowPlayer(orderedBee,true);
 
     }
@@ -61,5 +62,10 @@ public class PlayerCore : MonoBehaviour
     public void StartComandingBees()
     {
 
+    }
+    public void StopComandingBees() { }
+    public void FollowTarget(BeeAI bee, Transform target) {
+        bee.TargetFollow = target;
+        Game_Manager.instance.BEE_PlayerRequestForBeeToFollowPlayer(bee, true);
     }
 }

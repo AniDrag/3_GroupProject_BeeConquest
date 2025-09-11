@@ -19,7 +19,7 @@ public class BeeChasePlayerState : BeeStates
             return;
         }
 
-        bee.SetDestination(bee.player.transform.position);
+        bee.SetDestination(bee.TargetFollow.position);
     }
     public override void AnimationTriggerEvent() { }//PlayerMovemant.AnimationTriggers triggerType) { }
 

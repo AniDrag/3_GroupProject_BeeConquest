@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
 using System;
 public class CollectionData
@@ -28,13 +28,13 @@ public class PlayerServerData
 }
 public class Game_Manager : MonoBehaviour
 {
-
+    // ───────────── INSTANCE ─────────────
     public static Game_Manager instance;
 
     //-------------------
     //      Player & beee variables
     //-------------------
-    public Dictionary<int,PlayerServerData> players = new Dictionary<int, PlayerServerData>();
+    public Dictionary<int, PlayerServerData> players = new Dictionary<int, PlayerServerData>();
     private List<CollectionData> collectionDatas = new List<CollectionData>();
 
     //-------------------
@@ -43,8 +43,7 @@ public class Game_Manager : MonoBehaviour
     private List<FieldGenerator> serverFields = new List<FieldGenerator>();
     public static event Action<float> OnFixedTick;
 
-    private Dictionary<int, FieldCell> fieldCells = new Dictionary<int, FieldCell>();
-
+    // ───────────── SINGELTON PATERN ─────────────
     private void Awake()
     {
         if (instance != null && instance != this)
@@ -76,7 +75,7 @@ public class Game_Manager : MonoBehaviour
         Debug.Log("Added: " + beeCount + " bees");
 
     }
-
+    #region fixed tick variables
     private float beeStateUpdateInterval = 3f;        // seconds between calls
     private float beeRareTimer = 0f;
     private float beeNextRareTime = 0f;
@@ -84,10 +83,13 @@ public class Game_Manager : MonoBehaviour
     private float fieldStateUpdateInterval = 1.5f;
     private float fieldRareTimer = 0f;
     private float fieldNextRareTime = 0f;
+    #endregion
     private void FixedUpdate()
     {
         beeRareTimer += Time.fixedDeltaTime;
         fieldRareTimer += Time.fixedDeltaTime;
+
+        // ───────────── BEE REQUEST UPDATE FIXED TICK RATE ─────────────
         if (beeRareTimer >= beeNextRareTime)
         {
             beeRareTimer = 0f;
@@ -106,9 +108,9 @@ public class Game_Manager : MonoBehaviour
                     }
                 }
             }
-
         }
 
+        // ───────────── FIELD FIXED TICK RATE ─────────────
         if (fieldRareTimer >= fieldNextRareTime)
         {
             float dt = fieldRareTimer;
@@ -125,13 +127,19 @@ public class Game_Manager : MonoBehaviour
             OnFixedTick?.Invoke(dt);
         }
     }
-    #region Field Data and cells
+    // ───────────── FIELD FUNCTIONS ─────────────
+    #region Field Functions
     public void OnBuffExpired(FieldCell cell, FieldBuff buff)
     {
         Debug.Log($"Buff {buff.type} expired on cell {cell.name}");
         // TODO: Sync with server, update UI, etc.
     }
-
+    public void AddBuff(FieldCell cell, FieldBuff buff)
+    {
+        Debug.Log($"Buff {buff.type} expired on cell {cell.name}");
+        // TODO: Sync with server, update UI, etc.
+    }
+    
 
     /// <summary>
     /// When the timer is 0 it triggers the collection data, transfers polin to player,
@@ -150,36 +158,35 @@ public class Game_Manager : MonoBehaviour
         cell.DecreaseDurability(data.collectAmount);
         collectionDatas.Remove(data);
     }
-    // Decrese durability and send only that to the world. and buffs. regen happens localy and is sinced anyways since its doen on time.time durability increases unanimously.
-   
+    public void AsignFieldToServer(FieldGenerator generator)
+    {
+        serverFields.Add(generator);
+    }
+    public void AsignCurrentFieldToPlayer(int player, FieldGenerator field)
+    {
+        players[player].currentField = field;
+        players[player].currentField = field;
+    }
+    public void ExitCurrentFieldFromPlayer(PlayerCore player)
+    {
+        players[player.playerID].currentField = null;
+        player.currentField = null;
+    }
+    #endregion
+    // ───────────── BEE REQUESTS ─────────────
+    #region Bee Requests
     /// <summary>
     /// This function is called by a bee when it is ready to collect a new polin.
     /// This function handles asigning a Call for collecting polin and details sorounding that process.
     /// Server has info of where the bee is so we also send that info so no inconsistencies occure
     /// </summary>
-    /// <param name="bee"></param>
-    //public void BeeCollectionRequest(BeeAI bee)
-    //{
-    //    // get a Field cell that is nere player
-    //    // get the bee 
-    //    PlayerServerData player = players[bee.GetPlayerID];
-    //    FieldCell field = GetPositionToFieldCell(player.target.position);
-    //    bee.MoveTo(field.transform.position);
-    //    //float travelTime = Vector3.Distance(allBeesOnServer[bee], field.transform.position); // some calculation for time idk
-    //    CollectionData data = new CollectionData() {
-    //        collectAmount = bee.GetCollectionStrenght,
-    //        playerID = player.playerID,
-    //        fieldCellID = field.GetID,
-    //       // triggerTime = travelTime,
-    //    };
-    //    // All logic and info exchange here
-    //    collectionDatas.Add(bee,data);
-    //}
+    /// <param name="bee"> the bee that requested this</param>
+    /// <param name="collectionTime"> time it will take to collect polin</param>
     public void BEE_PollinCollectionRequest(BeeAI bee, float collectionTime)
     {
         Debug.Log("Requesting field location from GM");
         FieldGenerator generator = players[bee.playerID].currentField;
-        var cell = generator.GetRandomCellInRadius(players[bee.playerID].transform.position,5);
+        var cell = generator.GetRandomCellInRadius(players[bee.playerID].transform.position, 5);
         if (cell != null)
         {
             bee.SetDestination(cell.transform.position);
@@ -213,7 +220,6 @@ public class Game_Manager : MonoBehaviour
         bee.SetDestination(players[bee.playerID].transform.position);
         bee.stateMachine.ChangeState(bee.chaseState);
     }
-
     public void BeeMovementRequest(BeeCore bee)
     {
         Transform player = players[bee.GetPlayerID].transform;
@@ -221,6 +227,23 @@ public class Game_Manager : MonoBehaviour
         bee.MoveTo(randomPosition);
     }
 
+    #endregion
+    // ───────────── PLAYER REQUESTS & FNCTIONS ─────────────
+    #region Player Server Calls
+    public void JoinServer(int ID, PlayerServerData data)
+    {
+        if (!players.ContainsKey(ID)) players.Add(ID, data);
+        else players[ID].transform.GetComponent<PlayerCore>().SpawnPlayerBees(players[ID].playerBeesTwo);
+    }
+    public void LeaveServer(int ID)
+    {
+        players.Remove(ID);
+    }
+
+
+    #endregion
+    // ───────────── MATH FNCTIONS ─────────────
+    #region Math Functions
     Vector3 GetRandomPointInAnnulusXZ(Vector3 center, float minR, float maxR)
     {
         float r = Mathf.Sqrt(UnityEngine.Random.value * (maxR * maxR - minR * minR) + minR * minR);
@@ -228,7 +251,9 @@ public class Game_Manager : MonoBehaviour
         Vector2 dir = new Vector2(Mathf.Cos(theta), Mathf.Sin(theta));
         return center + new Vector3(dir.x * r, 0f, dir.y * r);
     }
-
+    #endregion
+    // ───────────── UNUSED FUNCTIONS ─────────────
+    #region Unused Functions
     /// <summary>
     /// Finction in progress. It is ment to get a random point around the player
     /// then it should find the closest fieldCell and asign it  as the destination for the bee.
@@ -240,30 +265,5 @@ public class Game_Manager : MonoBehaviour
         // get player position, check which cells are in range
         return new FieldCell();
     }
-
     #endregion
-    public void JoinServer(int ID, PlayerServerData data)
-    {
-        if (!players.ContainsKey(ID)) players.Add(ID, data);
-        else players[ID].transform.GetComponent<PlayerCore>().SpawnPlayerBees(players[ID].playerBeesTwo);
-    }
-    public void LeaveServer(int ID)
-    {
-        players.Remove(ID);
-    }
-
-    public void AsignFieldToServer(FieldGenerator generator)
-    {
-        serverFields.Add(generator);
-    }
-    public void AsignCurrentFieldToPlayer(int player, FieldGenerator field)
-    {
-        players[player].currentField = field;
-        players[player].currentField = field;
-    }
-    public void ExitCurrentFieldFromPlayer(PlayerCore player)
-    {
-        players[player.playerID].currentField = null;
-        player.currentField = null;
-    }
 }

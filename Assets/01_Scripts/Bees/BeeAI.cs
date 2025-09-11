@@ -17,6 +17,7 @@ public class BeeAI : Stats
     public Vector3 destinationPoint { get; private set; }
     public EnemyCore TargetEnemy { get; private set; }
     public FieldCell TargetField { get; private set; }
+    public Transform TargetFollow;
     public bool atDestination { get; private set; }
     #endregion
     // ───────────── PARENT INFO ─────────────
