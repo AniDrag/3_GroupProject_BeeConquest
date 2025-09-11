@@ -1,7 +1,4 @@
-﻿using TMPro;
-using Unity.VisualScripting;
-using UnityEditor.Playables;
-using UnityEngine;
+﻿using UnityEngine;
 [RequireComponent(typeof(BeeStateMachine))]
 public class BeeAI : Stats
 {

@@ -4,29 +4,34 @@ using UnityEngine.InputSystem;
 public class PlayerCamera : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] PlayerInput playerInput;
-    [SerializeField] Transform player;          // the actual player root
-    [SerializeField] Transform orientation;     // orientation used by MovementCore
-    [SerializeField] Transform camPivot;        // empty GameObject behind head
+    [SerializeField] private PlayerInput playerInput;
+    [SerializeField] private Transform player;          // player root
+    [SerializeField] private Transform orientation;     // used for player movement yaw
+    [SerializeField] private Transform camPivot;        // pivot behind player head
 
     [Header("Camera Settings")]
-    [SerializeField] float sensitivityX = 1f;
-    [SerializeField] float sensitivityY = 1f;
-    [SerializeField] float minY = -40f;
-    [SerializeField] float maxY = 70f;
+    [SerializeField] private float sensitivityX = 1f;
+    [SerializeField] private float sensitivityY = 1f;
+    [SerializeField] private float minPitch = -40f;
+    [SerializeField] private float maxPitch = 70f;
 
-    [Header("Distance Settings")]
-    [SerializeField] float camDistance = 4f;         // desired distance
-    [SerializeField] float camSmooth = 10f;          // smoothing
-    [SerializeField] LayerMask collisionMask;        // walls, environment
+    [Header("Distance & Collision")]
+    [SerializeField] private float camDistance = 4f;
+    [SerializeField] private float camSmooth = 10f;
+    [SerializeField] private LayerMask collisionMask;
 
-    float yaw;
-    float pitch;
-    Camera cam;
+    [Header("Offset Settings")]
+    [SerializeField] private float rightOffset = 0.5f;   // side offset
+    [SerializeField] private float upOffset = 0.2f;      // optional vertical offset
+
+    private float yaw;
+    private float pitch;
+    private Camera cam;
 
     private void Awake()
     {
         cam = Camera.main;
+        playerInput = player.GetComponent<PlayerInput>();
     }
 
     private void Start()
@@ -35,49 +40,65 @@ public class PlayerCamera : MonoBehaviour
         Cursor.visible = false;
     }
 
-    private void LateUpdate()
+    private void Update()
     {
         HandleRotation();
+    }
+
+    private void LateUpdate()
+    {
         HandleCameraCollision();
     }
 
-    void HandleRotation()
+    private void HandleRotation()
     {
         Vector2 look = playerInput.actions["Look"].ReadValue<Vector2>();
         yaw += look.x * sensitivityX;
         pitch -= look.y * sensitivityY;
-        pitch = Mathf.Clamp(pitch, minY, maxY);
+        pitch = Mathf.Clamp(pitch, minPitch, maxPitch);
 
-        // Rotate pivot (yaw + pitch)
-        camPivot.rotation = Quaternion.Euler(pitch, yaw, 0f);
-
-        // Only rotate orientation on yaw → for movement
+        // Rotate orientation for player movement (yaw only)
         orientation.rotation = Quaternion.Euler(0f, yaw, 0f);
+
+        // Rotate camPivot for camera orbit (yaw + pitch)
+        camPivot.rotation = Quaternion.Euler(pitch, yaw, 0f);
     }
 
-    void HandleCameraCollision()
+    private void HandleCameraCollision()
     {
-        Vector3 pivotPos = camPivot.position;
-        Vector3 desiredPos = pivotPos - camPivot.forward * camDistance;
+        Vector3 pivotPos = camPivot.position + camPivot.up * upOffset;
 
-        if (Physics.SphereCast(pivotPos, 0.2f, -camPivot.forward,
-            out RaycastHit hit, camDistance, collisionMask))
+        // Sideways offset
+        Vector3 offset = camPivot.right * rightOffset;
+
+        // Desired camera position
+        Vector3 camDir = camPivot.forward;
+        Vector3 desiredPos = pivotPos + offset - camDir * camDistance;
+
+        // SphereCast for walls
+        if (Physics.SphereCast(pivotPos + offset, 0.2f, -camDir, out RaycastHit hit, camDistance, collisionMask))
         {
-            // Pull camera closer if wall blocks it
             float dist = Mathf.Clamp(hit.distance, 0.5f, camDistance);
-            Vector3 newPos = pivotPos - camPivot.forward * dist;
-            cam.transform.position = Vector3.Lerp(cam.transform.position, newPos, Time.deltaTime * camSmooth);
+            desiredPos = pivotPos + offset - camDir * dist;
         }
-        else
-        {
-            // No wall, move to desired
-            cam.transform.position = Vector3.Lerp(cam.transform.position, desiredPos, Time.deltaTime * camSmooth);
-        }
+
+        // Smooth camera movement
+        cam.transform.position = Vector3.Lerp(cam.transform.position, desiredPos, Time.deltaTime * camSmooth);
 
         // Always look at pivot
         cam.transform.rotation = camPivot.rotation;
     }
+
+    /// <summary>
+    /// Optional: adjust offsets at runtime
+    /// </summary>
+    public void SetOffsets(float right, float up)
+    {
+        rightOffset = right;
+        upOffset = up;
+    }
 }
+
 
 
     

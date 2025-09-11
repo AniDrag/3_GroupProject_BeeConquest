@@ -61,7 +61,7 @@ public class WorldInteractor : MonoBehaviour
                 Debug.Log(interactable.GetInteractionText());
                 _currentIndex++;
                 menu.UI_SetInteractText(interactable.GetInteractionText());
-                menu.UI_ShowOrCloseInteractBpx(true);
+                menu.UI_ShowOrCloseInteractBox(true);
             }
         }
     }
@@ -76,7 +76,7 @@ public class WorldInteractor : MonoBehaviour
             {
                 // No interactables left, hide UI and reset index
                 _currentIndex = 0;
-                menu.UI_ShowOrCloseInteractBpx(false);
+                menu.UI_ShowOrCloseInteractBox(false);
                 return;
             }
 
