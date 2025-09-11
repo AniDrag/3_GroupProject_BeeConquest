@@ -151,11 +151,21 @@ public class Game_Manager : MonoBehaviour
     {
         FieldGenerator generator = data.field;
         var cell = generator.GetCellById(data.fieldCellID);
-        int pollin = Mathf.RoundToInt(cell.PollinMultiplier * data.collectAmount);
+        int pollin = 0; //= Mathf.RoundToInt(cell.PollinMultiplier * data.collectAmount
+        if(cell.CurrentDurability < data.collectAmount)
+        {
+            pollin = Mathf.RoundToInt(cell.PollinMultiplier * cell.CurrentDurability);
+            cell.DecreaseDurability(1);
+        }
+        else
+        {
+            pollin = Mathf.RoundToInt(cell.PollinMultiplier * data.collectAmount);
+            cell.DecreaseDurability(data.collectAmount);
+        }
         PlayerCore player = players[data.playerID].playerCore;
         if (players[data.playerID].playerCore == null) Debug.LogWarning("no player core found");
         player.AddPollin(pollin);
-        cell.DecreaseDurability(data.collectAmount);
+        
         collectionDatas.Remove(data);
     }
     public void AsignFieldToServer(FieldGenerator generator)
