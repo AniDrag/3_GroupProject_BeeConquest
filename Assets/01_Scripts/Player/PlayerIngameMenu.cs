@@ -28,7 +28,12 @@ public class PlayerIngameMenu : MonoBehaviour
     private void Awake()
     {
         menuAction = inputs.actions["Menu"];
-        if(player == null)
+        if (menuAction == null)
+            Debug.LogError("❌ Input Action 'Menu' not found in PlayerInput!");
+        else
+            menuAction.Enable();
+
+        if (player == null)
             player = transform.parent.GetComponent<PlayerCore>();
     }
 
@@ -59,31 +64,35 @@ public class PlayerIngameMenu : MonoBehaviour
     // ───────────────────────────── Menu Toggle
     private void UI_ToggleMenu(InputAction.CallbackContext ctx)
     {
+        Debug.Log("Menu action pressed!");
         if (menuOpen) UI_CloseMenu();
         else UI_OpenMenu();
     }
 
     private void UI_OpenMenu()
     {
+        Debug.Log("Enable menu");
         menuPanel.SetActive(true);
-        optionsPanel.SetActive(false); // reset
+        optionsPanel.SetActive(false);
         menuOpen = true;
         ControllPlayerCamAndMove(menuOpen);
-        // optional: lock cursor for UI
+
         Cursor.lockState = CursorLockMode.Confined;
         Cursor.visible = true;
     }
 
     private void UI_CloseMenu()
     {
+        Debug.Log("Disable menu");
         menuPanel.SetActive(false);
         optionsPanel.SetActive(false);
         menuOpen = false;
         ControllPlayerCamAndMove(menuOpen);
-        // optional: restore cursor for gameplay
+
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
+
 
     // ───────────────────────────── Button Actions
     private void UI_OpenOptions()
@@ -98,11 +107,14 @@ public class PlayerIngameMenu : MonoBehaviour
         Scene_Manager.instance.SCENE_LoadScene(0);// go to main menu
         
     }
-    void ControllPlayerCamAndMove(bool state)
+    void ControllPlayerCamAndMove(bool menuIsOpen)
     {
-        player.transform.GetComponent<PlayerMovemant>().enabled = state;
-        Camera.main.GetComponent<PlayerCamera>().enabled = state;
+        bool enableGameplay = !menuIsOpen;
+
+        player.GetComponent<PlayerMovemant>().enabled = enableGameplay;
+        Camera.main.GetComponent<PlayerCamera>().enabled = enableGameplay;
     }
+
     #region Interaction system
     public void UI_ShowOrCloseInteractBpx(bool state)
     {
