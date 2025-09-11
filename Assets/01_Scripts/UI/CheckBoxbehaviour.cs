@@ -1,4 +1,3 @@
-using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -12,7 +11,10 @@ public class CheckBoxbehaviour : MonoBehaviour
     [SerializeField] Image checkMark;
 
     bool isTicked = false;
-
+    private void Start()
+    {
+        InitializeCheckMark();
+    }
     public void ClickCheckMark()
     {
         isTicked = !isTicked;
@@ -21,6 +23,7 @@ public class CheckBoxbehaviour : MonoBehaviour
 
         if (isTicked)
         {
+
             ONActive?.Invoke();
         }
         else
@@ -29,5 +32,17 @@ public class CheckBoxbehaviour : MonoBehaviour
         }
     }
 
+    void InitializeCheckMark()
+    {
+        isTicked = checkMark.gameObject.activeSelf;
+        if (isTicked)
+        {
 
+            ONActive?.Invoke();
+        }
+        else
+        {
+            DEActive?.Invoke();
+        }
+    }
 }
