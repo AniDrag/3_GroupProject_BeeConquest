@@ -208,7 +208,7 @@ public class BeeAI : Stats
     private float GetTravelTime(Vector3 destination)
     {
         float distance = Vector3.Distance(transform.position, destination);
-        return distance / (speed * .3f);
+        return distance+ collectionSpeed;
     }
     #endregion
 
