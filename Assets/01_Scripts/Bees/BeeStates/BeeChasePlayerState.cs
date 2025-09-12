@@ -16,7 +16,7 @@ public class BeeChasePlayerState : BeeStates
         if (!bee.playerComand && bee.atDestination)// playe comand prevents it from moving to another state and always follow
         {
             Debug.Log("Changing State BEE");
-            stateMachine.ChangeState(bee.idleState);
+            stateMachine.ChangeState(bee.moveingState);
             return;
         }
         else

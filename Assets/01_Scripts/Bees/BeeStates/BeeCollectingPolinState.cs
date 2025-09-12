@@ -13,15 +13,8 @@ public class BeeCollectingPolinState : BeeStates
     public override void LogicUpdate()
     {
         if (nextCollectTime >= Time.time) return;
-        if (bee.player.currentField == null)
-        {
-            bee.stateMachine.ChangeState(bee.idleState);
-        }
-        else
-        {
             bee.stateMachine.ChangeState(bee.moveingState);
-            bee.GetDestinationData();
-        }
+            //bee.GetDestinationData();
     }
     public override void LateLogicUpdate() { }
     public override void FixedLogicUpdate() {

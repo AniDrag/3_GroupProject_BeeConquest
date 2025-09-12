@@ -51,7 +51,9 @@ public class PlayerCore : MonoBehaviour
         for (int i = 0; i< playerBees.Count;i++)
         {
             float distance = Vector3.Distance(transform.position, playerBees[i].transform.position);
-            if (distance > 5 && playerBees[i].stateMachine.currentState != playerBees[i].chaseState)
+            if (distance > 5 && 
+                playerBees[i].stateMachine.currentState != playerBees[i].chaseState && 
+                playerBees[i].stateMachine.currentState != playerBees[i].pollinCollectionState)
             {
                 //Debug.Log("player requested bee to follow DISTANCE:" + distance);
                 Game_Manager.instance.BEE_PlayerRequestForBeeToFollowPlayer(playerBees[i]);

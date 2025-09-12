@@ -3,7 +3,11 @@ guid: 71cbcac56796a4f45a740aca36c60e95
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - honneyStorage: {instanceID: 0}
+  - floatingNumPrefab: {fileID: 3622481429226328989, guid: 0083224acba4ab042a59f349058f5c2f, type: 3}
+  - BeePRF: {instanceID: 0}
+  - currentField: {instanceID: 0}
   executionOrder: -20
   icon: {instanceID: 0}
   userData: 
