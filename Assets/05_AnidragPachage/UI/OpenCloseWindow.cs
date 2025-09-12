@@ -55,10 +55,10 @@ namespace AniDrag.UI
             Situational
         }
 
-        [SerializeField, ShowIf("displayedGizmos")] private DisplayGizmosAtLocation gizmoHandler;
-        [SerializeField, ShowIf("displayedGizmos")] private Color gizmoOpenColor = Color.green;
-        [SerializeField, ShowIf("displayedGizmos")] private Color gizmoCloseColor = Color.red;
-        [SerializeField, ShowIf("displayedGizmos")] private Color gizmoInitalLocationColor = Color.gray;
+        [SerializeField, ShowIf("displayGizmos")] private DisplayGizmosAtLocation gizmoHandler;
+        [SerializeField, ShowIf("displayGizmos")] private Color gizmoOpenColor = Color.green;
+        [SerializeField, ShowIf("displayGizmos")] private Color gizmoCloseColor = Color.red;
+        [SerializeField, ShowIf("displayGizmos")] private Color gizmoInitalLocationColor = Color.gray;
         private Vector2 _windowOpenPositionForGizmos;
         private Vector2 _windowClosePositionForGizmos;
         private Vector2 _windowInitialPositionForGizmos;
@@ -76,7 +76,7 @@ namespace AniDrag.UI
 
             _initialPosition = window.transform.position;
 
-            //RecalculateGizmoPosition():
+            RecalculateGizmoPositions();
         }
 
         #region Animation Functionality

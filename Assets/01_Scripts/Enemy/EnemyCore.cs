@@ -22,4 +22,8 @@ public class EnemyCore : Stats
      
         storeDamage = 0;
     }
+   //public override void TakeDamage()
+   //{
+   //
+   //}
 }

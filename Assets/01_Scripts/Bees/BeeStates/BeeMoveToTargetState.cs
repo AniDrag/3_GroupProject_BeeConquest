@@ -1,12 +1,13 @@
-using TMPro;
-using UnityEngine;
+//using UnityEngine;
 
 public class BeeMoveToTargetState : BeeStates
 {
     public BeeMoveToTargetState(BeeStateMachine StateMachine, BeeAI Bee) : base(StateMachine, Bee) { }
     public override void EnterState()
     {
-        bee.beeState = BeeAI.BeeState.Moving;        
+        bee.beeState = BeeAI.BeeState.Moving;
+        
+        bee.GetDestinationData();
     }
     public override void ExitState() { }
     public override void LogicUpdate() { }
@@ -28,9 +29,8 @@ public class BeeMoveToTargetState : BeeStates
         }
         else
         {
-            //Debug.Log("resting");            
-            bee.GetDestinationData();
-            stateMachine.ChangeState(bee.moveingState);
+            //Debug.Log("resting");          
+            stateMachine.ChangeState(bee.idleState);
         }
         
     }

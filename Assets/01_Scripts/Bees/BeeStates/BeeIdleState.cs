@@ -6,13 +6,15 @@ public class BeeIdleState : BeeStates
 
 
     private float waitEndTime;
-    private float minIdleTime = 1f;
-    private float maxIdleTime = 3f;
+    private float minIdleTime = 3f;
+    private float maxIdleTime = 8f;
     public override void EnterState() {
 
         bee.beeState = BeeAI.BeeState.Idle;
         float waitDuration = Random.Range(minIdleTime, maxIdleTime);
         waitEndTime = Time.time + waitDuration;
+
+        
 
         //Debug.Log("Bee is in Idle State, Wait time is:" +waitTime);
     }
