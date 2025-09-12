@@ -835,11 +835,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6666499131025391523, guid: f3d2585671d22aa4daa5341ca3b00bb7, type: 3}
       propertyPath: width
-      value: 10
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 6666499131025391523, guid: f3d2585671d22aa4daa5341ca3b00bb7, type: 3}
       propertyPath: height
-      value: 10
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 6666499131025391523, guid: f3d2585671d22aa4daa5341ca3b00bb7, type: 3}
+      propertyPath: defaultRegen
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6666499131025391523, guid: f3d2585671d22aa4daa5341ca3b00bb7, type: 3}
+      propertyPath: defaultInitialDur
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 6666499131025391523, guid: f3d2585671d22aa4daa5341ca3b00bb7, type: 3}
+      propertyPath: defaultMaxDurability
+      value: 200
       objectReference: {fileID: 0}
     - target: {fileID: 6712170452533893938, guid: f3d2585671d22aa4daa5341ca3b00bb7, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1570,7 +1582,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -20, y: -20}
+  m_AnchoredPosition: {x: -166, y: -89}
   m_SizeDelta: {x: 334.93262, y: 101.67627}
   m_Pivot: {x: 1, y: 1}
 --- !u!114 &541811781
@@ -3653,6 +3665,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   honneyStorage: {fileID: 1956031281}
+  spawnNumPerClick: 75
   testBee:
   - {fileID: 147243669}
   BeePRF: {fileID: 1496351642241623577, guid: 9d38b062c1044da49ba08a052c27c4c1, type: 3}
@@ -4480,7 +4493,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 20, y: -20}
+  m_AnchoredPosition: {x: 158, y: -75}
   m_SizeDelta: {x: 334.93262, y: 101.67627}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1956031281

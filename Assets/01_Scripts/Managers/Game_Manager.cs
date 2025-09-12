@@ -42,7 +42,7 @@ public class Game_Manager : MonoBehaviour
     //-------------------
     private List<FieldGenerator> serverFields = new List<FieldGenerator>();
     public static event Action<float> OnFixedTick;
-    [SerializeField] GameObject floatingNumPrefab;
+    
 
     // ───────────── SINGELTON PATERN ─────────────
     private void Awake()
@@ -81,7 +81,7 @@ public class Game_Manager : MonoBehaviour
     private float beeRareTimer = 0f;
     private float beeNextRareTime = 0f;
 
-    private float fieldStateUpdateInterval = 1.5f;
+    private float fieldStateUpdateInterval = .1f;
     private float fieldRareTimer = 0f;
     private float fieldNextRareTime = 0f;
     #endregion
@@ -156,21 +156,17 @@ public class Game_Manager : MonoBehaviour
         int pollin = 0; //= Mathf.RoundToInt(cell.PollinMultiplier * data.collectAmount
         if(cell.CurrentDurability < data.collectAmount)
         {
-            if (floatingNumPrefab == null) Debug.LogWarning("DN prefab");
-            //Debug.LogWarning("Decreasing polin on server");
             pollin = Mathf.RoundToInt(cell.PollinMultiplier * cell.CurrentDurability);
-            cell.DecreaseDurability(cell.CurrentDurability -1, floatingNumPrefab);
+            cell.DecreaseDurability(cell.CurrentDurability -1);
         }
         else
         {
-           if(floatingNumPrefab == null) Debug.LogWarning("DN prefab");
-            //Debug.LogWarning("Decreasing polin on server");
             pollin = Mathf.RoundToInt(cell.PollinMultiplier * data.collectAmount);
-            cell.DecreaseDurability(data.collectAmount, floatingNumPrefab);
+            cell.DecreaseDurability(data.collectAmount);
         }
         PlayerCore player = players[data.playerID].playerCore;
         if (players[data.playerID].playerCore == null) Debug.LogWarning("no player core found");
-        player.AddPollin(pollin);
+        player.AddPollin(pollin, cell.WorldPosition);
         
         collectionDatas.Remove(data);
     }
@@ -198,7 +194,7 @@ public class Game_Manager : MonoBehaviour
     /// </summary>
     /// <param name="bee"> the bee that requested this</param>
     /// <param name="collectionTime"> time it will take to collect polin</param>
-    public void BEE_PollinCollectionRequest(BeeAI bee, float collectionTime)
+    public void BEE_PollinCollectionRequest(BeeAI bee)
     {
         Debug.Log("Requesting field location from GM");
         FieldGenerator generator = players[bee.playerID].currentField;
@@ -207,13 +203,17 @@ public class Game_Manager : MonoBehaviour
         {
             bee.SetDestination(cell.transform.position);
 
+            // get travel (seconds) and total (travel + collection)
+            float travel = bee.GetTravelTime(cell.transform.position); // travel only now
+            float total = travel + bee.CollectionDuration;
+
             CollectionData data = new CollectionData()
             {
                 collectAmount = bee.collectionStrength,
                 playerID = bee.playerID,
                 fieldCellID = cell.ID,
                 field = generator,
-                triggerTime = collectionTime,
+                triggerTime = Time.time + total,   // <-- store absolute timestamp
             };
             collectionDatas.Add(data);
         }

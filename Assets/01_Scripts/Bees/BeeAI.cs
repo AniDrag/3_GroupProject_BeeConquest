@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using static UnityEditorInternal.ReorderableList;
 [RequireComponent(typeof(BeeStateMachine))]
 public class BeeAI : Stats
 {
@@ -47,6 +46,7 @@ public class BeeAI : Stats
     // ───────────── READ ONLY STATS ─────────────
     public DamageData damage { get; private set; }
     public float getTravelingTime { get; private set; }
+
 
     // ─────────────ABILITIES ─────────────
     #endregion
@@ -149,11 +149,15 @@ public class BeeAI : Stats
 
     //       ───────────── PUBLIC API ─────────────
     #region  ───────────── PUBLIC API ─────────────
+    //private float expectedArrivalTime;
     public void SetDestination(Vector3 newDestination, bool addOffset = true)
     {
-        destinationPoint = newDestination +
-            new Vector3(Random.Range(-0.5f, 0.5f), addOffset ? heightOffsetY : 0, Random.Range(-0.5f, 0.5f));
+        destinationPoint = newDestination + new Vector3(Random.Range(-0.5f, 0.5f), addOffset ? heightOffsetY : 0, Random.Range(-0.5f, 0.5f));
         atDestination = false;
+
+        //float travelEta = GetTravelTime(destinationPoint);         // travel only
+        //expectedArrivalTime = Time.time + travelEta;              // arrival moment
+        //Debug.Log($"[SetDestination] Expected arrival in {travelEta:F3}s (at {expectedArrivalTime:F3}).");
     }
 
     public void SetMyParent(PlayerCore parentPlayer)
@@ -170,12 +174,15 @@ public class BeeAI : Stats
         }
         else if (player.currentField != null)
         {
-            Game_Manager.instance.BEE_PollinCollectionRequest(this, GetTravelTime(destinationPoint));
+            Game_Manager.instance.BEE_PollinCollectionRequest(this);
+            
         }
         else
         {
             Game_Manager.instance.BEE_IdleMoveRequest(this);
         }
+
+
     }
     #endregion
 
@@ -184,7 +191,7 @@ public class BeeAI : Stats
     #region ───────────── HELPER FUNCTIONS ─────────────
     private void SmoothMove(Vector3 target)
     {
-        transform.position = Vector3.MoveTowards(transform.position, target, speed * Time.deltaTime);
+        transform.position = Vector3.MoveTowards(transform.position, target, speed * Time.fixedDeltaTime);
     }
     private void SmoothRotate(Vector3 target)
     {
@@ -199,16 +206,35 @@ public class BeeAI : Stats
     {
         float distance = Vector3.Distance(transform.position, destinationPoint);
         float tolerance = (beeState == BeeState.Following) ? 2f : 0.2f;
-        atDestination = distance <= tolerance;
-        if (atDestination) 
+        bool nowAtDestination = distance <= tolerance;
+
+        if (nowAtDestination && !atDestination) // only when we transition to arrived
+        {
+            atDestination = true;
+            //beeState = BeeState.Collecting;                     // or do stateMachine.ChangeState(pollinCollectionState)
             beeStateUpdateInterval = 1.5f;
-        else 
-                beeStateUpdateInterval = distance / speed;
+            //Debug.Log($"[ARRIVED] Actual arrival time: {Time.time:F3}. Expected: {expectedArrivalTime:F3}. Delta: {Time.time - expectedArrivalTime:F3}s");
+
+            // optionally: start collection state
+            stateMachine.ChangeState(pollinCollectionState);
+        }
+        else if (!nowAtDestination)
+        {
+            atDestination = false;
+            beeStateUpdateInterval = distance / speed;
+        }
     }
-    private float GetTravelTime(Vector3 destination)
+    public float CollectionDuration => collectionSpeed;
+
+    // returns travel time in seconds (distance / speed) only
+    public float GetTravelTime(Vector3 destination)
     {
         float distance = Vector3.Distance(transform.position, destination);
-        return distance+ collectionSpeed;
+        float effectiveSpeed = Mathf.Max(0.0001f, speed); // avoid divide-by-zero
+        float travelTime = distance / effectiveSpeed;     // seconds
+
+        //Debug.Log($"[ETA] pos:{transform.position:F3} -> dest:{destination:F3} dist:{distance:F3} " + $"speed:{effectiveSpeed:F3} travel:{travelTime:F3}s");
+        return travelTime;
     }
     #endregion
 

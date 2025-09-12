@@ -19,8 +19,8 @@ public class BeeCollectingPolinState : BeeStates
         }
         else
         {
-            bee.GetDestinationData();
             bee.stateMachine.ChangeState(bee.moveingState);
+            bee.GetDestinationData();
         }
     }
     public override void LateLogicUpdate() { }

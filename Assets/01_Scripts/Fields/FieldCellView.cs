@@ -142,6 +142,7 @@ public class FieldCellView : MonoBehaviour
     {
         //Debug.Log("Stats are changing");
         UpdateDebugText();
+        // Add a method here for the client text.
     }
 
     private void UpdateDebugText()

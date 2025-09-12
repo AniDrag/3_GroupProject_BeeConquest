@@ -6,7 +6,7 @@ public class PlayerCore : MonoBehaviour
 {
     [Header("----- UI refrences -----")]
     [SerializeField] private TMP_Text honneyStorage;
-
+    [SerializeField] GameObject floatingNumPrefab;
     [Header("----- Bee Data -----")]
     [SerializeField] int spawnNumPerClick = 75;
     [SerializeField] public BeeAI[] testBee;
@@ -18,7 +18,7 @@ public class PlayerCore : MonoBehaviour
     [SerializeField] public FieldGenerator currentField;
 
     [Header("----- Inventory Data -----")]
-    [SerializeField] private int polinStorage;
+    [SerializeField] private long polinStorage;
 
     #region Getters
     public int playerID { get; private set; } = 0;
@@ -47,23 +47,28 @@ public class PlayerCore : MonoBehaviour
     
     private void FixedUpdate()
     {
-        if (playerBees.Count > 0) Debug.Log(playerBees.Count + " Bee amount from Player");
+        //if (playerBees.Count > 0) Debug.Log(playerBees.Count + " Bee amount from Player");
         for (int i = 0; i< playerBees.Count;i++)
         {
             float distance = Vector3.Distance(transform.position, playerBees[i].transform.position);
             if (distance > 5 && playerBees[i].stateMachine.currentState != playerBees[i].chaseState)
             {
-                Debug.Log("player requested bee to follow DISTANCE:" + distance);
+                //Debug.Log("player requested bee to follow DISTANCE:" + distance);
                 Game_Manager.instance.BEE_PlayerRequestForBeeToFollowPlayer(playerBees[i]);
             }
 
         }
     }
-    public void AddPollin(int amount)
+    public void AddPollin(long amount, Vector3 position)
     {
-        Debug.Log("Player recived honney");
+        //Debug.Log("Player recived honney");
         polinStorage += amount; 
         honneyStorage.text = $"Honey: {polinStorage / 5}";
+        GameObject go = Instantiate(floatingNumPrefab, position, Quaternion.identity);
+        go.transform.position += Vector3.up * 1f;
+        FloatingNumbers floatingNumber = go.GetComponent<FloatingNumbers>();
+        floatingNumber.Initialize(amount); // offset above cell
+
     }
     [Button("SpawnBees", ButtonSize.Medium, 0, 0, 0, 1, SdfIconType.None)]
     public void SpawnBees()
