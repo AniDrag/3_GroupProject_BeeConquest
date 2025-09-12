@@ -8,6 +8,7 @@ public class PlayerCore : MonoBehaviour
     [SerializeField] private TMP_Text honneyStorage;
 
     [Header("----- Bee Data -----")]
+    [SerializeField] int spawnNumPerClick = 75;
     [SerializeField] public BeeAI[] testBee;
     private Dictionary<int, List<BeeAI>> beeGroups = new Dictionary<int, List<BeeAI>>();// this is a dictionary of 3 squads of warrior and defender bees the player can asign adn then manipulate
     private List<BeeAI> playerBees = new List<BeeAI> ();
@@ -64,16 +65,19 @@ public class PlayerCore : MonoBehaviour
         polinStorage += amount; 
         honneyStorage.text = $"Honey: {polinStorage / 5}";
     }
-    [Button("SpawnBees", ButtonSize.Medium,0,0,0,1,SdfIconType.None)]
+    [Button("SpawnBees", ButtonSize.Medium, 0, 0, 0, 1, SdfIconType.None)]
     public void SpawnBees()
     {
-        GameObject newBee = Instantiate(BeePRF);
-        BeeAI bee = newBee.GetComponent<BeeAI>();
-        bee.SetMyParent(this);
-        playerBees.Add(bee);
-        Game_Manager.instance.players[playerID].playerBeesTwo.Add(bee);
-        // bee nees a skin and a type
-        //spawn bee and parent give the be the proper bee data and player data.
+        for (int i = 0; i < spawnNumPerClick; i++)
+        {
+            GameObject newBee = Instantiate(BeePRF);
+            BeeAI bee = newBee.GetComponent<BeeAI>();
+            bee.SetMyParent(this);
+            playerBees.Add(bee);
+            Game_Manager.instance.players[playerID].playerBeesTwo.Add(bee);
+            // bee nees a skin and a type
+            //spawn bee and parent give the be the proper bee data and player data.
+        }
     }
 
     // Controling bees
