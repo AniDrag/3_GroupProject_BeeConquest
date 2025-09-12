@@ -6,14 +6,10 @@ public class BeeMoveToTargetState : BeeStates
     public BeeMoveToTargetState(BeeStateMachine StateMachine, BeeAI Bee) : base(StateMachine, Bee) { }
     public override void EnterState()
     {
-        bee.beeState = BeeAI.BeeState.Moving;
-        //Debug.Log("Bee is in normal moving State");
-        
+        bee.beeState = BeeAI.BeeState.Moving;        
     }
     public override void ExitState() { }
-    public override void LogicUpdate() 
-    {
-    }
+    public override void LogicUpdate() { }
     public override void LateLogicUpdate() { }
     public override void FixedLogicUpdate()
     {  
@@ -33,7 +29,8 @@ public class BeeMoveToTargetState : BeeStates
         else
         {
             //Debug.Log("resting");            
-            stateMachine.ChangeState(bee.idleState);
+            bee.GetDestinationData();
+            stateMachine.ChangeState(bee.moveingState);
         }
         
     }

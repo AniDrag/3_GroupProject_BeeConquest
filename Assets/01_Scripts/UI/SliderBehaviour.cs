@@ -4,6 +4,7 @@ using UnityEngine.UI;
 
 public class SliderBehaviour : MonoBehaviour
 {
+    //SetsUiElementToSelectOnInteract
     public enum RoundToDecimals
     {
         one,

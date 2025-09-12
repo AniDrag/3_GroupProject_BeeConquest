@@ -1,3 +1,4 @@
+using AniDrag.Utility;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -43,6 +44,8 @@ public class FieldGenerator : MonoBehaviour
     public bool showDebugText = false;
     private bool lastKnownDebugText = true; // Should be the opposite of showDebugText.
     [ContextMenu("Debug - Damage Random Cell")]
+
+    [Button]
     private void DebugDamageRandomCell()
     {
         if (TotalCells == 0) return;
@@ -137,10 +140,10 @@ public class FieldGenerator : MonoBehaviour
             }
         }
 
-        if (damageRandomCell)
-        {
-            DebugDamageRandomCell();
-        }
+        //if (damageRandomCell)
+        //{
+        //    DebugDamageRandomCell();
+        //}
 
         UpdateDebugTextVisibility();
     }

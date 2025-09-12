@@ -3,22 +3,28 @@ using UnityEngine;
 public class BeeCollectingPolinState : BeeStates
 {
     public BeeCollectingPolinState(BeeStateMachine StateMachine, BeeAI Bee) : base(StateMachine, Bee) { }
-    private float waitTime = 0;
-    [SerializeField, Range(0.1f, 10)] private float minIdleTime = 2;
-    [SerializeField, Range(0.1f, 10)] private float maxIdleTime = 6;
+    private float nextCollectTime;
     public override void EnterState() {
         bee.beeState = BeeAI.BeeState.Collecting;
+        nextCollectTime = Time.time + bee.collectionSpeed;
         Debug.Log("Collected polin");
     }
     public override void ExitState() { }
     public override void LogicUpdate()
     {
-       
+        if (nextCollectTime >= Time.time) return;
+        if (bee.player.currentField == null)
+        {
+            bee.stateMachine.ChangeState(bee.idleState);
+        }
+        else
+        {
+            bee.GetDestinationData();
+            bee.stateMachine.ChangeState(bee.moveingState);
+        }
     }
     public override void LateLogicUpdate() { }
     public override void FixedLogicUpdate() {
-        if (waitTime >= Time.time) return;
-        stateMachine.ChangeState(bee.idleState);
     }
     public override void AnimationTriggerEvent() { }//PlayerMovemant.AnimationTriggers triggerType) { }
 

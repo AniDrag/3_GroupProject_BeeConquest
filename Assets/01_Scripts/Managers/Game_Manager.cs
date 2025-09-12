@@ -42,6 +42,7 @@ public class Game_Manager : MonoBehaviour
     //-------------------
     private List<FieldGenerator> serverFields = new List<FieldGenerator>();
     public static event Action<float> OnFixedTick;
+    [SerializeField] GameObject floatingNumPrefab;
 
     // ───────────── SINGELTON PATERN ─────────────
     private void Awake()
@@ -149,18 +150,23 @@ public class Game_Manager : MonoBehaviour
     /// </summary>
     public void CollectPolinTrigger(CollectionData data)
     {
+        
         FieldGenerator generator = data.field;
         var cell = generator.GetCellById(data.fieldCellID);
         int pollin = 0; //= Mathf.RoundToInt(cell.PollinMultiplier * data.collectAmount
         if(cell.CurrentDurability < data.collectAmount)
         {
+            if (floatingNumPrefab == null) Debug.LogWarning("DN prefab");
+            //Debug.LogWarning("Decreasing polin on server");
             pollin = Mathf.RoundToInt(cell.PollinMultiplier * cell.CurrentDurability);
-            cell.DecreaseDurability(1);
+            cell.DecreaseDurability(cell.CurrentDurability -1, floatingNumPrefab);
         }
         else
         {
+           if(floatingNumPrefab == null) Debug.LogWarning("DN prefab");
+            //Debug.LogWarning("Decreasing polin on server");
             pollin = Mathf.RoundToInt(cell.PollinMultiplier * data.collectAmount);
-            cell.DecreaseDurability(data.collectAmount);
+            cell.DecreaseDurability(data.collectAmount, floatingNumPrefab);
         }
         PlayerCore player = players[data.playerID].playerCore;
         if (players[data.playerID].playerCore == null) Debug.LogWarning("no player core found");
@@ -242,12 +248,14 @@ public class Game_Manager : MonoBehaviour
     #region Player Server Calls
     public void JoinServer(int ID, PlayerServerData data)
     {
-        if (!players.ContainsKey(ID)) players.Add(ID, data);
-        else players[ID].transform.GetComponent<PlayerCore>().SpawnPlayerBees(players[ID].playerBeesTwo);
+        if (!players.ContainsKey(ID)) //IF NEW PLAYER
+            players.Add(ID, data);
+        //else // IF Already Registered 
+        //    players[ID].transform.GetComponent<PlayerCore>().SpawnPlayerBees(players[ID].playerBeesTwo);
     }
     public void LeaveServer(int ID)
     {
-        players.Remove(ID);
+        players.Remove(ID);// DESPAWN ALL PLAYER GAMEOBJECTS
     }
 
 

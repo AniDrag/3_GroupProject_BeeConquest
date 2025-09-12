@@ -115,7 +115,7 @@ public class PlayerIngameMenu : MonoBehaviour
     {
         bool enableGameplay = !menuPanel.activeSelf;
 
-        player.GetComponent<PlayerMovemant>().enabled = enableGameplay;
+        //player.GetComponent<PlayerMovemant>().enabled = enableGameplay;
         Camera.main.GetComponent<PlayerCamera>().enabled = enableGameplay;
     }
     // ───────────────────────────── Input Switching

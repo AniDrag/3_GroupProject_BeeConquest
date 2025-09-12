@@ -18,7 +18,6 @@ public class FieldCellData : MonoBehaviour
     // events (subscribers: views, network, etc.)
     public event Action<FieldCellData, int> OnPercentBucketChanged;
     public event Action<FieldCellData> OnStatsChanged;
-
     private int lastPercentBucket = -1;
     private void Awake()
     {
@@ -56,9 +55,19 @@ public class FieldCellData : MonoBehaviour
     public float CurrentDurability => currentDurability;
     public float GetDurabilityPercent() => (currentDurability / MaxDurability) * 100f;
 
-    public void DecreaseDurability(float amount)
+    public void DecreaseDurability(float amount, GameObject prefab = null)
     {
+        if (prefab == null) Debug.Log("for some reason Cell did not get a prefab");
         if (amount <= 0f) return;
+        long finalValue = Mathf.RoundToInt(amount * PollinMultiplier);
+        if (prefab != null)
+        {
+            GameObject go = Instantiate(prefab, gameObject.transform.position, Quaternion.identity);
+            go.transform.position += Vector3.up * 1f;
+            FloatingNumbers floatingNumber = go.GetComponent<FloatingNumbers>();
+            floatingNumber.Initialize(finalValue); // offset above cell
+            Debug.Log("spawning damage Num at pos: " + go.transform.position);
+        }
         currentDurability = Mathf.Max(0f, currentDurability - amount);
         UpdateBucketIfNeeded();
         OnStatsChanged?.Invoke(this);

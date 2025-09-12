@@ -1,117 +1,94 @@
 ﻿using UnityEngine;
+using static UnityEditorInternal.ReorderableList;
 [RequireComponent(typeof(BeeStateMachine))]
 public class BeeAI : Stats
 {
-    // ───────────── ENUMS ─────────────
-    #region Enums 
+    #region ───────────── ENUMS ─────────────
     public enum BeeAttribute { Red, Blue, Green, Dark, Light }
     public enum BeeState { Idle, Moving, Collecting, Attacking, Following }
-    //public enum BeeClass { Worker, Attacker, Defender }
     #endregion
 
-    // ───────────── TARGETS ─────────────
-    #region Targets
+
+    #region  ───────────── TARGETS ─────────────
     public Vector3 destinationPoint { get; private set; }
     public EnemyCore TargetEnemy { get; private set; }
     public FieldCell TargetField { get; private set; }
-    public Transform TargetFollow;
     public bool atDestination { get; private set; }
     #endregion
+
     // ───────────── PARENT INFO ─────────────
-    public PlayerCore player;//{ get; private set; }
+    public PlayerCore player { get; private set; }
     public int playerID { get; private set; } = 0;
     public bool playerComand { get; private set; }
 
-    // ───────────── FIELDS ─────────────
-    #region Fields
-    [Header("--------------- Runtime ---------------")]
+
+    #region ───────────── SETTINGS ─────────────
+    [Header("Bee Stats")]
     public BeeAttribute beeAttribute;
     public BeeState beeState;
-    //public BeeClass beeClass;
-
-    [Header("--------------- Settings ---------------")]
-    [SerializeField, Range(1, 100)] public float collectionStrength { get; private set; } = 40f;
-    [SerializeField, Range(0.1f, 5f)] public float heightOffsetY { get; private set; } = 0.4f;
-    [SerializeField, Range(0.1f, 5f)] public float collectionSpeed { get; private set; } = 1;
-    [SerializeField] public float speed { get; private set; } = 3; // levl * speedScale
-
-    [Header("--------------- Stat modifiers ---------------")]
-    [SerializeField] private int staminaScaler = 1;
-    [SerializeField] private int damageScaler = 1;
-    [SerializeField] private int speedScaler = 1;
+    [SerializeField] public float speed = 3f;
+    [SerializeField, Range(1, 100)] public float collectionStrength = 40f;
+    [SerializeField, Range(0.1f, 5f)] public float heightOffsetY = 0.4f;
+    [SerializeField, Range(0.1f, 5f)] public float collectionSpeed = 1f;
     [Tooltip("on max level how much durability it can consume from a flower")]
-    [SerializeField, Range(10, 100)] private int collectionCap = 20;
+    //[SerializeField, Range(10, 100)] private int collectionCap = 20;
     [SerializeField] private float critDamage = 1;
-    [SerializeField] private int critChance = 1;
+    //[SerializeField] private int critChance = 1;
 
-    #endregion
+    [Header("Stat Modifiers")]
+    //[SerializeField] private int staminaScaler = 1;
+    //[SerializeField] private int damageScaler = 1;
+    //[SerializeField] private int speedScaler = 1;
 
+    // ───────────── PRIVATE STATS ─────────────
+   //private long currentXP; 
+   //private float currentStamina;
 
-    #region Properties
-    //-------------------
-    //      Stat Info
-    //-------------------
-   
-    private long currentXP; // when killing enemys and collecting polin mybe minigames and consumable items
-    private float currentStamina;
+    // ───────────── READ ONLY STATS ─────────────
     public DamageData damage { get; private set; }
     public float getTravelingTime { get; private set; }
 
-    // Ability slot
-
-
+    // ─────────────ABILITIES ─────────────
     #endregion
 
-
-    //-------------------
-    //      States and state macine Info
-    //-------------------
-    #region State machine Vars
-    [SerializeField] public BeeStateMachine stateMachine { get; private set; }
+        
+    #region  ───────────── STATE MACHINE ─────────────
+    public BeeStateMachine stateMachine { get; private set; }
     public BeeIdleState idleState;
-    public BeeChasePlayerState chaseState;
     public BeeMoveToTargetState moveingState;
+    public BeeChasePlayerState chaseState;
     public BeeCollectingPolinState pollinCollectionState;
     public BeeCombatState combatState;
     #endregion
-    //-------------------
-    //      Tick rate settings
-    //-------------------
-    private float fieldStateUpdateInterval =1.5f;
-    private float fieldRareTimer = 0f;
-    private float fieldNextRareTime = 0f;
 
-    #region Default functions
+    // ───────────── TICK & DISTANCE ─────────────
+    private float beeStateUpdateInterval = 1.5f;
+    private float beeRareTimer = 0f;
+    private float beeNextRareTime = 0f;
+
+    //      ───────────── DEFAULT UNITY FUNCTIONS ─────────────
+    #region ───────────── DEFAULT UNITY FUNCTIONS ─────────────
     void Start()
     {
-        //if (Game_Manager.instance.players.ContainsKey(playerID)) 
-        // Game_Manager.instance.players[playerID].playerBeesTwo.Add(this); // TEMP ADDING ALL BEES TO ONE PLAYER (THE CURRENT ONE)!!
-        SetMyParent(player);
-        //-------------------
-        //      Stat initialization
-        //-------------------
-        SetBaseStats(staminaScaler,damageScaler,1,speedScaler);
-        SetMultipliers();
-        //speed = Agility * CharacterLevel;
+        if (player == null) Debug.LogWarning("I have no player parent");
+
         //-------------------
         //      damage initialization
         //-------------------
-        int setNewDamage = Strength * 5;
+        int setNewDamage = 2 * 5;
         damage = new DamageData(setNewDamage, DamageType.Physical, critDamage);
 
         //-------------------
         //      States initialization
         //-------------------
-        stateMachine = transform.GetComponent<BeeStateMachine>();
-        idleState = new BeeIdleState(stateMachine,this);
+        stateMachine = GetComponent<BeeStateMachine>();
+
+        idleState = new BeeIdleState(stateMachine, this);
         chaseState = new BeeChasePlayerState(stateMachine, this);
         moveingState = new BeeMoveToTargetState(stateMachine, this);
         pollinCollectionState = new BeeCollectingPolinState(stateMachine, this);
         combatState = new BeeCombatState(stateMachine, this);
 
-        //-------------------
-        //      State machine initialization
-        //-------------------
         stateMachine.Initialize(idleState);
     }
 
@@ -125,76 +102,123 @@ public class BeeAI : Stats
     }
     private void FixedUpdate()
     {
+        // ───── FIELD TICK RATE ─────
+        beeRareTimer += Time.fixedDeltaTime;
+        if (beeRareTimer >= beeNextRareTime)
+        {
+            float dt = beeRareTimer;
+            beeRareTimer = 0f;
+            beeNextRareTime = Mathf.Max(0.3f,beeStateUpdateInterval);
+
+            stateMachine.currentState.FixedLogicUpdate();
+        }
+
+        // ───── MOVE BEE ONLY IF NECESSARY ─────
+        if (beeState == BeeState.Moving || beeState == BeeState.Following)
+        {
+            SmoothMove(destinationPoint);
+            SmoothRotate(destinationPoint);
+
+
+            // ───── CHECK ARRIVAL ─────
+            UpdateAtDestination();
+        }
+
+        /*
         fieldRareTimer += Time.fixedDeltaTime;
         if (fieldRareTimer >= fieldNextRareTime)
         {
             float dt = fieldRareTimer;
             fieldRareTimer = 0f;
-            fieldNextRareTime = Mathf.Max(0.01f, fieldStateUpdateInterval);
+            
+
 
             stateMachine.currentState.FixedLogicUpdate();
+            if (stateMachine.currentState != moveingState || stateMachine.currentState != chaseState){ fieldStateUpdateInterval = 1.5f; return; }
 
-            atDestination = Vector3.Distance(transform.position, destinationPoint) < (beeState == BeeState.Following? 2 : 0.01f);
 
-            if (atDestination && !playerComand)
-            {
-                fieldStateUpdateInterval = 1.5f;
-                GetDestinationData();
-            }
-            else fieldStateUpdateInterval = GetTravelTime(destinationPoint);
+            fieldStateUpdateInterval = GetTravelTime(destinationPoint);
+            fieldNextRareTime = Mathf.Max(0.1f, fieldStateUpdateInterval);
+            float tolerance = beeState == BeeState.Following ? 2 : 0.01f;
+            Debug.Log("Bee tolerance = "+tolerance);
+            atDestination = Vector3.Distance(transform.position, destinationPoint) <= tolerance;
         }
-        SmoothMove(destinationPoint);
+        SmoothMove(destinationPoint);*/
     }
     #endregion
-    // ───────────── API call Function ─────────────
-    #region API Functins
+
+    //       ───────────── PUBLIC API ─────────────
+    #region  ───────────── PUBLIC API ─────────────
     public void SetDestination(Vector3 newDestination, bool addOffset = true)
     {
         destinationPoint = newDestination +
-            new Vector3(Random.Range(-0.5f, 0.5f), addOffset? heightOffsetY:0, Random.Range(-0.5f, 0.5f));
-
-        getTravelingTime = GetTravelTime(destinationPoint) + Time.time;
+            new Vector3(Random.Range(-0.5f, 0.5f), addOffset ? heightOffsetY : 0, Random.Range(-0.5f, 0.5f));
         atDestination = false;
     }
-    #endregion
-    private float GetTravelTime(Vector3 destination)
-    {
-        float distance = Vector3.Distance(transform.position, destination);
-        return distance / speed; // seconds
-    }
+
     public void SetMyParent(PlayerCore parentPlayer)
     {
         player = parentPlayer;
         playerID = parentPlayer.playerID;
     }
+
     public void GetDestinationData()
     {
         if (TargetEnemy != null)
         {
-            //Game_Manager.instance.BeeCollectionRequest(this);
+            stateMachine.ChangeState(combatState);
         }
         else if (player.currentField != null)
         {
-           // Debug.Log("Pinging a destination to a field cell");
-            Game_Manager.instance.BEE_PollinCollectionRequest(this, GetTravelTime(destinationPoint) +1); // you'll implement this
+            Game_Manager.instance.BEE_PollinCollectionRequest(this, GetTravelTime(destinationPoint));
         }
         else
         {
-           // Debug.Log("Pinging a destination to a random location neare player cell");
-            // Idle or moving near player
             Game_Manager.instance.BEE_IdleMoveRequest(this);
         }
     }
+    #endregion
 
-    public void SmoothMove(Vector3 target)
+
+    //      ───────────── HELPER FUNCTIONS ─────────────
+    #region ───────────── HELPER FUNCTIONS ─────────────
+    private void SmoothMove(Vector3 target)
     {
         transform.position = Vector3.MoveTowards(transform.position, target, speed * Time.deltaTime);
     }
+    private void SmoothRotate(Vector3 target)
+    {
+        Vector3 direction = (target - transform.position).normalized;
+        if (direction.sqrMagnitude > 0.01f)
+        {
+            Quaternion lookRotation = Quaternion.LookRotation(direction);
+            transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5f);
+        }
+    }
+    private void UpdateAtDestination()
+    {
+        float distance = Vector3.Distance(transform.position, destinationPoint);
+        float tolerance = (beeState == BeeState.Following) ? 2f : 0.2f;
+        atDestination = distance <= tolerance;
+        if (atDestination) 
+            beeStateUpdateInterval = 1.5f;
+        else 
+                beeStateUpdateInterval = distance / speed;
+    }
+    private float GetTravelTime(Vector3 destination)
+    {
+        float distance = Vector3.Distance(transform.position, destination);
+        return distance / (speed * .3f);
+    }
+    #endregion
 
+
+#if UNITY_EDITOR
     private void OnDrawGizmos()
    {
        Gizmos.color = Color.yellow;
        Gizmos.DrawSphere(destinationPoint, 0.3f);
        //Gizmos.DrawSphere(player.transform.position, 0.3f);
    }
+#endif
 }
