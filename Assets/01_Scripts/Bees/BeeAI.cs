@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 [RequireComponent(typeof(BeeStateMachine))]
 public class BeeAI : Stats
 {
@@ -117,7 +118,7 @@ public class BeeAI : Stats
         if (beeState == BeeState.Moving || beeState == BeeState.Following)
         {
             SmoothMove(destinationPoint);
-            SmoothRotate(destinationPoint);
+            
 
 
             // ───── CHECK ARRIVAL ─────
@@ -154,7 +155,7 @@ public class BeeAI : Stats
     {
         destinationPoint = newDestination + new Vector3(Random.Range(-0.5f, 0.5f), addOffset ? heightOffsetY : 0, Random.Range(-0.5f, 0.5f));
         atDestination = false;
-
+        transform.LookAt(destinationPoint);
         //float travelEta = GetTravelTime(destinationPoint);         // travel only
         //expectedArrivalTime = Time.time + travelEta;              // arrival moment
         //Debug.Log($"[SetDestination] Expected arrival in {travelEta:F3}s (at {expectedArrivalTime:F3}).");
@@ -192,15 +193,6 @@ public class BeeAI : Stats
     private void SmoothMove(Vector3 target)
     {
         transform.position = Vector3.MoveTowards(transform.position, target, speed * Time.fixedDeltaTime);
-    }
-    private void SmoothRotate(Vector3 target)
-    {
-        Vector3 direction = (target - transform.position).normalized;
-        if (direction.sqrMagnitude > 0.01f)
-        {
-            Quaternion lookRotation = Quaternion.LookRotation(direction);
-            transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5f);
-        }
     }
     private void UpdateAtDestination()
     {
