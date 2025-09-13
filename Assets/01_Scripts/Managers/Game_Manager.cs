@@ -178,7 +178,7 @@ public class Game_Manager : MonoBehaviour
                         // If representative player or playerCore is missing, skip showing.
                         if (lab.representativePlayerId >= 0 && players.TryGetValue(lab.representativePlayerId, out var repData) && repData.playerCore != null)
                         {
-                            repData.playerCore.ShowPollinVisual(amount, clusterPos, lab.color, honeyReceived);
+                            repData.playerCore.ShowPollinVisual(amount, clusterPos, lab.color);
                         }
                         // else: intentionally do nothing (no FloatingLabelPool call)
                     }

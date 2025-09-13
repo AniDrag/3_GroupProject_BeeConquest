@@ -27,6 +27,7 @@ public class PlayerCore : MonoBehaviour
     [SerializeField] private bool showReceivedHoney = true;
     [SerializeField] private bool showReceivedPollen = true;
     private long maxPollinStorage = 10000;
+    private Queue<long> honeyQueue = new Queue<long>();
 
     #region Getters
     public int playerID { get; private set; } = 0;
@@ -64,6 +65,10 @@ public class PlayerCore : MonoBehaviour
             //spawn bee and parent give the be the proper bee data and player data.
         }
     }
+
+    private float playerStateUpdateInterval = .2f;
+    private float playerRareTimer = 0f;
+    private float playerNextRareTime = 0f;
     private void FixedUpdate()
     {
         //if (playerBees.Count > 0) Debug.Log(playerBees.Count + " Bee amount from Player");
@@ -77,8 +82,21 @@ public class PlayerCore : MonoBehaviour
             }
 
         }
-    }
 
+        playerRareTimer += Time.fixedDeltaTime;
+        if (playerRareTimer >= playerNextRareTime)
+        {
+            float dt = playerRareTimer;
+            playerRareTimer = 0f;
+            playerNextRareTime = Mathf.Max(0.01f, playerStateUpdateInterval);
+            long honeySum = 0;
+            while(honeyQueue.TryDequeue(out var val))
+            {
+                honeySum += val;
+            }
+            ActuallyShowHoneyVisual(honeySum);
+        }
+    }
     #region Collection and currency FUNCTIONS
     public long RemovePollin(long amount)
     {
@@ -103,15 +121,26 @@ public class PlayerCore : MonoBehaviour
     public void AddHoney(long amount)
     {
         honeyStorage += amount;
+        ShowHoneyVisual(amount);
         polinStorageUI.text = $"Pollin: {polinStorage}/{maxPollinStorage}";
         honneyStorageUI.text = $"Nicterial: {honeyStorage}";
     }
-    public void ShowPollinVisual(long pollen, Vector3 position, CellColor color = CellColor.Red, long honeyReceived = -1)
+    public void ShowPollinVisual(long pollen, Vector3 position, CellColor color = CellColor.Red)
     {
         if (showReceivedPollen == true)
             FloatingLabelPool.Instance.ShowAmount(pollen, position, FloatingLabelPool.Instance.ColorForCell(color));
+    }
+
+    public void ShowHoneyVisual(long honeyReceived)
+    {
         if (showReceivedHoney && honeyReceived > 0)
-            FloatingLabelPool.Instance.ShowAmount(honeyReceived, transform.position + Vector3.up, Color.yellow);
+            honeyQueue.Enqueue(honeyReceived);
+    }
+
+    private void ActuallyShowHoneyVisual(long honey)
+    {
+        if (showReceivedHoney && honey > 0)
+            FloatingLabelPool.Instance.ShowAmount(honey, transform.position + Vector3.up, Color.yellow);
     }
     #endregion
 
