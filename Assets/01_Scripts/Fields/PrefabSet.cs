@@ -8,6 +8,7 @@ public class PrefabSet
     public string name;
     [Tooltip("Relative weight for picking this set")]
     public float weight = 1f;
+    public CellColor color;
 
     [Header("Buckets (order matters)")]
     [Tooltip("Bucket values, e.g. 90,65,35,5")]

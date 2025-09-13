@@ -94,43 +94,83 @@ public class FieldGenerator : MonoBehaviour, Iinteract
     private void Start()
     {
         origin = transform.position;
+        int foundedCells = 0;
         if (generateOnStart) GenerateField();
         else
         {
-            // TODO: read children's FieldCellData and add it accordingly to the arrays: cells, idLookup, holderLookup.
             // Read existing children
-            var existingCells = GetComponentsInChildren<FieldCellData>();
+            var existingCells = GetComponentsInChildren<FieldCellData>(true); // include inactive just in case
             if (existingCells.Length == 0) return;
 
-            // Determine grid size based on positions (optional: you can assume width/height is correct)
+            // Prepare arrays / lookups
             cells = new FieldCellData[width, height];
             idLookup.Clear();
             holderLookup.Clear();
 
             foreach (var cell in existingCells)
             {
-                Vector3 local = cell.transform.position - origin;
-                int x = Mathf.FloorToInt(local.x / cellSize);
-                int y = Mathf.FloorToInt(local.z / cellSize);
-
-                if (x < 0 || x >= width || y < 0 || y >= height)
+                // Defensive: ensure the component is valid
+                if (cell == null)
                 {
-                    Debug.LogWarning($"Cell {cell.name} is out of bounds ({x},{y}), did you change the original width and height?");
+                    Debug.LogWarning("Found null FieldCellData in children; skipping.");
                     continue;
                 }
 
-                // assign to arrays
+                int cellId = cell.ID;
+
+                // Validate ID
+                if (cellId < 0)
+                {
+                    Debug.LogWarning($"Cell '{cell.name}' has invalid ID {cellId}; skipping.");
+                    continue;
+                }
+
+                // Determine x,y from id (deterministic)
+                int x = cellId % width;
+                int y = cellId / width; // integer division
+
+                // If computed y is outside, it's out of bounds
+                if (x < 0 || x >= width || y < 0 || y >= height)
+                {
+                    Debug.LogWarning($"Cell '{cell.name}' (ID={cellId}) maps to out-of-bounds coords ({x},{y}) for width={width},height={height}. Skipping.");
+                    continue;
+                }
+
+                // Check duplicates: if there's already a cell at that id/slot, warn and skip or replace
+                if (idLookup.ContainsKey(cellId))
+                {
+                    Debug.LogWarning($"Duplicate cell ID {cellId} found on '{cell.name}'. An earlier cell with same ID is already registered. Skipping this one.");
+                    continue;
+                }
+
+                // Compute canonical world position for that grid cell and snap holder to it
+                Vector3 canonicalPos = origin + new Vector3((x + 0.5f) * cellSize, 0f, (y + 0.5f) * cellSize);
+
+                // Ensure holder/gameobject reference
+                var holder = cell.gameObject;
+                holder.name = $"CellHolder_{cellId}"; // rename to canonical holder name
+
+                // If the holder is not parented correctly, set parent
+                if (holder.transform.parent != transform)
+                    holder.transform.SetParent(transform, true);
+
+                // Snap to canonical position (keeps rotation/scale)
+                holder.transform.position = canonicalPos;
+
+                // Put the cell into the arrays and lookups
                 cells[x, y] = cell;
-                idLookup[cell.ID] = cell;
+                idLookup[cellId] = cell;
+                holderLookup[cellId] = holder;
+                cell.WorldPosition = holder.transform.position;
 
-                // assign holder lookup
-                holderLookup[cell.ID] = cell.gameObject;
-
-                // Ensure it has a FieldCellView
-                var view = cell.GetComponent<FieldCellView>() ?? cell.gameObject.AddComponent<FieldCellView>();
+                // Ensure FieldCellView exists and set gizmo flag
+                var view = holder.GetComponent<FieldCellView>() ?? holder.AddComponent<FieldCellView>();
                 view.showGizmos = showGizmosOnHolder;
+
             }
+
         }
+        Debug.Log($"Succesefully added {foundedCells}/{cells.Length} cells");
         Game_Manager.instance.AsignFieldToServer(this);
         Game_Manager.instance.AsignCurrentFieldToPlayer(0,this);
     }
@@ -197,30 +237,9 @@ public class FieldGenerator : MonoBehaviour, Iinteract
         {
             for (int x = 0; x < width; x++)
             {
-                // world pos = origin + (x+0.5)*cellSize on X, (y+0.5)*cellSize on Z
-                Vector3 pos = origin + new Vector3((x + 0.5f) * cellSize, 0f, (y + 0.5f) * cellSize);
-
-                // create holder
-                var holder = (cellHolderPrefab != null) ? Instantiate(cellHolderPrefab, pos, Quaternion.identity, transform)
-                                                      : new GameObject($"CellHolder_{id}");
-                if (cellHolderPrefab == null) holder.transform.position = pos;
-                holder.name = $"CellHolder_{id}";
-                holder.transform.parent = transform;
-
-                //var cell = new FieldCellData(id, pos, defaultColor, defaultMaxDurability, defaultInitialDur, defaultRegen, defaultPollin);
-                var cell = holder.GetComponent<FieldCellData>();
-                if (cell == null) cell = holder.AddComponent<FieldCellData>();
-                cell.Setup(id, pos, defaultColor, defaultMaxDurability, defaultInitialDur, defaultRegen, defaultPollin);
-                cells[x, y] = cell;
-                idLookup[id] = cell;
-
-                // attach FieldCellView if not present
-                var view = holder.GetComponent<FieldCellView>() ?? holder.AddComponent<FieldCellView>();
-                view.showGizmos = showGizmosOnHolder;
-
-                // pick a prefab set by weighted random (or none if no sets)
+                // pick a prefab set by weighted random (or null if none)
                 PrefabSet chosen = null;
-                if (prefabSets.Count > 0 && totalWeight > 0f)
+                if (prefabSets != null && prefabSets.Count > 0 && totalWeight > 0f)
                 {
                     float r = (float)rng.NextDouble() * totalWeight;
                     float acc = 0f;
@@ -232,13 +251,51 @@ public class FieldGenerator : MonoBehaviour, Iinteract
                     if (chosen == null) chosen = prefabSets[prefabSets.Count - 1]; // fallback
                 }
 
-                view.InitializeWithPrefabSet(chosen, cell);
-                holderLookup[id] = holder;
+                // determine position
+                Vector3 pos = origin + new Vector3((x + 0.5f) * cellSize, 0f, (y + 0.5f) * cellSize);
 
+                // create holder (instantiate with parent once)
+                GameObject holder;
+                if (cellHolderPrefab != null)
+                {
+                    holder = Instantiate(cellHolderPrefab, pos, Quaternion.identity, transform);
+                    holder.name = $"CellHolder_{id}";
+                }
+                else
+                {
+                    holder = new GameObject($"CellHolder_{id}");
+                    holder.transform.position = pos;
+                    holder.transform.parent = transform;
+                }
+
+                // attach/get FieldCellData component
+                var cell = holder.GetComponent<FieldCellData>();
+                if (cell == null) cell = holder.AddComponent<FieldCellData>();
+
+                // pick color from chosen prefab set, fallback to defaultColor
+                CellColor cellColor = (chosen != null && chosen.color != null) ? chosen.color : defaultColor;
+                // Note: prefabColor likely a Color, not nullable — adjust if needed
+
+                // Setup cell with the prefab-specific color
+                cell.Setup(id, pos, cellColor, defaultMaxDurability, defaultInitialDur, defaultRegen, defaultPollin);
+
+                // store references
+                cells[x, y] = cell;
+                idLookup[id] = cell;
+
+                // attach FieldCellView if not present and initialize
+                var view = holder.GetComponent<FieldCellView>() ?? holder.AddComponent<FieldCellView>();
+                view.showGizmos = showGizmosOnHolder;
+
+                // give the view the chosen prefab set and the configured cell
+                view.InitializeWithPrefabSet(chosen, cell);
+
+                holderLookup[id] = holder;
                 id++;
             }
         }
     }
+
 
     public void ClearPreviousField()
     {
@@ -285,7 +342,10 @@ public class FieldGenerator : MonoBehaviour, Iinteract
         {
             for (int x = 0; x < width; x++)
             {
-                cells[x, y].TickRegeneration(dt);
+                if (cells[x, y] != null)
+                {
+                    cells[x, y].TickRegeneration(dt);
+                }
             }
         }
     }
