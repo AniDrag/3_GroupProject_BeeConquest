@@ -60,7 +60,7 @@ public class Game_Manager : MonoBehaviour
 
         instance = this;
         DontDestroyOnLoad(gameObject); // optional, if you want it persistent
-        serverLabelAgregator = new ServerLabelAgregator(clusterRadius: 3f, processIntervalSeconds: .1f, minLabelThreshold: 1f);
+        serverLabelAgregator = new ServerLabelAgregator(clusterRadius: 5f, processIntervalSeconds: .2f, minLabelThreshold: 16f);
         serverLabelAgregator.Start();
     }
 
