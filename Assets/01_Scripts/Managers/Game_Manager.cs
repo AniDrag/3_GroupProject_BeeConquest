@@ -42,7 +42,12 @@ public class Game_Manager : MonoBehaviour
     //-------------------
     private List<FieldGenerator> serverFields = new List<FieldGenerator>();
     public static event Action<float> OnFixedTick;
-    
+
+    //-------------------
+    //      Pollen
+    //-------------------
+    private ServerLabelAgregator serverLabelAgregator;
+
 
     // ───────────── SINGELTON PATERN ─────────────
     private void Awake()
@@ -55,8 +60,15 @@ public class Game_Manager : MonoBehaviour
 
         instance = this;
         DontDestroyOnLoad(gameObject); // optional, if you want it persistent
+        serverLabelAgregator = new ServerLabelAgregator(clusterRadius: 3f, processIntervalSeconds: .1f, minLabelThreshold: 1f);
+        serverLabelAgregator.Start();
     }
 
+    private void OnDestroy()
+    {
+        serverLabelAgregator?.Stop();
+        serverLabelAgregator?.Dispose();
+    }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private int beeCount;
     void Start()
@@ -126,6 +138,52 @@ public class Game_Manager : MonoBehaviour
                 }
             }
             OnFixedTick?.Invoke(dt);
+            //// IF WE HAVE ACTUAL SERVER, USE THIS:
+            //var aggLabels = damageAggregator?.DrainResults();
+            //if (aggLabels != null && aggLabels.Count > 0)
+            //{
+            //    foreach (var lab in aggLabels)
+            //    {
+            //        // Build compact payload; send to relevant clients (optimize by distance)
+            //        var payload = new AggLabelPayload
+            //        {
+            //            color = (int)lab.color,
+            //            totalAmount = lab.totalAmount,
+            //            clusterX = lab.clusterX,
+            //            clusterY = lab.clusterY,
+            //            clusterZ = lab.clusterZ,
+            //            playerX = lab.playerX,
+            //            playerY = lab.playerY,
+            //            playerZ = lab.playerZ,
+            //            playerId = lab.representativePlayerId
+            //        };
+
+            //        Network_SendToAllClients_ShowAggregatedLabel(payload); // THIS IS THE PACKAGE WE SEND.
+            //    }
+            //}
+            if (serverLabelAgregator != null)
+            {
+                var aggLabels = serverLabelAgregator.DrainResults();
+                if (aggLabels != null && aggLabels.Count > 0)
+                {
+                    foreach (var lab in aggLabels)
+                    {
+                        // Convert to the expected types
+                        long amount = (long)Mathf.Round(lab.totalAmount);
+                        long honeyReceived = amount / 5;
+
+                        Vector3 clusterPos = new Vector3(lab.clusterX, lab.clusterY, lab.clusterZ);
+
+                        // Only call ShowPollinVisual on the representative player's PlayerCore.
+                        // If representative player or playerCore is missing, skip showing.
+                        if (lab.representativePlayerId >= 0 && players.TryGetValue(lab.representativePlayerId, out var repData) && repData.playerCore != null)
+                        {
+                            repData.playerCore.ShowPollinVisual(amount, clusterPos, lab.color, honeyReceived);
+                        }
+                        // else: intentionally do nothing (no FloatingLabelPool call)
+                    }
+                }
+            }
         }
     }
     // ───────────── FIELD FUNCTIONS ─────────────
@@ -140,7 +198,7 @@ public class Game_Manager : MonoBehaviour
         Debug.Log($"Buff {buff.type} expired on cell {cell.name}");
         // TODO: Sync with server, update UI, etc.
     }
-    
+
 
     /// <summary>
     /// When the timer is 0 it triggers the collection data, transfers polin to player,
@@ -150,24 +208,49 @@ public class Game_Manager : MonoBehaviour
     /// </summary>
     public void CollectPolinTrigger(CollectionData data)
     {
-        
         FieldGenerator generator = data.field;
         var cell = generator.GetCellById(data.fieldCellID);
-        int pollin = 0; //= Mathf.RoundToInt(cell.PollinMultiplier * data.collectAmount
-        if(cell.CurrentDurability < data.collectAmount)
+        if (cell == null) return;
+
+        int pollin = 0;
+        float actualTaken = 0f;
+
+        if (cell.CurrentDurability < data.collectAmount)
         {
+            actualTaken = cell.CurrentDurability;
             pollin = Mathf.RoundToInt(cell.PollinMultiplier * cell.CurrentDurability);
-            cell.DecreaseDurability(cell.CurrentDurability -1);
+            cell.DecreaseDurability(cell.CurrentDurability - 1);
         }
         else
         {
+            actualTaken = data.collectAmount;
             pollin = Mathf.RoundToInt(cell.PollinMultiplier * data.collectAmount);
             cell.DecreaseDurability(data.collectAmount);
         }
+
+        // Give resources to player but DO NOT spawn a visual here:
         PlayerCore player = players[data.playerID].playerCore;
-        if (players[data.playerID].playerCore == null) Debug.LogWarning("no player core found");
-        player.AddPollin(pollin, cell.WorldPosition);
-        
+        if (player == null) Debug.LogWarning("no player core found");
+        else player.AddPollin(pollin, 0);
+
+        // Enqueue damage for aggregator visual grouping (local)
+        if (serverLabelAgregator != null && actualTaken > 0f)
+        {
+            var ev = new DamageEvent
+            {
+                sourcePlayerId = data.playerID,
+                color = cell.Color,
+                amount = actualTaken,
+                worldX = cell.WorldPosition.x,
+                worldY = cell.WorldPosition.y,
+                worldZ = cell.WorldPosition.z,
+                playerWorldX = players[data.playerID].transform.position.x,
+                playerWorldY = players[data.playerID].transform.position.y,
+                playerWorldZ = players[data.playerID].transform.position.z
+            };
+            serverLabelAgregator.EnqueueDamage(ev);
+        }
+
         collectionDatas.Remove(data);
     }
     public void AsignFieldToServer(FieldGenerator generator)

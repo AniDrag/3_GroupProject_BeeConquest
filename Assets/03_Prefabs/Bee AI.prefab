@@ -46,16 +46,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d18ee22876a76b447b52a6b94fd920b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TargetFollow: {fileID: 0}
-  player: {fileID: 0}
   beeAttribute: 0
   beeState: 0
-  staminaScaler: 1
-  damageScaler: 1
-  speedScaler: 1
-  collectionCap: 20
+  speed: 3
+  collectionStrength: 40
+  heightOffsetY: 0.4
+  collectionSpeed: 5
   critDamage: 1
-  critChance: 1
 --- !u!114 &8710215986607500564
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -131,6 +128,10 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 8d54a8afb92d60242ae02d5ae877bc03, type: 3}
       propertyPath: m_ConstrainProportionsScale
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: 8d54a8afb92d60242ae02d5ae877bc03, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 8d54a8afb92d60242ae02d5ae877bc03, type: 3}
       propertyPath: m_Name

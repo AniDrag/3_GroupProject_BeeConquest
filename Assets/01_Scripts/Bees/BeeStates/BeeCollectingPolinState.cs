@@ -7,7 +7,7 @@ public class BeeCollectingPolinState : BeeStates
     public override void EnterState() {
         bee.beeState = BeeAI.BeeState.Collecting;
         nextCollectTime = Time.time + bee.collectionSpeed;
-        Debug.Log("Collected polin");
+        //Debug.Log("Collected polin");
     }
     public override void ExitState() { }
     public override void LogicUpdate()

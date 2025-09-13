@@ -17,8 +17,11 @@ public class PlayerCore : MonoBehaviour
     [Header("----- Field Data -----")]
     [SerializeField] public FieldGenerator currentField;
 
+
     [Header("----- Inventory Data -----")]
     [SerializeField] private long polinStorage;
+    [SerializeField] private bool showReceivedHoney = true;
+    [SerializeField] private bool showReceivedPollen = true;
 
     #region Getters
     public int playerID { get; private set; } = 0;
@@ -43,17 +46,26 @@ public class PlayerCore : MonoBehaviour
 
         Game_Manager.instance.JoinServer(playerID,data);
     }
-
-    
+    void Start()
+    {
+        for (int i = 0; i < spawnNumPerClick; i++)
+        {
+            GameObject newBee = Instantiate(BeePRF);
+            BeeAI bee = newBee.GetComponent<BeeAI>();
+            bee.SetMyParent(this);
+            playerBees.Add(bee);
+            Game_Manager.instance.players[playerID].playerBeesTwo.Add(bee);
+            // bee nees a skin and a type
+            //spawn bee and parent give the be the proper bee data and player data.
+        }
+    }
     private void FixedUpdate()
     {
         //if (playerBees.Count > 0) Debug.Log(playerBees.Count + " Bee amount from Player");
         for (int i = 0; i< playerBees.Count;i++)
         {
             float distance = Vector3.Distance(transform.position, playerBees[i].transform.position);
-            if (distance > 5 && 
-                playerBees[i].stateMachine.currentState != playerBees[i].chaseState && 
-                playerBees[i].stateMachine.currentState != playerBees[i].pollinCollectionState)
+            if (distance > 5 && playerBees[i].stateMachine.currentState == playerBees[i].idleState)
             {
                 //Debug.Log("player requested bee to follow DISTANCE:" + distance);
                 Game_Manager.instance.BEE_PlayerRequestForBeeToFollowPlayer(playerBees[i]);
@@ -61,17 +73,22 @@ public class PlayerCore : MonoBehaviour
 
         }
     }
-    public void AddPollin(long amount, Vector3 position)
-    {
-        //Debug.Log("Player recived honney");
-        polinStorage += amount; 
-        honneyStorage.text = $"Honey: {polinStorage / 5}";
-        GameObject go = Instantiate(floatingNumPrefab, position, Quaternion.identity);
-        go.transform.position += Vector3.up * 1f;
-        FloatingNumbers floatingNumber = go.GetComponent<FloatingNumbers>();
-        floatingNumber.Initialize(amount); // offset above cell
 
+
+    public void AddPollin(long pollen, long honey)
+    {
+        polinStorage += pollen;
+        honneyStorage.text = $"Honey: {polinStorage / 5}";
     }
+
+    public void ShowPollinVisual(long pollen, Vector3 position, CellColor color = CellColor.Red, long honeyReceived = -1)
+    {
+        if (showReceivedPollen == true)
+            FloatingLabelPool.Instance.ShowAmount(pollen, position, FloatingLabelPool.Instance.ColorForCell(color));
+        if (showReceivedHoney && honeyReceived > 0)
+            FloatingLabelPool.Instance.ShowAmount(honeyReceived, transform.position + Vector3.up, Color.yellow);
+    }
+
     [Button("SpawnBees", ButtonSize.Medium, 0, 0, 0, 1, SdfIconType.None)]
     public void SpawnBees()
     {
