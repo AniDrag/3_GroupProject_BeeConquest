@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [DisallowMultipleComponent]
-public class FieldGenerator : MonoBehaviour
+public class FieldGenerator : MonoBehaviour, Iinteract
 {
     [Header("Generation settings, DO NOT CHANGE AFTER GENERATING.")]
     public int width = 10;
@@ -57,6 +57,23 @@ public class FieldGenerator : MonoBehaviour
             RefreshCellVisual(c.ID);
         }
     }
+
+
+
+    public string GetInteractionText() => "";
+
+    public void Interact(GameObject interactor)
+    {
+        interactor.GetComponent<PlayerCore>().currentField = this;
+    }
+    public void DeInteract(GameObject interactor)
+    {
+        interactor.GetComponent<PlayerCore>().currentField = null;
+    }
+    public bool CanInteract(GameObject interactor) => interactor.GetComponent<PlayerCore>() != null;    
+    public InteractionType Type() => InteractionType.WhenInRange;
+
+
 
     private void OnEnable()
     {

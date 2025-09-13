@@ -26,4 +26,5 @@ public enum InteractionType
     Continuous,     // triggers every frame while in range/holding (damage zones, healing pools)
     ContextMenu,    // opens a radial / UI menu for multiple actions
     Remote,         // can be triggered from distance (e.g., aiming at it)
+    Collision,
 }

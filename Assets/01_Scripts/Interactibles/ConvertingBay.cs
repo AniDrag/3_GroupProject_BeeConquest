@@ -9,7 +9,12 @@ public class ConvertingBay : MonoBehaviour, Iinteract
     [SerializeField] private InteractionType interactionType = InteractionType.OnKeyPress;
     [SerializeField] string interactionBayName = "Unregistered";
     private int systemLevel = 1;
-    Coroutine _activeCorutine;
+    bool activateCollection;
+    #region Tick stuff
+    float beeRareTimer;
+    float beeNextRareTime;
+    float beeStateUpdateInterval = 1;
+    #endregion
 
     public bool CanInteract(GameObject interactor) => registeredPlayer == null || interactor.GetComponent<PlayerCore>() == registeredPlayer;
     public InteractionType Type() => interactionType;
@@ -25,25 +30,34 @@ public class ConvertingBay : MonoBehaviour, Iinteract
         else
         {
             registeredPlayer.DepositPollin(this.transform);
-            _activeCorutine = StartCoroutine(GeneratePollin());
-
+            activateCollection = false;
         }
 
     }
     public void DeInteract(GameObject interactor)
     {
-        if (registeredPlayer == null && _activeCorutine !=null) return;
-        StopCoroutine(GeneratePollin());
+        if (registeredPlayer == null ) return;
+        activateCollection = false; 
+        beeRareTimer = 0;
+        beeNextRareTime = 0;
         registeredPlayer.CleareComands();
-        _activeCorutine = null; 
     }
 
-    IEnumerator GeneratePollin()
+    void GeneratePollin()
     {
-        WaitForSeconds wait = new WaitForSeconds(1);
         Game_Manager.instance.ConvertPolinToHoney(10000 * systemLevel, registeredPlayer.playerID);
-        yield return wait;
-        StartCoroutine(GeneratePollin());
     }
 
+    private void FixedUpdate()
+    {
+        if(!activateCollection)return;
+        beeRareTimer += Time.fixedDeltaTime;
+        if (beeRareTimer >= beeNextRareTime)
+        {
+            float dt = beeRareTimer;
+            beeRareTimer = 0f;
+            beeNextRareTime = Mathf.Max(0.3f, beeStateUpdateInterval);
+            GeneratePollin();
+        }
+    }
 }
