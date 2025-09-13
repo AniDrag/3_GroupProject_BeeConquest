@@ -279,7 +279,7 @@ public class Game_Manager : MonoBehaviour
     /// <param name="collectionTime"> time it will take to collect polin</param>
     public void BEE_PollinCollectionRequest(BeeAI bee)
     {
-        Debug.Log("Requesting field location from GM");
+        //Debug.Log("Requesting field location from GM");
         FieldGenerator generator = players[bee.playerID].currentField;
         var cell = generator.GetRandomCellInRadius(players[bee.playerID].transform.position, 5);
         if (cell != null)
@@ -329,6 +329,13 @@ public class Game_Manager : MonoBehaviour
     #endregion
     // ───────────── PLAYER REQUESTS & FNCTIONS ─────────────
     #region Player Server Calls
+
+    public void ConvertPolinToHoney(long amount, int playerID)
+    {
+        PlayerCore player = players[playerID].playerCore;
+        long honey = player.RemovePollin(amount) / 3;
+        players[playerID].playerCore.AddHoney(honey);
+    }
     public void JoinServer(int ID, PlayerServerData data)
     {
         if (!players.ContainsKey(ID)) //IF NEW PLAYER

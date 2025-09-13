@@ -45,7 +45,7 @@ public class PlayerIngameMenu : MonoBehaviour
         // force PlayerInput to detect scheme
         if (string.IsNullOrEmpty(inputs.currentControlScheme))
             inputs.SwitchCurrentControlScheme("Keyboard&Mouse", Keyboard.current, Mouse.current);
-        Debug.Log("Scheme type: " + inputs.currentControlScheme + " || Is cursure visible: " + menuPanel.activeSelf);
+        //Debug.Log("Scheme type: " + inputs.currentControlScheme + " || Is cursure visible: " + menuPanel.activeSelf);
         ApplyControlScheme(inputs.currentControlScheme);
     }
 
@@ -127,7 +127,7 @@ public class PlayerIngameMenu : MonoBehaviour
     {
         bool menuIsOpen = menuPanel.activeSelf;
         
-        Debug.Log("Scheme type: " + scheme + " || Is cursure visible: " + menuIsOpen);
+        //Debug.Log("Scheme type: " + scheme + " || Is cursure visible: " + menuIsOpen);
         if (scheme == "Keyboard&Mouse")
         {
             Cursor.visible = menuIsOpen;
@@ -164,7 +164,6 @@ public class PlayerIngameMenu : MonoBehaviour
     public void UI_ShowOrCloseInteractBox(bool state) =>
         interactBox.gameObject.SetActive(state);
 
-    public void UI_SetInteractText(string text) =>
-        interactText.text = text;
+    public void UI_SetInteractText(string text) => interactText.text = text;
     #endregion
 }

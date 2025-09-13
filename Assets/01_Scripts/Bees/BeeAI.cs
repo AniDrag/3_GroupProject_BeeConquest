@@ -13,13 +13,14 @@ public class BeeAI : Stats
     public Vector3 destinationPoint { get; private set; }
     public EnemyCore TargetEnemy { get; private set; }
     public FieldCell TargetField { get; private set; }
+    public Transform TargetComand;
     public bool atDestination { get; private set; }
     #endregion
 
     // ───────────── PARENT INFO ─────────────
     public PlayerCore player { get; private set; }
     public int playerID { get; private set; } = 0;
-    public bool playerComand { get; private set; }
+    public bool playerComand;
 
 
     #region ───────────── SETTINGS ─────────────

@@ -22,7 +22,7 @@ public class BeeIdleState : BeeStates
     public override void LogicUpdate() { }
     public override void LateLogicUpdate() { }
     public override void FixedLogicUpdate(){
-        if (waitEndTime >= Time.time) return;
+        if (waitEndTime >= Time.time && !bee.playerComand) return;
         stateMachine.ChangeState(bee.moveingState);
     }
     public override void AnimationTriggerEvent() { }//PlayerMovemant.AnimationTriggers triggerType) { }
