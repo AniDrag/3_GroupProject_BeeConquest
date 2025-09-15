@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Unity.VisualScripting;
+using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 [RequireComponent(typeof(BeeStateMachine))]
 public class BeeAI : Stats
@@ -27,13 +28,14 @@ public class BeeAI : Stats
     [Header("Bee Stats")]
     public BeeAttribute beeAttribute;
     public BeeState beeState;
+    public AbilitySettings beeAbility;
     [SerializeField] public float speed = 3f;
     [SerializeField, Range(1, 100)] public float collectionStrength = 40f;
     [SerializeField, Range(0.1f, 5f)] public float heightOffsetY = 0.4f;
     [SerializeField, Range(0.1f, 5f)] public float collectionSpeed = 1f;
     [Tooltip("on max level how much durability it can consume from a flower")]
-    //[SerializeField, Range(10, 100)] private int collectionCap = 20;
     [SerializeField] private float critDamage = 1;
+    //[SerializeField, Range(10, 100)] private int collectionCap = 20;
     //[SerializeField] private int critChance = 1;
 
     [Header("Stat Modifiers")]
@@ -228,6 +230,13 @@ public class BeeAI : Stats
 
         //Debug.Log($"[ETA] pos:{transform.position:F3} -> dest:{destination:F3} dist:{distance:F3} " + $"speed:{effectiveSpeed:F3} travel:{travelTime:F3}s");
         return travelTime;
+    }
+
+    public void SpawnAbility()
+    {
+        beeAbility.abilityVisualPrefab.GetComponent<Ability>().SetAbilityData(this, beeAbility.AbilityName);
+        GameObject ability = Instantiate(beeAbility.abilityVisualPrefab);
+        ability.transform.position = transform.position;
     }
     #endregion
 

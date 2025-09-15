@@ -64,11 +64,16 @@ public class FieldGenerator : MonoBehaviour, Iinteract
 
     public void Interact(GameObject interactor)
     {
+        Debug.Log($"Player: {interactor.name} || Has entered field: {transform.name}");
+
+        Game_Manager.instance.AsignCurrentFieldToPlayer(0, this);
         interactor.GetComponent<PlayerCore>().currentField = this;
     }
     public void DeInteract(GameObject interactor)
     {
+        Debug.Log($"Player: {interactor.name} || Has Exited field: {transform.name}");
         interactor.GetComponent<PlayerCore>().currentField = null;
+        Game_Manager.instance.ExitCurrentFieldFromPlayer(interactor.GetComponent<PlayerCore>());
     }
     public bool CanInteract(GameObject interactor) => interactor.GetComponent<PlayerCore>() != null;    
     public InteractionType Type() => InteractionType.WhenInRange;
@@ -172,7 +177,6 @@ public class FieldGenerator : MonoBehaviour, Iinteract
         }
         Debug.Log($"Succesefully added {foundedCells}/{cells.Length} cells");
         Game_Manager.instance.AsignFieldToServer(this);
-        Game_Manager.instance.AsignCurrentFieldToPlayer(0,this);
     }
 
     private void Update()

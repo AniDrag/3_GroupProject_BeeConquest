@@ -5,17 +5,19 @@ using UnityEngine;
 public class PlayerCore : MonoBehaviour
 {
     [Header("----- UI refrences -----")]
-    [SerializeField] private TMP_Text honneyStorageUI;
-    [SerializeField] private TMP_Text polinStorageUI;
-    [SerializeField] GameObject floatingNumPrefab;
+    public bool showUiRefs;
+    [SerializeField, ShowIf("showUiRefs")] private TMP_Text honneyStorageUI;
+    [SerializeField, ShowIf("showUiRefs")] private TMP_Text polinStorageUI;
 
 
     [Header("----- Bee Data -----")]
-    [SerializeField] int spawnNumPerClick = 75;
-    [SerializeField] public BeeAI[] testBee;
-    private Dictionary<int, List<BeeAI>> beeGroups = new Dictionary<int, List<BeeAI>>();// this is a dictionary of 3 squads of warrior and defender bees the player can asign adn then manipulate
-    private List<BeeAI> playerBees = new List<BeeAI>();
-    [SerializeField] GameObject BeePRF;
+    public bool showBeeData;
+    [SerializeField,Range(5,25),ShowIf("showBeeData")] int startFollowDistance;
+    [SerializeField, ShowIf("showBeeData")] int spawnNumPerClick = 75;
+    [SerializeField, ShowIf("showBeeData")] public BeeAI[] testBee;
+    [ShowIf("showBeeData")] private Dictionary<int, List<BeeAI>> beeGroups = new Dictionary<int, List<BeeAI>>();// this is a dictionary of 3 squads of warrior and defender bees the player can asign adn then manipulate
+    [ShowIf("showBeeData")] private List<BeeAI> playerBees = new List<BeeAI>();
+    [SerializeField, ShowIf("showBeeData")] GameObject BeePRF;
 
     [Header("----- Field Data -----")]
     [SerializeField] public FieldGenerator currentField;
@@ -75,7 +77,7 @@ public class PlayerCore : MonoBehaviour
         for (int i = 0; i < playerBees.Count; i++)
         {
             float distance = Vector3.Distance(transform.position, playerBees[i].transform.position);
-            if (distance > 5 && playerBees[i].stateMachine.currentState == playerBees[i].idleState)
+            if (distance > startFollowDistance && (playerBees[i].stateMachine.currentState != playerBees[i].pollinCollectionState || playerBees[i].stateMachine.currentState != playerBees[i].combatState))
             {
                 //Debug.Log("player requested bee to follow DISTANCE:" + distance);
                 Game_Manager.instance.BEE_PlayerRequestForBeeToFollowPlayer(playerBees[i]);

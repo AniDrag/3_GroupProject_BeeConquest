@@ -260,7 +260,6 @@ public class Game_Manager : MonoBehaviour
     public void AsignCurrentFieldToPlayer(int player, FieldGenerator field)
     {
         players[player].currentField = field;
-        players[player].currentField = field;
     }
     public void ExitCurrentFieldFromPlayer(PlayerCore player)
     {

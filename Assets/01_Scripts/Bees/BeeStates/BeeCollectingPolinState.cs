@@ -13,6 +13,11 @@ public class BeeCollectingPolinState : BeeStates
     public override void LogicUpdate()
     {
         if (nextCollectTime >= Time.time) return;
+        if (Random.value > .99f)
+        {
+            //Instantiate toke, of type.
+
+        }
             bee.stateMachine.ChangeState(bee.moveingState);
             //bee.GetDestinationData();
     }
