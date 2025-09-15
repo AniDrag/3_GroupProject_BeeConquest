@@ -28,9 +28,10 @@ public class FieldGenerator : MonoBehaviour, Iinteract
     public CellColor defaultColor = CellColor.Green;
 
     // internal storage
-    private FieldCellData[,] cells;
+    private FieldCellData[,] allCells;
     private Dictionary<int, FieldCellData> idLookup = new();
     private Dictionary<int, GameObject> holderLookup = new(); // id -> holder gameObject
+    private FieldCellData[] existingCells;
 
     // public accessor
     public int TotalCells => width * height;
@@ -103,7 +104,7 @@ public class FieldGenerator : MonoBehaviour, Iinteract
             if (existingCells.Length == 0) return;
 
             // Prepare arrays / lookups
-            cells = new FieldCellData[width, height];
+            allCells = new FieldCellData[width, height];
             idLookup.Clear();
             holderLookup.Clear();
 
@@ -158,7 +159,7 @@ public class FieldGenerator : MonoBehaviour, Iinteract
                 holder.transform.position = canonicalPos;
 
                 // Put the cell into the arrays and lookups
-                cells[x, y] = cell;
+                allCells[x, y] = cell;
                 idLookup[cellId] = cell;
                 holderLookup[cellId] = holder;
                 cell.WorldPosition = holder.transform.position;
@@ -170,7 +171,16 @@ public class FieldGenerator : MonoBehaviour, Iinteract
             }
 
         }
-        Debug.Log($"Succesefully added {foundedCells}/{cells.Length} cells");
+
+        int i = 0;
+        foreach (var cell in allCells)
+        {
+            if (cell != null)
+            {
+                existingCells[i++] = cell;
+            }
+        }
+        Debug.Log($"Succesefully added {foundedCells}/{allCells.Length} cells");
         Game_Manager.instance.AsignFieldToServer(this);
         Game_Manager.instance.AsignCurrentFieldToPlayer(0,this);
     }
@@ -224,7 +234,7 @@ public class FieldGenerator : MonoBehaviour, Iinteract
     {
         ClearPreviousField();
 
-        cells = new FieldCellData[width, height];
+        allCells = new FieldCellData[width, height];
         idLookup.Clear();
         holderLookup.Clear();
 
@@ -280,7 +290,7 @@ public class FieldGenerator : MonoBehaviour, Iinteract
                 cell.Setup(id, pos, cellColor, defaultMaxDurability, defaultInitialDur, defaultRegen, defaultPollin);
 
                 // store references
-                cells[x, y] = cell;
+                allCells[x, y] = cell;
                 idLookup[id] = cell;
 
                 // attach FieldCellView if not present and initialize
@@ -304,7 +314,7 @@ public class FieldGenerator : MonoBehaviour, Iinteract
         {
             DestroyImmediate(t.gameObject);
         }
-        cells = null;
+        allCells = null;
         idLookup.Clear();
         holderLookup.Clear();
     }
@@ -312,9 +322,9 @@ public class FieldGenerator : MonoBehaviour, Iinteract
     // quick accessors
     public FieldCellData GetCellByXY(int x, int y)
     {
-        if (cells == null) return null;
+        if (allCells == null) return null;
         if (x < 0 || y < 0 || x >= width || y >= height) return null;
-        return cells[x, y];
+        return allCells[x, y];
     }
 
     public FieldCellData GetCellById(int id)
@@ -325,7 +335,7 @@ public class FieldGenerator : MonoBehaviour, Iinteract
 
     public FieldCellData GetCellAtWorldPos(Vector3 worldPos)
     {
-        if (cells == null) return null;
+        if (allCells == null) return null;
         Vector3 local = worldPos - origin;
         int x = Mathf.FloorToInt(local.x / cellSize);
         int y = Mathf.FloorToInt(local.z / cellSize);
@@ -336,17 +346,23 @@ public class FieldGenerator : MonoBehaviour, Iinteract
     public void Tick(float dt)
     {
         //Debug.Log("Tick");
-        if (cells == null) return;
+        //if (allCells == null) return;
         //Debug.Log("Tick is not null");
-        for (int y = 0; y < height; y++)
+        //for (int y = 0; y < height; y++)
+        //{
+        //    for (int x = 0; x < width; x++)
+        //    {
+        //        if (allCells[x, y] != null)
+        //        {
+        //            allCells[x, y].TickRegeneration(dt);
+        //        }
+        //    }
+        //}
+
+        if (existingCells  == null) return;
+        foreach (var cell in existingCells)
         {
-            for (int x = 0; x < width; x++)
-            {
-                if (cells[x, y] != null)
-                {
-                    cells[x, y].TickRegeneration(dt);
-                }
-            }
+            cell.TickRegeneration(dt);
         }
     }
 
@@ -363,10 +379,10 @@ public class FieldGenerator : MonoBehaviour, Iinteract
     // expose all cells if needed
     public IEnumerable<FieldCellData> AllCells()
     {
-        if (cells == null) yield break;
+        if (allCells == null) yield break;
         for (int y = 0; y < height; y++)
             for (int x = 0; x < width; x++)
-                yield return cells[x, y];
+                yield return allCells[x, y];
     }
 
     /// <summary>
@@ -376,7 +392,7 @@ public class FieldGenerator : MonoBehaviour, Iinteract
     /// </summary>
     public FieldCellData GetRandomCellInRadius(Vector3 worldCenter, float radius, bool onlyPositiveDurability = true, bool weightByPollin = false)
     {
-        if (cells == null) return null;
+        if (allCells == null) return null;
         // convert to local grid coords (assuming Origin and cellSize)
         Vector3 local = worldCenter - origin;
         int minX = Mathf.Clamp(Mathf.FloorToInt((local.x - radius) / cellSize), 0, width - 1);
@@ -391,7 +407,7 @@ public class FieldGenerator : MonoBehaviour, Iinteract
         {
             for (int x = minX; x <= maxX; x++)
             {
-                var c = cells[x, y];
+                var c = allCells[x, y];
                 if (c == null) continue;
 
                 // quick circle check against cell center
