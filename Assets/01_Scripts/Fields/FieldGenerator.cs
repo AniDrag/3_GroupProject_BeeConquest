@@ -125,7 +125,6 @@ public class FieldGenerator : MonoBehaviour, IInteract
         existingCells = valid.ToArray();
     }*/ // U could use this ? idk
         origin = transform.position;
-        int foundedCells = 0;
         if (generateOnStart) GenerateField();
         else
         {
@@ -202,6 +201,13 @@ public class FieldGenerator : MonoBehaviour, IInteract
 
         }
 
+        int foundedCells = 0;
+        foreach ( var cell in allCells )
+            if ( cell != null )
+                foundedCells++;
+
+        Debug.Log($"Trying to add {foundedCells}/{allCells.Length} cells");
+        existingCells = new FieldCellData[foundedCells];
         int i = 0;
         foreach (var cell in allCells)
         {
