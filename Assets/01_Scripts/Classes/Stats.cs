@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -12,7 +13,7 @@ public class Stats : MonoBehaviour,IDamageable
     private string characterClass = "class";
 
     // Level details
-    private int characterLevel = 0;
+    private int characterLevel = 1;
     private int levelUpPrice;
     private float xpToLevelMulti = 1.5f;
 
@@ -39,8 +40,9 @@ public class Stats : MonoBehaviour,IDamageable
     private int physicalDefense;
     private int magicDefense;
     private int statusDefense;
+    private List<Buff> activeBuffs = new List<Buff>();
 
-#endregion
+    #endregion
 
     #region Getters (Properties)
     public int CharacterLevel => characterLevel;
@@ -130,4 +132,51 @@ public class Stats : MonoBehaviour,IDamageable
 
         levelUpPrice = (int)(100 * xpToLevelMulti);
     }
+
+    
+    // Buff managment
+    public void AddBuff(Buff buff)
+    {
+        // Example rule: if same buff already exists, refresh duration
+        var existing = activeBuffs.Find(b => b.Id == buff.Id);
+        if (existing != null)
+        {
+            existing.TimeRemaining = buff.Duration;
+            return;
+        }
+
+        activeBuffs.Add(buff);
+        Debug.Log(activeBuffs.Count +"all buffs active");
+    }
+
+    public void UpdateBuffs(float deltaTime)
+    {
+        for (int i = activeBuffs.Count - 1; i >= 0; i--)
+        {
+            activeBuffs[i].TimeRemaining -= deltaTime;
+            if (activeBuffs[i].IsExpired)
+            {
+                activeBuffs.RemoveAt(i);
+                Debug.Log(activeBuffs.Count + "all buffs active");
+            }
+        }
+    }
+
+    public float GetModifiedStat(StatType stat, float baseValue)
+    {
+        float flat = 0f;
+        float mult = 1f;
+
+        foreach (var buff in activeBuffs)
+        {
+            if (buff.TargetStat == stat)
+            {
+                flat += buff.FlatModifier;
+                mult *= buff.Multiplier;
+            }
+        }
+
+        return (baseValue + flat) * mult;
+    }
 }
+
