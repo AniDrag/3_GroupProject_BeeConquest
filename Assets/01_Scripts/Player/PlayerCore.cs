@@ -16,7 +16,7 @@ public class PlayerCore : MonoBehaviour
     [SerializeField, ShowIf("showBeeData")] int spawnNumPerClick = 75;
     [SerializeField, ShowIf("showBeeData")] public BeeAI[] testBee;
     [ShowIf("showBeeData")] private Dictionary<int, List<BeeAI>> beeGroups = new Dictionary<int, List<BeeAI>>();// this is a dictionary of 3 squads of warrior and defender bees the player can asign adn then manipulate
-    [ShowIf("showBeeData")] private List<BeeAI> playerBees = new List<BeeAI>();
+    [ShowIf("showBeeData")] public List<BeeAI> playerBees { get; private set; } = new List<BeeAI>();
     [SerializeField, ShowIf("showBeeData")] GameObject BeePRF;
 
     [Header("----- Field Data -----")]

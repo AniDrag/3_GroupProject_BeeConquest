@@ -9,7 +9,7 @@ public class Ability : MonoBehaviour, IInteract
     public void Interact(GameObject interactor)
     {
         //bee.AbilityTrigger();
-        bee.TriggerAbilityLogic(bee, interactor.GetComponent<PlayerCore>());
+        bee.TriggerAbilityLogic(bee, interactor.GetComponent<PlayerCore>(), transform.position);
         Destroy(gameObject);
     }
     public void DeInteract(GameObject interactor)

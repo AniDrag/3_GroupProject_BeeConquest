@@ -28,24 +28,29 @@ public class BeeAI : Stats
     [Header("Bee Stats")]
     public BeeAttribute beeAttribute;
     public BeeState beeState;
-    public AbilitySettings beeAbility;
-    [SerializeField] public float speed = 3f;
-    [SerializeField, Range(1, 100)] public float collectionStrength = 40f;
-    [SerializeField, Range(0.1f, 5f)] public float heightOffsetY = 0.4f;
-    [SerializeField, Range(0.1f, 5f)] public float collectionSpeed = 1f;
+    public float SpawnTokenChance { get; private set; }
+    public float speed { get; private set; }
+    public float collectionStrength { get; private set; }
+    public float heightOffsetY = 0.4f;
+    public float collectionSpeed { get; private set; }
     [Tooltip("on max level how much durability it can consume from a flower")]
     [SerializeField] private float critDamage = 1;
-    //[SerializeField, Range(10, 100)] private int collectionCap = 20;
-    //[SerializeField] private int critChance = 1;
+    [SerializeField, Range(10, 100)] private int collectionCap = 20;
+    [SerializeField] private int critChance = 1;
+    
 
-    [Header("Stat Modifiers")]
-    //[SerializeField] private int staminaScaler = 1;
-    //[SerializeField] private int damageScaler = 1;
-    //[SerializeField] private int speedScaler = 1;
+    [Header("Base Stats Modifiers")]
+    [SerializeField] private int beeVitality = 1;
+    [SerializeField] private int beeStrength = 1;
+    [SerializeField] private int beeDexterity = 1;
+    [SerializeField] private int beeAgility = 1;
+
+    [Header("Base Stats Multiplayers")]
+    [SerializeField] private float beeStaminaMulti = 1;
 
     // ───────────── PRIVATE STATS ─────────────
-   //private long currentXP; 
-   //private float currentStamina;
+    //private long currentXP; 
+    //private float currentStamina;
 
     // ───────────── READ ONLY STATS ─────────────
     public DamageData damage { get; private set; }
@@ -53,11 +58,13 @@ public class BeeAI : Stats
 
 
     // ─────────────ABILITIES ─────────────
+
+    public AbilitySettings beeAbility;
     #endregion
 
-        
+
     #region  ───────────── STATE MACHINE ─────────────
-    public BeeStateMachine StateMachine { get; private set; }
+    public BeeStateMachine StateMachine;
     public BeeIdleState idleState;
     public BeeMoveToTargetState moveingState;
     public BeeChasePlayerState chaseState;
@@ -72,20 +79,26 @@ public class BeeAI : Stats
 
     //      ───────────── DEFAULT UNITY FUNCTIONS ─────────────
     #region ───────────── DEFAULT UNITY FUNCTIONS ─────────────
-    void Start()
+    protected virtual void Start()
     {
+        if (StateMachine == null)
+            StateMachine = GetComponent<BeeStateMachine>();
+        if (StateMachine == null)
+            StateMachine = gameObject.AddComponent<BeeStateMachine>();
+        SpawnTokenChance = .1f;
+        SetBaseStats(beeVitality,beeStrength,beeDexterity,beeAgility);
+        SetMultipliers(1,1,beeStaminaMulti);
         if (player == null) Debug.LogWarning("I have no player parent");
 
         //-------------------
         //      damage initialization
         //-------------------
-        int setNewDamage = 2 * 5;
+        int setNewDamage = Strength * CharacterLevel + Dexterity/2;
         damage = new DamageData(setNewDamage, DamageType.Physical, critDamage);
-
+        speed = Agility * CharacterLevel;
         //-------------------
         //      States initialization
         //-------------------
-        StateMachine = GetComponent<BeeStateMachine>();
 
         idleState = new BeeIdleState(StateMachine, this);
         chaseState = new BeeChasePlayerState(StateMachine, this);
@@ -180,7 +193,8 @@ public class BeeAI : Stats
     #region ───────────── HELPER FUNCTIONS ─────────────
     private void SmoothMove(Vector3 target)
     {
-        transform.position = Vector3.MoveTowards(transform.position, target, speed * Time.fixedDeltaTime);
+        float newSpeed = GetModifiedStat(StatType.Speed,speed);
+        transform.position = Vector3.MoveTowards(transform.position, target, newSpeed * Time.fixedDeltaTime);
     }
     private void UpdateAtDestination()
     {
@@ -221,7 +235,7 @@ public class BeeAI : Stats
     #endregion
 
     #region Abilitie Logic
-    public virtual void TriggerAbilityLogic(BeeAI bee, PlayerCore player)
+    public virtual void TriggerAbilityLogic(BeeAI bee, PlayerCore player, Vector3 origin)
     {
 
     }
@@ -233,6 +247,23 @@ public class BeeAI : Stats
         ability.GetComponent<Ability>().SetAbilityData(this, beeAbility.AbilityName);
     }
     #endregion
+
+    public override void OnDeath()
+    {
+        base.OnDeath();
+        // Return to base
+        // Rest and dont collect pollin
+    }
+    public override void TakeDamage(DamageData data)
+    {
+        base.TakeDamage(data);
+        //Deal damage to stamina / hp
+    }
+    public override void UpdateStats()
+    {
+        base.UpdateStats();
+        //When bee levels up
+    }
 
 #if UNITY_EDITOR
     private void OnDrawGizmos()

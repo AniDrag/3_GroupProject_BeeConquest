@@ -292,7 +292,7 @@ public class Game_Manager : MonoBehaviour
 
             CollectionData data = new CollectionData()
             {
-                collectAmount = bee.collectionStrength,
+                collectAmount = bee.GetModifiedStat(StatType.CollectionStrength, bee.collectionStrength),
                 playerID = bee.playerID,
                 fieldCellID = cell.ID,
                 field = generator,
