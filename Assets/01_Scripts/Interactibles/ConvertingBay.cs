@@ -7,7 +7,7 @@ public class ConvertingBay : MonoBehaviour, IInteract
     [SerializeField] private PlayerCore registeredPlayer;
     [SerializeField] private InteractionType interactionType = InteractionType.OnKeyPress;
     [SerializeField] string interactionBayName = "Unregistered";
-    private int systemLevel = 1;
+    [SerializeField] private int systemLevel = 1;
     bool activateCollection;
     #region Tick stuff
     float beeRareTimer;
@@ -32,7 +32,9 @@ public class ConvertingBay : MonoBehaviour, IInteract
         {
             Debug.Log($" {interactor.name} requested pollin fermentation");
             registeredPlayer.DepositPollin(this.transform);
-            activateCollection = false;
+            interactionBayName = "Fermenting...";
+            registeredPlayer.visualsUI.interactedItemText.text = interactionBayName;
+            activateCollection = true;
         }
 
     }
@@ -44,6 +46,8 @@ public class ConvertingBay : MonoBehaviour, IInteract
         beeRareTimer = 0;
         beeNextRareTime = 0;
         registeredPlayer.CleareComands();
+        interactionBayName = "Ferment pollin?";
+        registeredPlayer.visualsUI.interactedItemText.text = interactionBayName;
     }
 
     void GeneratePollin()

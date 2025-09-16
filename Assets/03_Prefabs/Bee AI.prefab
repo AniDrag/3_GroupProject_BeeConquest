@@ -46,8 +46,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d18ee22876a76b447b52a6b94fd920b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  TargetComand: {fileID: 0}
+  playerComand: 0
   beeAttribute: 0
   beeState: 0
+  beeAbility: {fileID: 11400000, guid: 42655b78847e2a8438c04835af8c4541, type: 2}
   speed: 3
   collectionStrength: 40
   heightOffsetY: 0.4

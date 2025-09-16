@@ -335,6 +335,7 @@ public class Game_Manager : MonoBehaviour
         PlayerCore player = players[playerID].playerCore;
         long honey = player.RemovePollin(amount) / 3;
         players[playerID].playerCore.AddHoney(honey);
+        Debug.Log($"converting polling:{amount}, to honey: {honey}");
     }
     public void JoinServer(int ID, PlayerServerData data)
     {

@@ -35,7 +35,7 @@ public class PlayerCore : MonoBehaviour
     public int playerID { get; private set; } = 0;
 
     #endregion
-
+    
     private void Awake()
     {
 
@@ -74,7 +74,7 @@ public class PlayerCore : MonoBehaviour
     private float playerRareTimer = 0f;
     private float playerNextRareTime = 0f;
 
-    private float perSecond = 1;
+    private float perSecond = 10;
     private float polinPerSecTime = 0f;
     private float pollinPerSecRareTime = 0f;
     private long oldPollinAmount = 0;
@@ -112,7 +112,9 @@ public class PlayerCore : MonoBehaviour
             //Debug.Log("Pollin per sec update");
             polinPerSecTime = 0f;
             pollinPerSecRareTime = Mathf.Max(0.01f, perSecond);
-            visualsUI.pollinPerSecText.text = $"{polinStorage - oldPollinAmount}/s";
+            float perSec = (polinStorage - oldPollinAmount) / perSecond;
+            if(perSec < 0) perSec = 0;
+            visualsUI.pollinPerSecText.text = $"{perSec:F1}/s";
             oldPollinAmount = polinStorage;
         }
     }

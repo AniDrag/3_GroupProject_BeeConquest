@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using AniDrag.Utility;
+using UnityEngine;
+using UnityEngine.UI;
 [RequireComponent(typeof(BeeStateMachine))]
 public class BeeAI : Stats
 {
@@ -215,14 +217,22 @@ public class BeeAI : Stats
         return travelTime;
     }
 
-    public void SpawnAbility()
-    {
-        beeAbility.abilityVisualPrefab.GetComponent<Ability>().SetAbilityData(this, beeAbility.AbilityName);
-        GameObject ability = Instantiate(beeAbility.abilityVisualPrefab);
-        ability.transform.position = transform.position;
-    }
+    
     #endregion
 
+    #region Abilitie Logic
+    public virtual void TriggerAbilityLogic(BeeAI bee, PlayerCore player)
+    {
+
+    }
+    [Button]
+    public void SpawnAbility()
+    {
+        GameObject ability = Instantiate(beeAbility.abilityVisualPrefab, transform.position, Quaternion.identity);
+        ability.transform.GetChild(0).GetComponent<Image>().sprite = beeAbility.sprite;
+        ability.GetComponent<Ability>().SetAbilityData(this, beeAbility.AbilityName);
+    }
+    #endregion
 
 #if UNITY_EDITOR
     private void OnDrawGizmos()

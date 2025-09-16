@@ -815,6 +815,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 1474394691}
     m_Modifications:
     - target: {fileID: 1242067696804816896, guid: 9d38b062c1044da49ba08a052c27c4c1, type: 3}
+      propertyPath: beeAbility
+      value: 
+      objectReference: {fileID: 11400000, guid: 42655b78847e2a8438c04835af8c4541, type: 2}
+    - target: {fileID: 1242067696804816896, guid: 9d38b062c1044da49ba08a052c27c4c1, type: 3}
       propertyPath: collectionStrength
       value: 30.4
       objectReference: {fileID: 0}
@@ -1325,12 +1329,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 253560732}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: 0.506}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.807, z: 0.6}
+  m_LocalScale: {x: 1, y: 0.99, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1624816714}
+  m_Father: {fileID: 1319350651}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &253560734
 MonoBehaviour:
@@ -1346,7 +1350,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 1624816724}
   inputs: {fileID: 1624816717}
-  interactionRadius: 2
+  interactionRadius: 1
 --- !u!135 &253560735
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -1366,7 +1370,7 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 1.35
+  m_Radius: 1
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!54 &253560736
 Rigidbody:
@@ -3270,10 +3274,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92bc5babd95444d41ae2cb8e8f52ab97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  RegistrationZone: {fileID: 0}
+  RegistrationZone: {fileID: 995451025}
   registeredPlayer: {fileID: 0}
   interactionType: 0
   interactionBayName: Unregistered
+  systemLevel: 1
 --- !u!1 &1073664974
 GameObject:
   m_ObjectHideFlags: 0
@@ -4254,7 +4259,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 1.75, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 253560733}
   m_Father: {fileID: 1624816714}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1328321298
@@ -4854,6 +4860,7 @@ MonoBehaviour:
   registeredPlayer: {fileID: 0}
   interactionType: 0
   interactionBayName: Unregistered
+  systemLevel: 1
 --- !u!1 &1624816713
 GameObject:
   m_ObjectHideFlags: 0
@@ -4887,7 +4894,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 253560733}
   - {fileID: 434622521}
   - {fileID: 152886604}
   - {fileID: 1319350651}
