@@ -1,6 +1,4 @@
-﻿using Unity.VisualScripting;
-using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
+﻿using UnityEngine;
 [RequireComponent(typeof(BeeStateMachine))]
 public class BeeAI : Stats
 {
@@ -57,7 +55,7 @@ public class BeeAI : Stats
 
         
     #region  ───────────── STATE MACHINE ─────────────
-    public BeeStateMachine stateMachine { get; private set; }
+    public BeeStateMachine StateMachine { get; private set; }
     public BeeIdleState idleState;
     public BeeMoveToTargetState moveingState;
     public BeeChasePlayerState chaseState;
@@ -85,24 +83,24 @@ public class BeeAI : Stats
         //-------------------
         //      States initialization
         //-------------------
-        stateMachine = GetComponent<BeeStateMachine>();
+        StateMachine = GetComponent<BeeStateMachine>();
 
-        idleState = new BeeIdleState(stateMachine, this);
-        chaseState = new BeeChasePlayerState(stateMachine, this);
-        moveingState = new BeeMoveToTargetState(stateMachine, this);
-        pollinCollectionState = new BeeCollectingPolinState(stateMachine, this);
-        combatState = new BeeCombatState(stateMachine, this);
+        idleState = new BeeIdleState(StateMachine, this);
+        chaseState = new BeeChasePlayerState(StateMachine, this);
+        moveingState = new BeeMoveToTargetState(StateMachine, this);
+        pollinCollectionState = new BeeCollectingPolinState(StateMachine, this);
+        combatState = new BeeCombatState(StateMachine, this);
 
-        stateMachine.Initialize(idleState);
+        StateMachine.Initialize(idleState);
     }
 
     private void Update()
     {
-        stateMachine.currentState.LogicUpdate();
+        StateMachine.currentState.LogicUpdate();
     }
     private void LateUpdate()
     {
-        stateMachine.currentState.LateLogicUpdate();
+      //  StateMachine.currentState.LateLogicUpdate();
     }
     private void FixedUpdate()
     {
@@ -110,19 +108,16 @@ public class BeeAI : Stats
         beeRareTimer += Time.fixedDeltaTime;
         if (beeRareTimer >= beeNextRareTime)
         {
-            float dt = beeRareTimer;
             beeRareTimer = 0f;
             beeNextRareTime = Mathf.Max(0.3f,beeStateUpdateInterval);
 
-            stateMachine.currentState.FixedLogicUpdate();
+            StateMachine.currentState.FixedLogicUpdate();
         }
 
         // ───── MOVE BEE ONLY IF NECESSARY ─────
         if (beeState == BeeState.Moving || beeState == BeeState.Following)
         {
-            SmoothMove(destinationPoint);
-            
-
+            SmoothMove(destinationPoint); 
 
             // ───── CHECK ARRIVAL ─────
             UpdateAtDestination();
@@ -172,21 +167,9 @@ public class BeeAI : Stats
 
     public void GetDestinationData()
     {
-        if (TargetEnemy != null)
-        {
-            stateMachine.ChangeState(combatState);
-        }
-        else if (player.currentField != null)
-        {
-            Game_Manager.instance.BEE_PollinCollectionRequest(this);
-            
-        }
-        else
-        {
-            Game_Manager.instance.BEE_IdleMoveRequest(this);
-        }
-
-
+        if (TargetEnemy != null) StateMachine.ChangeState(combatState);
+        else if (player.currentField != null) Game_Manager.instance.BEE_PollinCollectionRequest(this);
+        else Game_Manager.instance.BEE_IdleMoveRequest(this);
     }
     #endregion
 
@@ -200,7 +183,7 @@ public class BeeAI : Stats
     private void UpdateAtDestination()
     {
         float distance = Vector3.Distance(transform.position, destinationPoint);
-        float tolerance = (beeState == BeeState.Following) ? 2f : 0.2f;
+        float tolerance = beeState == BeeState.Following ? 2f : 0.2f;
         bool nowAtDestination = distance <= tolerance;
 
         if (nowAtDestination && !atDestination) // only when we transition to arrived
@@ -211,7 +194,7 @@ public class BeeAI : Stats
             //Debug.Log($"[ARRIVED] Actual arrival time: {Time.time:F3}. Expected: {expectedArrivalTime:F3}. Delta: {Time.time - expectedArrivalTime:F3}s");
 
             // optionally: start collection state
-            stateMachine.ChangeState(pollinCollectionState);
+            //StateMachine.ChangeState(pollinCollectionState);// Not supposed to change state inside Bee core!!!
         }
         else if (!nowAtDestination)
         {

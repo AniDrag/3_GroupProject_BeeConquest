@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class ItemPickup : MonoBehaviour, Iinteract
+public class ItemPickup : MonoBehaviour, IInteract
 {
     public string itemName;
 

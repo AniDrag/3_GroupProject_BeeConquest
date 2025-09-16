@@ -13,6 +13,7 @@ public class PlayerIngameMenu : MonoBehaviour
     [Header("Input")]
     [SerializeField] private PlayerInput inputs;
     private InputAction menuAction;
+    
 
     [Header("Menu References")]
     [SerializeField] private GameObject menuPanel;   // Main menu panel
@@ -24,7 +25,7 @@ public class PlayerIngameMenu : MonoBehaviour
     [SerializeField] private Button logOutBtn;
     [SerializeField] private Button closeBtn;
 
-    private bool menuOpen = false;
+    private bool menuOpen;
 
 
     private void Awake()

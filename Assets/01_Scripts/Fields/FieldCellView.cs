@@ -132,7 +132,7 @@ public class FieldCellView : MonoBehaviour
         if (!activated)
         {
             // Log if no prefab matched this bucket (or basically has no pollen left)
-            Debug.Log($"[FieldCellView] No prefab for bucket {bucket} on cell {data.ID}, cell has no pollen");
+           // Debug.Log($"[FieldCellView] No prefab for bucket {bucket} on cell {data.ID}, cell has no pollen");
         }
 
         UpdateDebugText();

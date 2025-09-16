@@ -1,6 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
 using System.Collections.Generic;
-using System;
+using UnityEngine;
 public class CollectionData
 {
     public float collectAmount;
@@ -257,14 +257,15 @@ public class Game_Manager : MonoBehaviour
     {
         serverFields.Add(generator);
     }
-    public void AsignCurrentFieldToPlayer(int player, FieldGenerator field)
+    public void AsignCurrentFieldToPlayer(int ID, FieldGenerator field)
     {
-        players[player].currentField = field;
+        players[ID].currentField = field;
+        players[ID].playerCore.AsignField(field);
     }
-    public void ExitCurrentFieldFromPlayer(PlayerCore player)
+    public void ExitCurrentFieldFromPlayer(int ID)
     {
-        players[player.playerID].currentField = null;
-        player.currentField = null;
+        players[ID].currentField = null;
+        players[ID].playerCore.RemoveField();
     }
     #endregion
     // ───────────── BEE REQUESTS ─────────────
@@ -316,7 +317,7 @@ public class Game_Manager : MonoBehaviour
     {
         //Debug.Log("Requesting player  location from GM");
         bee.SetDestination(players[bee.playerID].transform.position);
-        bee.stateMachine.ChangeState(bee.chaseState);
+        bee.StateMachine.ChangeState(bee.chaseState);
     }
     public void BeeMovementRequest(BeeCore bee)
     {

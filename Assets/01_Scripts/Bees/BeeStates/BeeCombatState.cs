@@ -21,7 +21,7 @@ public class BeeCombatState : BeeStates
     {
         if (bee.TargetEnemy == null)
         {
-            bee.stateMachine.ChangeState(bee.idleState);
+            bee.StateMachine.ChangeState(bee.idleState);
             return;
         }
 

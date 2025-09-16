@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class FpsCounter : MonoBehaviour
 {
+    
     [Header("UI Reference")]
     [Tooltip("Assign a TextMeshProUGUI element to display FPS.")]
     [SerializeField] private TMP_Text fpsText;

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Ability : MonoBehaviour, Iinteract
+public class Ability : MonoBehaviour, IInteract
 {
     private string AbilityName = "Ability";
     private BeeAI bee;

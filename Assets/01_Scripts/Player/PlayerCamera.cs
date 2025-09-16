@@ -27,6 +27,7 @@ public class PlayerCamera : MonoBehaviour
     private float yaw;
     private float pitch;
     private Camera cam;
+    public bool disableCamRotation;
 
     private void Awake()
     {
@@ -42,6 +43,7 @@ public class PlayerCamera : MonoBehaviour
 
     private void Update()
     {
+        if (disableCamRotation) return;
         HandleRotation();
     }
 

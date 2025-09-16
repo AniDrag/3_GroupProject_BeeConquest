@@ -1,18 +1,7 @@
-using TMPro;
 using UnityEngine;
 
-public class UI_Manager : MonoBehaviour
+public class UI_Quests : MonoBehaviour
 {
-    public static UI_Manager instance;
-
-
-    private void Awake()
-    {
-        if(instance != null) Destroy(gameObject); 
-        
-        instance = this;
-        
-    }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -24,5 +13,4 @@ public class UI_Manager : MonoBehaviour
     {
         
     }
-
 }

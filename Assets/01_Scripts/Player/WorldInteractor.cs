@@ -5,43 +5,56 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(SphereCollider))]
 public class WorldInteractor : MonoBehaviour
 {
-    [SerializeField] private PlayerInput input;
-    [SerializeField] private float interactionRadius = 2f;
-    [SerializeField] private KeyCode interactKey = KeyCode.E;
-    [SerializeField] private KeyCode cycleKey = KeyCode.Tab;
-    [SerializeField] PlayerIngameMenu menu;
-    [SerializeField] private GameObject player;
+    [Header("----- Refrences -----")]
+    [SerializeField] private PlayerCore player;
 
-    private readonly List<Iinteract> _nearbyInteractables = new List<Iinteract>();
+    [Header("----- Inputs -----")]
+    [SerializeField] private PlayerInput inputs;
+    private InputAction cycleAction;
+    private InputAction interactAction;
+
+    [Header("----- Interaction settings -----")]
+    [SerializeField] private float interactionRadius = 2f;  
+    
+    private readonly List<IInteract> _nearbyInteractables = new List<IInteract>();
     private int _currentIndex = 0;
 
     private void Awake()
     {
-       // input = transform.parent.GetComponent<PlayerMovemant>().input;
+
+        cycleAction = inputs.actions["Cycle"];
+        interactAction = inputs.actions["Interact"];
+        // input = transform.parent.GetComponent<PlayerMovemant>().input;
         SphereCollider col = GetComponent<SphereCollider>();
         col.isTrigger = true;
         col.radius = interactionRadius;
-        player = transform.parent.gameObject;
+       
+    }
+    private void OnEnable()
+    {
+        cycleAction.Enable();
+        interactAction.Enable();
+        cycleAction.performed += CycleInteractible;
+        interactAction.performed += InteractWithObject;
     }
 
-    private void Update()
+    private void OnDisable()
     {
-        Debug.Log(_currentIndex);
-        if (_nearbyInteractables.Count == 0) return;
+        cycleAction.performed -= CycleInteractible;
+        interactAction.performed -= InteractWithObject;
+        cycleAction.Disable();
+        interactAction.Disable();
+    }
 
-        // Cycle through interactables
-        if (Input.GetKeyDown(cycleKey))
-        {
-            _currentIndex++;
-            if (_currentIndex >= _nearbyInteractables.Count) _currentIndex = 0;
-            UpdateUI();
-        }
-        
-        // Interact with current
-        if (Input.GetKeyDown(interactKey))
-        {
-            _nearbyInteractables[_currentIndex].Interact(player);
-        }
+    private void CycleInteractible(InputAction.CallbackContext ctx)
+    {
+        _currentIndex++;
+        if (_currentIndex >= _nearbyInteractables.Count) _currentIndex = 0;
+        UpdateUI();
+    }
+    private void InteractWithObject(InputAction.CallbackContext ctx)
+    {
+        _nearbyInteractables[_currentIndex].Interact(player.gameObject);
     }
     private void UpdateUI()
     {
@@ -50,19 +63,20 @@ public class WorldInteractor : MonoBehaviour
         _currentIndex = Mathf.Clamp(_currentIndex, 0, _nearbyInteractables.Count - 1);
 
         var text = _nearbyInteractables[_currentIndex].GetInteractionText();
-        menu.UI_SetInteractText(text);
-        Debug.Log($"UI updated: {text}");
+        player.GetComponent<PlayerCore>().visualsUI.interactedItemText.text = text;
+        //menu.UI_SetInteractText(text);
+        //Debug.Log($"UI updated: {text}");
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.TryGetComponent<Iinteract>(out var interactable))
+        if (other.TryGetComponent<IInteract>(out var interactable))
         {
            
-            Debug.Log("Added an interactor");
+            //Debug.Log("Added an interactor");
             InteractionType type = interactable.Type();
             if (type == InteractionType.WhenInRange)
-                interactable.Interact(player);
+                interactable.Interact(player.gameObject);
             else if (type == InteractionType.OnKeyPress)
             {
                 if (!_nearbyInteractables.Contains(interactable))_nearbyInteractables.Add(interactable);
@@ -74,22 +88,22 @@ public class WorldInteractor : MonoBehaviour
 
                 Debug.Log(interactable.GetInteractionText());
                 UpdateUI();
-                menu.UI_ShowOrCloseInteractBox(true);
+                player.visualsUI.UI_ShowOrCloseInteractBox(true);
             }
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.TryGetComponent<Iinteract>(out var interactable))
+        if (other.TryGetComponent<IInteract>(out var interactable))
         {
-            interactable.DeInteract(player);
+            interactable.DeInteract(player.gameObject);
             _nearbyInteractables.Remove(interactable);
             if (_nearbyInteractables.Count == 0)
             {
                 // No interactables left, hide UI and reset index
                 _currentIndex = 0;
-                menu.UI_ShowOrCloseInteractBox(false);
+                player.visualsUI.UI_ShowOrCloseInteractBox(false);
                 return;
             }
 
@@ -99,7 +113,7 @@ public class WorldInteractor : MonoBehaviour
                 _currentIndex = _nearbyInteractables.Count - 1;
             }
 
-            menu.UI_SetInteractText(_nearbyInteractables[_currentIndex].GetInteractionText());
+            player.visualsUI.UI_SetInteractText(_nearbyInteractables[_currentIndex].GetInteractionText());
         }
     }
 }

@@ -1,10 +1,9 @@
-using AniDrag.Utility;
-using System;
+﻿using AniDrag.Utility;
 using System.Collections.Generic;
 using UnityEngine;
 
 [DisallowMultipleComponent]
-public class FieldGenerator : MonoBehaviour, Iinteract
+public class FieldGenerator : MonoBehaviour, IInteract
 {
     [Header("Generation settings, DO NOT CHANGE AFTER GENERATING.")]
     public int width = 10;
@@ -67,14 +66,14 @@ public class FieldGenerator : MonoBehaviour, Iinteract
     {
         Debug.Log($"Player: {interactor.name} || Has entered field: {transform.name}");
 
-        Game_Manager.instance.AsignCurrentFieldToPlayer(0, this);
-        interactor.GetComponent<PlayerCore>().currentField = this;
+        Game_Manager.instance.AsignCurrentFieldToPlayer(interactor.GetComponent<PlayerCore>().playerID, this);
+        //interactor.GetComponent<PlayerCore>().AsignField(this);
     }
     public void DeInteract(GameObject interactor)
     {
         Debug.Log($"Player: {interactor.name} || Has Exited field: {transform.name}");
-        interactor.GetComponent<PlayerCore>().currentField = null;
-        Game_Manager.instance.ExitCurrentFieldFromPlayer(interactor.GetComponent<PlayerCore>());
+        interactor.GetComponent<PlayerCore>().RemoveField();
+        Game_Manager.instance.ExitCurrentFieldFromPlayer(interactor.GetComponent<PlayerCore>().playerID);
     }
     public bool CanInteract(GameObject interactor) => interactor.GetComponent<PlayerCore>() != null;    
     public InteractionType Type() => InteractionType.WhenInRange;
@@ -99,6 +98,32 @@ public class FieldGenerator : MonoBehaviour, Iinteract
 
     private void Start()
     {
+        /* 
+         // If no children are in the container → generate fresh field
+    if (fieldContainer.childCount == 0)
+    {
+        GenerateField();
+
+        // After GenerateField, allCells is already filled → reuse it
+        existingCells = allCells;
+    }
+    else
+    {
+        // Pull already placed children into allCells
+        allCells = new FieldCellData[fieldContainer.childCount];
+        for (int i = 0; i < fieldContainer.childCount; i++)
+        {
+            allCells[i] = fieldContainer.GetChild(i).GetComponent<FieldCellData>();
+        }
+
+        // Filter out nulls into existingCells
+        List<FieldCellData> valid = new List<FieldCellData>();
+        foreach (var cell in allCells)
+        {
+            if (cell != null) valid.Add(cell);
+        }
+        existingCells = valid.ToArray();
+    }*/ // U could use this ? idk
         origin = transform.position;
         int foundedCells = 0;
         if (generateOnStart) GenerateField();
@@ -288,7 +313,7 @@ public class FieldGenerator : MonoBehaviour, Iinteract
 
                 // pick color from chosen prefab set, fallback to defaultColor
                 CellColor cellColor = (chosen != null && chosen.color != null) ? chosen.color : defaultColor;
-                // Note: prefabColor likely a Color, not nullable � adjust if needed
+                // Note: prefabColor likely a Color, not nullable — adjust if needed
 
                 // Setup cell with the prefab-specific color
                 cell.Setup(id, pos, cellColor, defaultMaxDurability, defaultInitialDur, defaultRegen, defaultPollin);

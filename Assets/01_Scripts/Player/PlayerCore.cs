@@ -5,14 +5,14 @@ using UnityEngine;
 public class PlayerCore : MonoBehaviour
 {
     [Header("----- UI refrences -----")]
-    public bool showUiRefs;
-    [SerializeField, ShowIf("showUiRefs")] private TMP_Text honneyStorageUI;
-    [SerializeField, ShowIf("showUiRefs")] private TMP_Text polinStorageUI;
+    [SerializeField] public UI_Visuals visualsUI;
+    [SerializeField] public UI_Dialogue dialogueUI;
+    [SerializeField] public UI_Quests questUI;
 
 
     [Header("----- Bee Data -----")]
     public bool showBeeData;
-    [SerializeField,Range(5,25),ShowIf("showBeeData")] int startFollowDistance;
+    [SerializeField,Range(5,25),ShowIf("showBeeData")] int startFollowDistance = 5;
     [SerializeField, ShowIf("showBeeData")] int spawnNumPerClick = 75;
     [SerializeField, ShowIf("showBeeData")] public BeeAI[] testBee;
     [ShowIf("showBeeData")] private Dictionary<int, List<BeeAI>> beeGroups = new Dictionary<int, List<BeeAI>>();// this is a dictionary of 3 squads of warrior and defender bees the player can asign adn then manipulate
@@ -20,12 +20,12 @@ public class PlayerCore : MonoBehaviour
     [SerializeField, ShowIf("showBeeData")] GameObject BeePRF;
 
     [Header("----- Field Data -----")]
-    [SerializeField] public FieldGenerator currentField;
+    public FieldGenerator currentField {  get; private set; }
 
 
     [Header("----- Inventory Data -----")]
-    [SerializeField] private long polinStorage;
-    [SerializeField] private long honeyStorage;
+    [SerializeField] private long polinStorage = 0;
+    [SerializeField] private long honeyStorage = 0;
     [SerializeField] private bool showReceivedHoney = true;
     [SerializeField] private bool showReceivedPollen = true;
     private long maxPollinStorage = 10000;
@@ -56,6 +56,8 @@ public class PlayerCore : MonoBehaviour
     }
     void Start()
     {
+        visualsUI.pollinCounterText.text = $"Pollin: {polinStorage}/{maxPollinStorage}";
+        visualsUI.honeyCounterText.text = $"Nicterial: {honeyStorage}";
         for (int i = 0; i < spawnNumPerClick; i++)
         {
             GameObject newBee = Instantiate(BeePRF);
@@ -71,13 +73,20 @@ public class PlayerCore : MonoBehaviour
     private float playerStateUpdateInterval = .2f;
     private float playerRareTimer = 0f;
     private float playerNextRareTime = 0f;
+
+    private float perSecond = 1;
+    private float polinPerSecTime = 0f;
+    private float pollinPerSecRareTime = 0f;
+    private long oldPollinAmount = 0;
     private void FixedUpdate()
     {
         //if (playerBees.Count > 0) Debug.Log(playerBees.Count + " Bee amount from Player");
         for (int i = 0; i < playerBees.Count; i++)
         {
             float distance = Vector3.Distance(transform.position, playerBees[i].transform.position);
-            if (distance > startFollowDistance && (playerBees[i].stateMachine.currentState != playerBees[i].pollinCollectionState || playerBees[i].stateMachine.currentState != playerBees[i].combatState))
+            if (distance >= startFollowDistance && 
+                playerBees[i].StateMachine.currentState != playerBees[i].pollinCollectionState && 
+                playerBees[i].StateMachine.currentState != playerBees[i].combatState)
             {
                 //Debug.Log("player requested bee to follow DISTANCE:" + distance);
                 Game_Manager.instance.BEE_PlayerRequestForBeeToFollowPlayer(playerBees[i]);
@@ -86,9 +95,9 @@ public class PlayerCore : MonoBehaviour
         }
 
         playerRareTimer += Time.fixedDeltaTime;
+        polinPerSecTime += Time.fixedDeltaTime;
         if (playerRareTimer >= playerNextRareTime)
         {
-            float dt = playerRareTimer;
             playerRareTimer = 0f;
             playerNextRareTime = Mathf.Max(0.01f, playerStateUpdateInterval);
             long honeySum = 0;
@@ -97,6 +106,14 @@ public class PlayerCore : MonoBehaviour
                 honeySum += val;
             }
             ActuallyShowHoneyVisual(honeySum);
+        }
+        if (polinPerSecTime >= pollinPerSecRareTime)
+        {
+            //Debug.Log("Pollin per sec update");
+            polinPerSecTime = 0f;
+            pollinPerSecRareTime = Mathf.Max(0.01f, perSecond);
+            visualsUI.pollinPerSecText.text = $"{polinStorage - oldPollinAmount}/s";
+            oldPollinAmount = polinStorage;
         }
     }
     #region Collection and currency FUNCTIONS
@@ -107,25 +124,37 @@ public class PlayerCore : MonoBehaviour
         {
             tempNum = polinStorage;
             polinStorage = 0;
+            visualsUI.pollinCounterText.text = $"Pollin: {polinStorage}/{maxPollinStorage}";
+            visualsUI.UI_UpdatePollin(polinStorage, maxPollinStorage);
             return tempNum;
         }
         else
         {
             polinStorage -= amount;
+            visualsUI.pollinCounterText.text = $"Pollin: {polinStorage}/{maxPollinStorage}";
+            visualsUI.UI_UpdatePollin(polinStorage, maxPollinStorage);
             return amount;
         }
+        
     }
     public void AddPollin(long pollen, long honey)
     {
         polinStorage += pollen;
-        polinStorageUI.text = $"Pollin: {polinStorage}/{maxPollinStorage}";
+        if(polinStorage >= maxPollinStorage)
+        {
+            polinStorage = maxPollinStorage;
+            RemoveField();
+        }
+        visualsUI.pollinCounterText.text = $"Pollin: {polinStorage}/{maxPollinStorage}";
+        visualsUI.UI_UpdatePollin(polinStorage,maxPollinStorage);
     }
     public void AddHoney(long amount)
     {
         honeyStorage += amount;
         ShowHoneyVisual(amount);
-        polinStorageUI.text = $"Pollin: {polinStorage}/{maxPollinStorage}";
-        honneyStorageUI.text = $"Nicterial: {honeyStorage}";
+        visualsUI.pollinCounterText.text = $"Pollin: {polinStorage}/{maxPollinStorage}";
+        visualsUI.honeyCounterText.text = $"Nicterial: {honeyStorage}";
+        visualsUI.UI_UpdatePollin(polinStorage, maxPollinStorage);
     }
     public void ShowPollinVisual(long pollen, Vector3 position, CellColor color = CellColor.Red)
     {
@@ -143,6 +172,19 @@ public class PlayerCore : MonoBehaviour
     {
         if (showReceivedHoney && honey > 0)
             FloatingLabelPool.Instance.ShowAmount(honey, transform.position + Vector3.up, Color.yellow);
+    }
+    #endregion
+
+    #region Field Associated Functions
+    public void AsignField(FieldGenerator newField)
+    {// by not having a field asigned we bees will not collect pollin
+        if (polinStorage >= maxPollinStorage) return;
+
+        currentField = newField;
+    }
+    public void RemoveField()
+    {
+        currentField = null;
     }
     #endregion
 

@@ -18,7 +18,7 @@ public class BeeCollectingPolinState : BeeStates
             //Instantiate toke, of type.
 
         }
-            bee.stateMachine.ChangeState(bee.moveingState);
+            bee.StateMachine.ChangeState(bee.moveingState);
             //bee.GetDestinationData();
     }
     public override void LateLogicUpdate() { }
