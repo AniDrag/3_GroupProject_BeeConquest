@@ -216,7 +216,7 @@ public class FieldGenerator : MonoBehaviour, IInteract
                 existingCells[i++] = cell;
             }
         }
-        Debug.Log($"Succesefully added {foundedCells}/{allCells.Length} cells");
+        //Debug.Log($"Succesefully added {foundedCells}/{allCells.Length} cells");
         Game_Manager.instance.AsignFieldToServer(this);
     }
 

@@ -7,9 +7,9 @@ public class BeeCollectingPolinState : BeeStates
     bool spawnAbility;
     public override void EnterState() {
         bee.beeState = BeeAI.BeeState.Collecting;
-        nextCollectTime = Time.time + bee.collectionSpeed;
+        nextCollectTime = Time.time + bee.GetModifiedStat(StatType.CollectionSpeed,bee.collectionSpeed);
         spawnAbility = Random.value < bee.GetModifiedStat(StatType.SpawnTokenChance,bee.SpawnTokenChance);
-        //Debug.Log("Collected polin");
+        Debug.Log("Collected polin" + nextCollectTime);
     }
     public override void ExitState() { }
     public override void LogicUpdate()
