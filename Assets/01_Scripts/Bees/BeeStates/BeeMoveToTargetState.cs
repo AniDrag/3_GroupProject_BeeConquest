@@ -6,7 +6,7 @@ public class BeeMoveToTargetState : BeeStates
     public override void EnterState()
     {
         bee.beeState = BeeAI.BeeState.Moving;
-        
+        stateMachine.animator.SetTrigger("Moving");
         bee.GetDestinationData();
     }
     public override void ExitState() { }

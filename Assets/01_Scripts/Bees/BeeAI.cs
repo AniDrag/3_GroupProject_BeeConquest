@@ -35,7 +35,7 @@ public class BeeAI : Stats
     public float collectionSpeed { get; private set; }
     [Tooltip("on max level how much durability it can consume from a flower")]
     [SerializeField] private float critDamage = 1;
-    //[SerializeField, Range(10, 100)] private int collectionCap = 20;
+    [SerializeField, Range(10, 100)] private int collectionCap = 20;
     //[SerializeField] private int critChance = 1;
     
 
@@ -96,6 +96,7 @@ public class BeeAI : Stats
 
         int setNewDamage = Strength * CharacterLevel + Dexterity/2;
         damage = new DamageData(setNewDamage, DamageType.Physical, critDamage);
+        collectionStrength = Mathf.Min(collectionCap, Strength * CharacterLevel + Dexterity / 2);
         SpawnTokenChance = .1f;
         speed = Agility * CharacterLevel;
         collectionStrength = Strength * CharacterLevel;
@@ -210,7 +211,7 @@ public class BeeAI : Stats
     private void UpdateAtDestination()
     {
         float distance = Vector3.Distance(transform.position, destinationPoint);
-        float tolerance = beeState == BeeState.Following ? 2f : 0.2f;
+        float tolerance = beeState == BeeState.Following ? 5f : 0.2f;
         bool nowAtDestination = distance <= tolerance;
 
         if (nowAtDestination && !atDestination) // only when we transition to arrived

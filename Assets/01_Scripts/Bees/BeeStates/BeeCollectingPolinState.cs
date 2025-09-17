@@ -10,6 +10,7 @@ public class BeeCollectingPolinState : BeeStates
         nextCollectTime = Time.time + bee.GetModifiedStat(StatType.CollectionSpeed,bee.collectionSpeed);
         spawnAbility = Random.value < bee.GetModifiedStat(StatType.SpawnTokenChance,bee.SpawnTokenChance);
         Debug.Log("Collected polin" + nextCollectTime);
+        stateMachine.animator.SetTrigger("Pollinating");
     }
     public override void ExitState() { }
     public override void LogicUpdate()

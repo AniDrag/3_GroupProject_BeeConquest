@@ -16,7 +16,10 @@ public class LovingBee : BeeAI
         foreach(var playerBee in player.playerBees)
         {
             Debug.Log("Added buff--> LOVe u XD");
-            playerBee.AddBuff(new Buff("Love u XD", StatType.SpawnTokenChance, 0, 1.1f,20));
+            float increseChance = 1.1f; // 10% increase to overall chance
+            float buffDuration = 20;
+            int flatStatincrease = 0;
+            playerBee.AddBuff(new Buff("Love u XD", StatType.SpawnTokenChance, flatStatincrease, increseChance, buffDuration));
         }
 
     }

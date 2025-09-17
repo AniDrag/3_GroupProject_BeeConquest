@@ -3,7 +3,7 @@ using UnityEngine;
 public class BeeStateMachine : MonoBehaviour
 {
     public BeeStates currentState { get; private set; }
-
+    public Animator animator;
     public void Initialize(BeeStates startingState)
     {
         currentState = startingState;
