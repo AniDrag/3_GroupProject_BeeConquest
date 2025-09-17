@@ -303,7 +303,7 @@ public class FieldGenerator : MonoBehaviour, IInteract
                 GameObject holder;
                 if (cellHolderPrefab != null)
                 {
-                    holder = Instantiate(cellHolderPrefab, pos, Quaternion.identity, transform);
+                    holder = Instantiate(cellHolderPrefab, pos, Quaternion.Euler(0, Random.Range(0, 180), 0), transform);
                     holder.name = $"CellHolder_{id}";
                 }
                 else
@@ -377,6 +377,13 @@ public class FieldGenerator : MonoBehaviour, IInteract
         return GetCellByXY(x, y);
     }
 
+    public Vector2Int GetCellArrayPosition(FieldCellData cellData)
+    {
+        if (cellData == null) return Vector2Int.zero;
+        int x = cellData.ID % width;
+        int y = cellData.ID / width;
+        return new Vector2Int(x,y);
+    }
     // tick that you call from Game_Manager.FixedUpdate
     public void Tick(float dt)
     {

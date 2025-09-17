@@ -21,7 +21,7 @@ public class FieldBuff
 }
 
 // Adding colors to the cells
-public enum CellColor { Red, Blue, Green, Black, White }
+public enum CellColor { Red, Blue, Green, Black, White, Yellow }
 
 public class FieldCell : MonoBehaviour
 {

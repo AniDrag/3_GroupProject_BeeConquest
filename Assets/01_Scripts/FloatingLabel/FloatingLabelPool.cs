@@ -55,6 +55,7 @@ public class FloatingLabelPool : MonoBehaviour
             case CellColor.Red: return Color.red;
             case CellColor.Green: return Color.green;
             case CellColor.Blue: return Color.cyan;
+            case CellColor.Yellow: return Color.yellow;
             // extend mapping as needed
             default: return Color.white;
         }

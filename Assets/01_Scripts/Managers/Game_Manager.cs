@@ -60,7 +60,7 @@ public class Game_Manager : MonoBehaviour
 
         instance = this;
         DontDestroyOnLoad(gameObject); // optional, if you want it persistent
-        serverLabelAgregator = new ServerLabelAgregator(clusterRadius: 5f, processIntervalSeconds: .2f, minLabelThreshold: 16f);
+        serverLabelAgregator = new ServerLabelAgregator(clusterRadius: 5f, processIntervalSeconds: .2f, minLabelThreshold: 1f); //min label treshold, put to 16.
         serverLabelAgregator.Start();
     }
 
@@ -304,6 +304,19 @@ public class Game_Manager : MonoBehaviour
         {
             Debug.Log("no cell found");
         }
+    }
+
+    public void DecreaseCellDurability(BeeAI bee, FieldCellData cell, long damage)
+    {
+        CollectionData data = new CollectionData()
+        {
+            collectAmount = damage,
+            playerID = bee.playerID,
+            fieldCellID = cell.ID,
+            field = players[bee.playerID].currentField,
+            triggerTime = 0,   // <-- store absolute timestamp
+        };
+        collectionDatas.Add(data);
     }
     public void BEE_IdleMoveRequest(BeeAI bee)
     {
