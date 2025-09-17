@@ -205,7 +205,7 @@ public class BeeAI : Stats
     #region ───────────── HELPER FUNCTIONS ─────────────
     private void SmoothMove(Vector3 target)
     {
-        //float newSpeed = GetModifiedStat(StatType.Speed,speed);
+        float newSpeed = GetModifiedStat(StatType.Speed,speed);
         transform.position = Vector3.MoveTowards(transform.position, target, speed * Time.fixedDeltaTime);
     }
     private void UpdateAtDestination()

@@ -40,6 +40,7 @@ public class Stats : MonoBehaviour,IDamageable
     private int physicalDefense;
     private int magicDefense;
     private int statusDefense;
+    private Dictionary<string,Buff> buffs = new Dictionary<string,Buff>();
     private List<Buff> activeBuffs = new List<Buff>();
 
     #endregion
@@ -137,29 +138,47 @@ public class Stats : MonoBehaviour,IDamageable
     // Buff managment
     public void AddBuff(Buff buff)
     {
-        // Example rule: if same buff already exists, refresh duration
-        var existing = activeBuffs.Find(b => b.Id == buff.Id);
-        if (existing != null)
+        if (buffs.ContainsKey(buff.Id))
         {
-            existing.TimeRemaining = buff.Duration;
-            return;
+            Buff manageBuff = buffs[buff.Id];
+            manageBuff.Duration = buff.Duration;
+            manageBuff.Multiplier *= buff.Multiplier;
+            manageBuff.FlatModifier += buff.FlatModifier;
+            manageBuff.TimeRemaining = manageBuff.Duration;
         }
-
-        activeBuffs.Add(buff);
-        Debug.Log(activeBuffs.Count +"all buffs active");
+        else buffs.Add(buff.Id, buff);
+        //// Example rule: if same buff already exists, refresh duration
+        //var existing = activeBuffs.Find(b => b.Id == buff.Id);
+        //if (existing != null)
+        //{
+        //    existing.TimeRemaining = buff.Duration;
+        //    return;
+        //}
+        //
+        //activeBuffs.Add(buff);
+        Debug.Log(buffs.Count +"all buffs active");
     }
 
     public void UpdateBuffs(float deltaTime)
     {
-        for (int i = activeBuffs.Count - 1; i >= 0; i--)
+        foreach (var buff in buffs.Keys )
         {
-            activeBuffs[i].TimeRemaining -= deltaTime;
-            if (activeBuffs[i].IsExpired)
+            buffs[buff].TimeRemaining -= deltaTime;
+            if (buffs[buff].IsExpired)
             {
-                activeBuffs.RemoveAt(i);
-                Debug.Log(activeBuffs.Count + "all buffs active");
+                buffs.Remove(buff);
+                Debug.Log(buffs.Count + "all buffs active");
             }
         }
+        //for (int i = activeBuffs.Count - 1; i >= 0; i--)
+        //{
+        //    activeBuffs[i].TimeRemaining -= deltaTime;
+        //    if (activeBuffs[i].IsExpired)
+        //    {
+        //        activeBuffs.RemoveAt(i);
+        //        Debug.Log(activeBuffs.Count + "all buffs active");
+        //    }
+        //}
     }
 
     public float GetModifiedStat(StatType stat, float baseValue)
@@ -167,7 +186,7 @@ public class Stats : MonoBehaviour,IDamageable
         float flat = 0f;
         float mult = 1f;
 
-        foreach (var buff in activeBuffs)
+        foreach (var buff in buffs.Values)
         {
             if (buff.TargetStat == stat)
             {
