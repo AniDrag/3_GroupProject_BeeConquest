@@ -1,6 +1,5 @@
 using AniDrag.Utility;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 public class PlayerCore : MonoBehaviour
 {
@@ -41,18 +40,15 @@ public class PlayerCore : MonoBehaviour
 
         foreach (var bee in testBee)
         {
+            bee.SetMyParent(this);
             playerBees.Add(bee);
+            
         }
         beeGroups.Add(1, playerBees);
 
-        foreach (var bee in playerBees)
-        {
-            bee.SetMyParent(this);
-        }
-
         PlayerServerData data = new PlayerServerData(playerID, transform, this, playerBees) { };
-
         Game_Manager.instance.JoinServer(playerID, data);
+
     }
     void Start()
     {

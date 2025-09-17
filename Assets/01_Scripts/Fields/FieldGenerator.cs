@@ -185,7 +185,7 @@ public class FieldGenerator : MonoBehaviour, IInteract
                     holder.transform.SetParent(transform, true);
 
                 // Snap to canonical position (keeps rotation/scale)
-                holder.transform.position = canonicalPos;
+                //holder.transform.position = canonicalPos;
 
                 // Put the cell into the arrays and lookups
                 allCells[x, y] = cell;
@@ -216,7 +216,7 @@ public class FieldGenerator : MonoBehaviour, IInteract
                 existingCells[i++] = cell;
             }
         }
-        Debug.Log($"Succesefully added {foundedCells}/{allCells.Length} cells");
+        //Debug.Log($"Succesefully added {foundedCells}/{allCells.Length} cells");
         Game_Manager.instance.AsignFieldToServer(this);
     }
 

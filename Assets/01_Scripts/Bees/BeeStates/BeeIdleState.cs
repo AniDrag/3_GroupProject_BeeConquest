@@ -19,14 +19,16 @@ public class BeeIdleState : BeeStates
         //Debug.Log("Bee is in Idle State, Wait time is:" +waitTime);
     }
     public override void ExitState() { }
-    public override void LogicUpdate() { }
-    public override void LateLogicUpdate() { }
-    public override void FixedLogicUpdate(){
+    public override void LogicUpdate() {
         if (bee.playerComand) return;
 
         if (waitEndTime >= Time.time && bee.player.currentField == null) return;
         // bee.player.currentField == null Added so tha if we are on feil bees wount wait around
         stateMachine.ChangeState(bee.moveingState);
+    }
+    public override void LateLogicUpdate() { }
+    public override void FixedLogicUpdate(){
+        
     }
     public override void AnimationTriggerEvent() { }//PlayerMovemant.AnimationTriggers triggerType) { }
 }

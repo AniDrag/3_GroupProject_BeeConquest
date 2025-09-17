@@ -48,12 +48,14 @@ public class WorldInteractor : MonoBehaviour
 
     private void CycleInteractible(InputAction.CallbackContext ctx)
     {
+        if (_nearbyInteractables.Count == 0) return;
         _currentIndex++;
         if (_currentIndex >= _nearbyInteractables.Count) _currentIndex = 0;
         UpdateUI();
     }
     private void InteractWithObject(InputAction.CallbackContext ctx)
     {
+        if (_nearbyInteractables.Count == 0) return;
         _nearbyInteractables[_currentIndex].Interact(player.gameObject);
     }
     private void UpdateUI()

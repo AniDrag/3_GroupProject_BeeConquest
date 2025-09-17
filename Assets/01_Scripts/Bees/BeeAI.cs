@@ -29,14 +29,14 @@ public class BeeAI : Stats
     public BeeAttribute beeAttribute;
     public BeeState beeState;
     public float SpawnTokenChance { get; private set; }
-    public float speed { get; private set; }
+    public float speed; //{ get; private set; }
     public float collectionStrength { get; private set; }
     public float heightOffsetY = 0.4f;
     public float collectionSpeed { get; private set; }
     [Tooltip("on max level how much durability it can consume from a flower")]
     [SerializeField] private float critDamage = 1;
-    [SerializeField, Range(10, 100)] private int collectionCap = 20;
-    [SerializeField] private int critChance = 1;
+    //[SerializeField, Range(10, 100)] private int collectionCap = 20;
+    //[SerializeField] private int critChance = 1;
     
 
     [Header("Base Stats Modifiers")]
@@ -85,17 +85,22 @@ public class BeeAI : Stats
             StateMachine = GetComponent<BeeStateMachine>();
         if (StateMachine == null)
             StateMachine = gameObject.AddComponent<BeeStateMachine>();
-        SpawnTokenChance = .1f;
-        SetBaseStats(beeVitality,beeStrength,beeDexterity,beeAgility);
-        SetMultipliers(1,1,beeStaminaMulti);
+        if (StateMachine == null) Debug.LogWarning("No stte machine");
         if (player == null) Debug.LogWarning("I have no player parent");
+        //-------------------
+        //      Stat initialization
+        //-------------------
+        SetBaseStats(beeVitality, beeStrength, beeDexterity, beeAgility);
+        SetMultipliers(1, 1, beeStaminaMulti);
+        SetLevel(1);
 
-        //-------------------
-        //      damage initialization
-        //-------------------
         int setNewDamage = Strength * CharacterLevel + Dexterity/2;
         damage = new DamageData(setNewDamage, DamageType.Physical, critDamage);
+        SpawnTokenChance = .1f;
         speed = Agility * CharacterLevel;
+        collectionStrength = Strength * CharacterLevel;
+        collectionSpeed =Mathf.Max(1,5-((Agility * CharacterLevel)/100f));
+
         //-------------------
         //      States initialization
         //-------------------
@@ -105,6 +110,12 @@ public class BeeAI : Stats
         moveingState = new BeeMoveToTargetState(StateMachine, this);
         pollinCollectionState = new BeeCollectingPolinState(StateMachine, this);
         combatState = new BeeCombatState(StateMachine, this);
+        if (idleState == null) Debug.LogWarning("No idle state ");
+        if (chaseState == null) Debug.LogWarning("No chase state ");
+        if (moveingState == null) Debug.LogWarning("No moving state ");
+        if (combatState == null) Debug.LogWarning("No combat State ");
+        if (pollinCollectionState == null) Debug.LogWarning("No pollin Collection state ");
+
 
         StateMachine.Initialize(idleState);
     }
@@ -193,8 +204,8 @@ public class BeeAI : Stats
     #region ───────────── HELPER FUNCTIONS ─────────────
     private void SmoothMove(Vector3 target)
     {
-        float newSpeed = GetModifiedStat(StatType.Speed,speed);
-        transform.position = Vector3.MoveTowards(transform.position, target, newSpeed * Time.fixedDeltaTime);
+        //float newSpeed = GetModifiedStat(StatType.Speed,speed);
+        transform.position = Vector3.MoveTowards(transform.position, target, speed * Time.fixedDeltaTime);
     }
     private void UpdateAtDestination()
     {
