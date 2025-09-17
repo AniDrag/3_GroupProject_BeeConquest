@@ -185,7 +185,7 @@ public class FieldGenerator : MonoBehaviour, IInteract
                     holder.transform.SetParent(transform, true);
 
                 // Snap to canonical position (keeps rotation/scale)
-                holder.transform.position = canonicalPos;
+                //holder.transform.position = canonicalPos;
 
                 // Put the cell into the arrays and lookups
                 allCells[x, y] = cell;
