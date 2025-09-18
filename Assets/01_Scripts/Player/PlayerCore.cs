@@ -27,7 +27,7 @@ public class PlayerCore : MonoBehaviour
     [SerializeField] private long honeyStorage = 0;
     [SerializeField] private bool showReceivedHoney = true;
     [SerializeField] private bool showReceivedPollen = true;
-    private long maxPollinStorage = 10000;
+    [SerializeField] private long maxPollinStorage = 10000;
     private Queue<long> honeyQueue = new Queue<long>();
 
     #region Getters
