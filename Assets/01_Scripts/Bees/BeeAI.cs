@@ -258,10 +258,10 @@ public class BeeAI : Stats
     {
         int setNewDamage = Strength * CharacterLevel + Dexterity / 2;
         damage = new DamageData(setNewDamage, DamageType.Physical, critDamage);
-        collectionStrength = Mathf.Min(collectionCap, Strength * CharacterLevel + Dexterity / 2);
-        SpawnTokenChance = .1f;
-        speed = Agility * CharacterLevel;
-        collectionStrength = Strength * CharacterLevel;
+        
+        SpawnTokenChance = .1f + CharacterLevel/10f;
+        speed = 3 +( Agility * CharacterLevel)/10f;
+        collectionStrength = Mathf.Min(collectionCap, Strength * CharacterLevel + Dexterity / 2f);
         collectionSpeed = Mathf.Max(1, 5 - ((Agility * CharacterLevel) / 100f));
     }
 
