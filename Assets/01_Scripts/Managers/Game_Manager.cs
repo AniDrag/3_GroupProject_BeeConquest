@@ -222,14 +222,12 @@ public class Game_Manager : MonoBehaviour
 
         if (cell.CurrentDurability < data.collectAmount)
         {
-            actualTaken = cell.CurrentDurability;
-            pollin = Mathf.RoundToInt(cell.PollinMultiplier * data.collectAmount * 100);
+            actualTaken = Mathf.RoundToInt(cell.PollinMultiplier * data.collectAmount * 100);
             cell.DecreaseDurability(cell.CurrentDurability - 1);
         }
         else
         {
-            actualTaken = data.collectAmount;
-            pollin = Mathf.RoundToInt(cell.PollinMultiplier * data.collectAmount * 100);
+            actualTaken = Mathf.RoundToInt(cell.PollinMultiplier * data.collectAmount * 100);
             cell.DecreaseDurability(data.collectAmount);
         }
 
