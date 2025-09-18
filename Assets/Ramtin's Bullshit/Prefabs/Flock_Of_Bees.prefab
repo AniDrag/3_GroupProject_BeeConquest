@@ -90,6 +90,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: -180
       objectReference: {fileID: 0}
+    - target: {fileID: 5986191367112679002, guid: 2f1d9ea11c816334ab22bd04d1fc55e1, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8781881291233028195, guid: 2f1d9ea11c816334ab22bd04d1fc55e1, type: 3}
       propertyPath: m_Name
       value: Bee_Statue (8)
@@ -173,6 +177,10 @@ PrefabInstance:
     - target: {fileID: 727057127031485720, guid: 2f1d9ea11c816334ab22bd04d1fc55e1, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: -180
+      objectReference: {fileID: 0}
+    - target: {fileID: 5986191367112679002, guid: 2f1d9ea11c816334ab22bd04d1fc55e1, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8781881291233028195, guid: 2f1d9ea11c816334ab22bd04d1fc55e1, type: 3}
       propertyPath: m_Name
@@ -258,6 +266,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: -180
       objectReference: {fileID: 0}
+    - target: {fileID: 5986191367112679002, guid: 2f1d9ea11c816334ab22bd04d1fc55e1, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8781881291233028195, guid: 2f1d9ea11c816334ab22bd04d1fc55e1, type: 3}
       propertyPath: m_Name
       value: Bee_Statue (3)
@@ -341,6 +353,10 @@ PrefabInstance:
     - target: {fileID: 727057127031485720, guid: 2f1d9ea11c816334ab22bd04d1fc55e1, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: -180
+      objectReference: {fileID: 0}
+    - target: {fileID: 5986191367112679002, guid: 2f1d9ea11c816334ab22bd04d1fc55e1, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8781881291233028195, guid: 2f1d9ea11c816334ab22bd04d1fc55e1, type: 3}
       propertyPath: m_Name
@@ -426,6 +442,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: -180
       objectReference: {fileID: 0}
+    - target: {fileID: 5986191367112679002, guid: 2f1d9ea11c816334ab22bd04d1fc55e1, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8781881291233028195, guid: 2f1d9ea11c816334ab22bd04d1fc55e1, type: 3}
       propertyPath: m_Name
       value: Bee_Statue (4)
@@ -509,6 +529,10 @@ PrefabInstance:
     - target: {fileID: 727057127031485720, guid: 2f1d9ea11c816334ab22bd04d1fc55e1, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: -180
+      objectReference: {fileID: 0}
+    - target: {fileID: 5986191367112679002, guid: 2f1d9ea11c816334ab22bd04d1fc55e1, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8781881291233028195, guid: 2f1d9ea11c816334ab22bd04d1fc55e1, type: 3}
       propertyPath: m_Name
@@ -594,6 +618,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: -180
       objectReference: {fileID: 0}
+    - target: {fileID: 5986191367112679002, guid: 2f1d9ea11c816334ab22bd04d1fc55e1, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8781881291233028195, guid: 2f1d9ea11c816334ab22bd04d1fc55e1, type: 3}
       propertyPath: m_Name
       value: Bee_Statue
@@ -677,6 +705,10 @@ PrefabInstance:
     - target: {fileID: 727057127031485720, guid: 2f1d9ea11c816334ab22bd04d1fc55e1, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: -180
+      objectReference: {fileID: 0}
+    - target: {fileID: 5986191367112679002, guid: 2f1d9ea11c816334ab22bd04d1fc55e1, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8781881291233028195, guid: 2f1d9ea11c816334ab22bd04d1fc55e1, type: 3}
       propertyPath: m_Name
@@ -762,6 +794,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: -180
       objectReference: {fileID: 0}
+    - target: {fileID: 5986191367112679002, guid: 2f1d9ea11c816334ab22bd04d1fc55e1, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8781881291233028195, guid: 2f1d9ea11c816334ab22bd04d1fc55e1, type: 3}
       propertyPath: m_Name
       value: Bee_Statue (7)
@@ -846,6 +882,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: -180
       objectReference: {fileID: 0}
+    - target: {fileID: 5986191367112679002, guid: 2f1d9ea11c816334ab22bd04d1fc55e1, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8781881291233028195, guid: 2f1d9ea11c816334ab22bd04d1fc55e1, type: 3}
       propertyPath: m_Name
       value: Bee_Statue (5)
@@ -929,6 +969,10 @@ PrefabInstance:
     - target: {fileID: 727057127031485720, guid: 2f1d9ea11c816334ab22bd04d1fc55e1, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: -180
+      objectReference: {fileID: 0}
+    - target: {fileID: 5986191367112679002, guid: 2f1d9ea11c816334ab22bd04d1fc55e1, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8781881291233028195, guid: 2f1d9ea11c816334ab22bd04d1fc55e1, type: 3}
       propertyPath: m_Name
