@@ -23,7 +23,7 @@ public class BeeAI : Stats
     public bool playerComand;
 
 
-    #region ───────────── SETTINGS ─────────────
+    #region ───────────── Stats SETTINGS ─────────────
     [Header("Bee Stats")]
     public ColorAtribute beeAttribute;
     public BeeState beeState;
@@ -36,7 +36,7 @@ public class BeeAI : Stats
     [SerializeField] private float critDamage = 1;
     [SerializeField, Range(10, 100)] private int collectionCap = 20;
     //[SerializeField] private int critChance = 1;
-    
+
 
     [Header("Base Stats Modifiers")]
     [SerializeField] private int beeVitality = 1;
@@ -93,13 +93,7 @@ public class BeeAI : Stats
         SetMultipliers(1, 1, beeStaminaMulti);
         SetLevel(1);
 
-        int setNewDamage = Strength * CharacterLevel + Dexterity/2;
-        damage = new DamageData(setNewDamage, DamageType.Physical, critDamage);
-        collectionStrength = Mathf.Min(collectionCap, Strength * CharacterLevel + Dexterity / 2);
-        SpawnTokenChance = .1f;
-        speed = Agility * CharacterLevel;
-        collectionStrength = Strength * CharacterLevel;
-        collectionSpeed =Mathf.Max(1,5-((Agility * CharacterLevel)/100f));
+        UpdateBeeStats();
 
         //-------------------
         //      States initialization
@@ -126,7 +120,7 @@ public class BeeAI : Stats
     }
     private void LateUpdate()
     {
-      //  StateMachine.currentState.LateLogicUpdate();
+        //  StateMachine.currentState.LateLogicUpdate();
     }
     private void FixedUpdate()
     {
@@ -135,7 +129,7 @@ public class BeeAI : Stats
         if (beeRareTimer >= beeNextRareTime)
         {
             beeRareTimer = 0f;
-            beeNextRareTime = Mathf.Max(0.3f,beeStateUpdateInterval);
+            beeNextRareTime = Mathf.Max(0.3f, beeStateUpdateInterval);
 
             StateMachine.currentState.FixedLogicUpdate();
         }
@@ -143,7 +137,7 @@ public class BeeAI : Stats
         // ───── MOVE BEE ONLY IF NECESSARY ─────
         if (beeState == BeeState.Moving || beeState == BeeState.Following)
         {
-            SmoothMove(destinationPoint); 
+            SmoothMove(destinationPoint);
 
             // ───── CHECK ARRIVAL ─────
             UpdateAtDestination();
@@ -204,7 +198,7 @@ public class BeeAI : Stats
     #region ───────────── HELPER FUNCTIONS ─────────────
     private void SmoothMove(Vector3 target)
     {
-        float newSpeed = GetModifiedStat(StatType.Speed,speed);
+        float newSpeed = GetModifiedStat(StatType.Speed, speed);
         transform.position = Vector3.MoveTowards(transform.position, target, speed * Time.fixedDeltaTime);
     }
     private void UpdateAtDestination()
@@ -242,7 +236,7 @@ public class BeeAI : Stats
         return travelTime;
     }
 
-    
+
     #endregion
 
     #region Abilitie Logic
@@ -259,6 +253,18 @@ public class BeeAI : Stats
     }
     #endregion
 
+    #region Stat CalculationLogic
+    void UpdateBeeStats()
+    {
+        int setNewDamage = Strength * CharacterLevel + Dexterity / 2;
+        damage = new DamageData(setNewDamage, DamageType.Physical, critDamage);
+        collectionStrength = Mathf.Min(collectionCap, Strength * CharacterLevel + Dexterity / 2);
+        SpawnTokenChance = .1f;
+        speed = Agility * CharacterLevel;
+        collectionStrength = Strength * CharacterLevel;
+        collectionSpeed = Mathf.Max(1, 5 - ((Agility * CharacterLevel) / 100f));
+    }
+
     public override void OnDeath()
     {
         base.OnDeath();
@@ -272,16 +278,21 @@ public class BeeAI : Stats
     }
     public override void UpdateStats()
     {
+        beeVitality += 1;
+        beeStrength += 1;
+        beeDexterity += 1;
+        beeAgility += 1;
         base.UpdateStats();
+        UpdateBeeStats();
         //When bee levels up
     }
-
+    #endregion
 #if UNITY_EDITOR
     private void OnDrawGizmos()
-   {
-       Gizmos.color = Color.yellow;
-       Gizmos.DrawSphere(destinationPoint, 0.3f);
-       //Gizmos.DrawSphere(player.transform.position, 0.3f);
-   }
+    {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawSphere(destinationPoint, 0.3f);
+        //Gizmos.DrawSphere(player.transform.position, 0.3f);
+    }
 #endif
 }

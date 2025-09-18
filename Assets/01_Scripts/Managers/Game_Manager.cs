@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+#region Other Classes
 public class CollectionData
 {
     public float collectAmount;
@@ -26,8 +27,10 @@ public class PlayerServerData
         playerBeesTwo = PlayerBees;
     }
 }
+#endregion
 public class Game_Manager : MonoBehaviour
 {
+    #region Variables
     // ───────────── INSTANCE ─────────────
     public static Game_Manager instance;
 
@@ -47,8 +50,9 @@ public class Game_Manager : MonoBehaviour
     //      Pollen
     //-------------------
     private ServerLabelAgregator serverLabelAgregator;
+    #endregion
 
-
+    #region basic Functions / Unity Functions
     // ───────────── SINGELTON PATERN ─────────────
     private void Awake()
     {
@@ -186,6 +190,7 @@ public class Game_Manager : MonoBehaviour
             }
         }
     }
+    #endregion
     // ───────────── FIELD FUNCTIONS ─────────────
     #region Field Functions
     public void OnBuffExpired(FieldCell cell, FieldBuff buff)
@@ -218,13 +223,13 @@ public class Game_Manager : MonoBehaviour
         if (cell.CurrentDurability < data.collectAmount)
         {
             actualTaken = cell.CurrentDurability;
-            pollin = Mathf.RoundToInt(cell.PollinMultiplier * cell.CurrentDurability);
+            pollin = Mathf.RoundToInt(cell.PollinMultiplier * data.collectAmount * 100);
             cell.DecreaseDurability(cell.CurrentDurability - 1);
         }
         else
         {
             actualTaken = data.collectAmount;
-            pollin = Mathf.RoundToInt(cell.PollinMultiplier * data.collectAmount);
+            pollin = Mathf.RoundToInt(cell.PollinMultiplier * data.collectAmount * 100);
             cell.DecreaseDurability(data.collectAmount);
         }
 

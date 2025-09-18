@@ -1,5 +1,5 @@
 using UnityEngine;
-
+[RequireComponent(typeof(Animator))]
 public class BeeStateMachine : MonoBehaviour
 {
     public BeeStates currentState { get; private set; }
