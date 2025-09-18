@@ -154,7 +154,7 @@ public class PlayerCore : MonoBehaviour
         visualsUI.honeyCounterText.text = $"Nicterial: {honeyStorage}";
         visualsUI.UI_UpdatePollin(polinStorage, maxPollinStorage);
     }
-    public void ShowPollinVisual(long pollen, Vector3 position, CellColor color = CellColor.Red)
+    public void ShowPollinVisual(long pollen, Vector3 position, ColorAtribute color)
     {
         if (showReceivedPollen == true)
             FloatingLabelPool.Instance.ShowAmount(pollen, position, FloatingLabelPool.Instance.ColorForCell(color));

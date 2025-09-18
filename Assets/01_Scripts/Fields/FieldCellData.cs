@@ -7,7 +7,7 @@ using UnityEngine;
 public class FieldCellData : MonoBehaviour
 {
     public int ID;
-    public CellColor Color;
+    public ColorAtribute Color;
 
     public Vector3 WorldPosition;
     public float MaxDurability;
@@ -24,7 +24,7 @@ public class FieldCellData : MonoBehaviour
         currentDurability = MaxDurability;
     }
 
-    public FieldCellData(int id, Vector3 worldPos, CellColor color,
+    public FieldCellData(int id, Vector3 worldPos, ColorAtribute color,
         float maxDur, float initialDur, float regen, float pollinMul)
     {
         ID = id;
@@ -38,7 +38,7 @@ public class FieldCellData : MonoBehaviour
         OnStatsChanged?.Invoke(this);
     }
 
-    public void Setup(int id, Vector3 worldPos, CellColor color,
+    public void Setup(int id, Vector3 worldPos, ColorAtribute color,
     float maxDur, float initialDur, float regen, float pollinMul)
     {
         ID = id;

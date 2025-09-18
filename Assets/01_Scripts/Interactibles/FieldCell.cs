@@ -21,13 +21,12 @@ public class FieldBuff
 }
 
 // Adding colors to the cells
-public enum CellColor { Red, Blue, Green, Black, White, Yellow }
 
 public class FieldCell : MonoBehaviour
 {
     private int ID = 0;
     // We will need color as well
-    private CellColor cellColor;
+    private Color cellColor;
     private float durability;
     private float durabilityRegen;
     [SerializeField, Range(1, 100)] private float pollinMultiplier;

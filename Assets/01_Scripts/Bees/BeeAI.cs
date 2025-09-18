@@ -5,7 +5,6 @@ using UnityEngine.UI;
 public class BeeAI : Stats
 {
     #region ───────────── ENUMS ─────────────
-    public enum BeeAttribute { Red, Blue, Green, Dark, Light }
     public enum BeeState { Idle, Moving, Collecting, Attacking, Following }
     #endregion
 
@@ -26,7 +25,7 @@ public class BeeAI : Stats
 
     #region ───────────── SETTINGS ─────────────
     [Header("Bee Stats")]
-    public BeeAttribute beeAttribute;
+    public ColorAtribute beeAttribute;
     public BeeState beeState;
     public float SpawnTokenChance { get; private set; }
     public float speed; //{ get; private set; }

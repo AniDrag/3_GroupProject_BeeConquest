@@ -46,7 +46,9 @@ public class LightningBee : BeeAI
                     var cell = player.currentField.GetCellByXY(j + cellCoordinates.x, k + cellCoordinates.y);
                     if (cell == null) continue;
 
-                    long damage = (long)(bee.collectionStrength * 100f);
+                    long damage = (long)(bee.collectionStrength * 10f);
+                    if (cell.Color == bee.beeAttribute)
+                        damage *= (long)2f;
                     Game_Manager.instance.DecreaseCellDurability(bee, cell, damage);
                     DebugDamage += damage;
                 }

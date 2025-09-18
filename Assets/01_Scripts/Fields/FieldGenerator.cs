@@ -5,6 +5,7 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public class FieldGenerator : MonoBehaviour, IInteract
 {
+
     [Header("Generation settings, DO NOT CHANGE AFTER GENERATING.")]
     public int width = 10;
     public int height = 10;
@@ -24,7 +25,7 @@ public class FieldGenerator : MonoBehaviour, IInteract
     public float defaultInitialDur = 100f;
     public float defaultRegen = 1f;
     public float defaultPollin = 1f;
-    public CellColor defaultColor = CellColor.Green;
+    public ColorAtribute defaultColor = ColorAtribute.Green;
 
     // internal storage
     private FieldCellData[,] allCells;
@@ -272,6 +273,15 @@ public class FieldGenerator : MonoBehaviour, IInteract
         allCells = new FieldCellData[width, height];
         idLookup.Clear();
         holderLookup.Clear();
+        //BoxCollider collider = this.GetComponent<BoxCollider>();
+        //if (collider == null)
+        //{
+        //    collider = this.gameObject.AddComponent<BoxCollider>();
+        //}
+        //collider.center = new Vector3(width / 2f, 0, height / 2f);
+        //collider.size = new Vector3(width, 0, height);
+        //collider.isTrigger = true;
+
 
         int id = 0;
         // precompute total weight for weighted random
@@ -318,7 +328,7 @@ public class FieldGenerator : MonoBehaviour, IInteract
                 if (cell == null) cell = holder.AddComponent<FieldCellData>();
 
                 // pick color from chosen prefab set, fallback to defaultColor
-                CellColor cellColor = (chosen != null && chosen.color != null) ? chosen.color : defaultColor;
+                ColorAtribute cellColor = (chosen != null && chosen.color != null) ? chosen.color : defaultColor;
                 // Note: prefabColor likely a Color, not nullable — adjust if needed
 
                 // Setup cell with the prefab-specific color

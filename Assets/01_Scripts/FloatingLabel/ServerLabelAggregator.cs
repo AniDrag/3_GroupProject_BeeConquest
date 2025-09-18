@@ -164,7 +164,7 @@ public class ServerLabelAgregator : IDisposable
     // Helper bucket class (reference type so no parameterless struct ctors)
     private class BucketData
     {
-        public CellColor color;
+        public ColorAtribute color;
         public float sumAmount;
         public float weightedX;
         public float weightedZ;
@@ -176,7 +176,7 @@ public class ServerLabelAgregator : IDisposable
         public Dictionary<int, float> playerDamageMap;
         public float topPlayerDamage;
 
-        public BucketData(CellColor c)
+        public BucketData(ColorAtribute c)
         {
             color = c;
             sumAmount = 0f;
@@ -193,7 +193,7 @@ public class ServerLabelAgregator : IDisposable
 public struct DamageEvent
 {
     public int sourcePlayerId;   // -1 if none
-    public CellColor color;
+    public ColorAtribute color;
     public float amount;
     public float worldX;
     public float worldY;
@@ -206,7 +206,7 @@ public struct DamageEvent
 // Aggregated label produced by background processing
 public class AggregatedLabel
 {
-    public CellColor color;
+    public ColorAtribute color;
     public float totalAmount;
     public float clusterX, clusterY, clusterZ;
     public int representativePlayerId;
