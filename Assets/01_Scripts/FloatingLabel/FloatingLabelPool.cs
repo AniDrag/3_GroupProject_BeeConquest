@@ -48,19 +48,19 @@ public class FloatingLabelPool : MonoBehaviour
         label.Show(formatted, c, worldPos);
     }
 
-    public Color ColorForCell(ColorAtribute c)
-    {
-        switch (c)
-        {
-            case ColorAtribute.Red: return Color.red;
-            case ColorAtribute.Green: return Color.green;
-            case ColorAtribute.Blue: return Color.cyan;
-            case ColorAtribute.Yellow: return Color.yellow;
-            case ColorAtribute.White: return Color.white;
-            // extend mapping as needed
-            default: return Color.black;
-        }
-    }
+    //public Color ColorForCell(ColorAtribute c)
+    //{
+    //    switch (c)
+    //    {
+    //        case ColorAtribute.Red: return Color.red;
+    //        case ColorAtribute.Green: return Color.green;
+    //        case ColorAtribute.Blue: return Color.cyan;
+    //        case ColorAtribute.Yellow: return Color.yellow;
+    //        case ColorAtribute.White: return Color.white;
+    //        // extend mapping as needed
+    //        default: return Color.black;
+    //    }
+    //}
 }
 
 

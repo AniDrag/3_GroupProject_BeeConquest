@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public enum ColorAtribute { Red, Blue, Green, Black, White, Yellow }
+public enum ColorAtribute { Red, Blue, Green, Black, White, Yellow, Purple }
 
 public static class ColorAtributes
 {
@@ -15,6 +15,7 @@ public static class ColorAtributes
         { ColorAtribute.Black, Color.black },
         { ColorAtribute.White, Color.white },
         { ColorAtribute.Yellow,From255(255, 220,   0) },
+        { ColorAtribute.Purple, From255(106, 13, 173) },
     };
 
     // safe getter (avoids KeyNotFoundException)

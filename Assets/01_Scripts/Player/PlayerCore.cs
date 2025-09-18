@@ -157,7 +157,7 @@ public class PlayerCore : MonoBehaviour
     public void ShowPollinVisual(long pollen, Vector3 position, ColorAtribute color)
     {
         if (showReceivedPollen == true)
-            FloatingLabelPool.Instance.ShowAmount(pollen, position, FloatingLabelPool.Instance.ColorForCell(color));
+            FloatingLabelPool.Instance.ShowAmount(pollen, position, color.ToColor());
     }
 
     public void ShowHoneyVisual(long honeyReceived)
