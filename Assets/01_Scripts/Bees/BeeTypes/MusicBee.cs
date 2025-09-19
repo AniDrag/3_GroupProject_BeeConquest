@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class MusicBee : BeeAI
+public class MusicBee : BasicBee
 {
     [SerializeField] private string beeName = "name";
     [SerializeField] private float buffEffectRadious;
@@ -10,7 +10,7 @@ public class MusicBee : BeeAI
 
         SetName(beeName);
     }
-    public override void TriggerAbilityLogic(BeeAI bee, PlayerCore player, Vector3 origin)
+    public override void TriggerAbilityLogic(BasicBee bee, PlayerCore player, Vector3 origin)
     {
         // Boost collection strenght flat stat
         //base.TriggerAbilityLogic();

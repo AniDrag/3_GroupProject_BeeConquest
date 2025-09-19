@@ -14,7 +14,7 @@ public class Stats : MonoBehaviour,IDamageable
 
     // Level details
     private int characterLevel = 1;
-    private int levelUpPrice;
+    protected int maxXP;
     private float xpToLevelMulti = 1.5f;
 
     // Multipliers
@@ -29,6 +29,7 @@ public class Stats : MonoBehaviour,IDamageable
     private int strength = 1;
     private int dexterity = 1;
     private int agility = 1;
+    private int luck = 1;
 
     // Derived Stats
     private int maxHealth;
@@ -47,7 +48,7 @@ public class Stats : MonoBehaviour,IDamageable
 
     #region Getters (Properties)
     public int CharacterLevel => characterLevel;
-    public long LevelUpPrice => levelUpPrice;
+    public long LevelUpPrice => maxXP;
 
     public string CharacterName => characterName;
     public string CharacterRace => characterRace;
@@ -67,6 +68,8 @@ public class Stats : MonoBehaviour,IDamageable
     public int Strength => strength;
     public int Dexterity => dexterity;
     public int Agility => agility;
+    public int Luck => luck;
+
 
 
     #endregion
@@ -85,12 +88,13 @@ public class Stats : MonoBehaviour,IDamageable
         UpdateStats();
     }
 
-    public void SetBaseStats(int vit = 1, int str = 1, int dex = 1, int agi = 1)
+    public void SetBaseStats(int vit = 1, int str = 1, int dex = 1, int agi = 1, int luc = 1)
     {
         vitality = vit;
         strength = str;
         dexterity = dex;
         agility = agi;
+        luck = luc;
         UpdateStats();
     }
     public void SetLevel(int level)
@@ -102,7 +106,7 @@ public class Stats : MonoBehaviour,IDamageable
     public void SetRace(string race) => characterRace = race;
     public void SetClass(string characterClass) => this.characterClass = characterClass;
     #endregion
-
+    public event System.Action OnBuffed;
     // overwriten by other users
     public virtual void LevelUp()
     {
@@ -119,6 +123,7 @@ public class Stats : MonoBehaviour,IDamageable
     }
     public virtual void UpdateStats()
     {
+        
         int lvl = Mathf.Max(1, characterLevel); // Avoid zero-level problems
 
         maxHealth = (int)(50 * vitality * healthMulti) * lvl;
@@ -131,7 +136,7 @@ public class Stats : MonoBehaviour,IDamageable
         magicDefense = (int)(3 * vitality * magicDefenseMulti) * lvl;
         statusDefense = (int)(3 * vitality * statusDefenseMulti) * lvl;
 
-        levelUpPrice = (int)(100 * xpToLevelMulti);
+        //maxXP = (int)(100 * xpToLevelMulti);
     }
 
     
@@ -156,29 +161,24 @@ public class Stats : MonoBehaviour,IDamageable
         //}
         //
         //activeBuffs.Add(buff);
-        Debug.Log(buffs.Count +"all buffs active");
+        //Debug.Log(buffs.Count +"all buffs active");
+        UpdateStats();
     }
 
     public void UpdateBuffs(float deltaTime)
     {
-        foreach (var buff in buffs.Keys )
+        var expired = new List<string>();
+
+        foreach (var key in buffs.Keys)
         {
-            buffs[buff].TimeRemaining -= deltaTime;
-            if (buffs[buff].IsExpired)
-            {
-                buffs.Remove(buff);
-                Debug.Log(buffs.Count + "all buffs active");
-            }
+            buffs[key].TimeRemaining -= deltaTime;
+            if (buffs[key].IsExpired)
+                expired.Add(key);
         }
-        //for (int i = activeBuffs.Count - 1; i >= 0; i--)
-        //{
-        //    activeBuffs[i].TimeRemaining -= deltaTime;
-        //    if (activeBuffs[i].IsExpired)
-        //    {
-        //        activeBuffs.RemoveAt(i);
-        //        Debug.Log(activeBuffs.Count + "all buffs active");
-        //    }
-        //}
+
+        foreach (var key in expired)
+            buffs.Remove(key);
+        UpdateStats(); // <-- Recalc after removing buffs
     }
 
     public float GetModifiedStat(StatType stat, float baseValue)
@@ -194,8 +194,9 @@ public class Stats : MonoBehaviour,IDamageable
                 mult *= buff.Multiplier;
             }
         }
-
-        return (baseValue + flat) * mult;
+        float newValue = (baseValue + flat) * mult;
+        //Debug.Log(newValue + stat.ToString());
+        return newValue;
     }
 }
 

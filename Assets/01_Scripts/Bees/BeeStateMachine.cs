@@ -20,11 +20,11 @@ public class BeeStateMachine : MonoBehaviour
 
 public class BeeStates
 {
-    public BeeAI.BeeState state;
+    public BeeState state;
     protected BeeStateMachine stateMachine;
-    protected BeeAI bee;
+    protected BasicBee bee;
 
-    public BeeStates(BeeStateMachine StateMachine, BeeAI bee)
+    public BeeStates(BeeStateMachine StateMachine, BasicBee bee)
     {
         this.stateMachine = StateMachine;
         this.bee = bee;
@@ -37,3 +37,4 @@ public class BeeStates
     public virtual void FixedLogicUpdate() { }
     public virtual void AnimationTriggerEvent() { }//PlayerMovemant.AnimationTriggers triggerType) { }
 }
+public enum BeeState { Idle, Moving, Collecting, Attacking, Following }

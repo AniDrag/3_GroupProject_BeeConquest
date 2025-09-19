@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class BeeIdleState : BeeStates
 {
-    public BeeIdleState(BeeStateMachine stateMachine, BeeAI bee) : base(stateMachine, bee) { }
+    public BeeIdleState(BeeStateMachine stateMachine, BasicBee bee) : base(stateMachine, bee) { }
 
 
     private float waitEndTime;
@@ -10,7 +10,7 @@ public class BeeIdleState : BeeStates
     private float maxIdleTime = 8f;
     public override void EnterState() {
         stateMachine.animator.SetTrigger("Idle");    
-        bee.beeState = BeeAI.BeeState.Idle;
+        bee.beeState = BeeState.Idle;
         float waitDuration = Random.Range(minIdleTime, maxIdleTime);
         waitEndTime = Time.time + waitDuration;
         //Debug.Log("Bee is in Idle State, Wait time is:" +waitTime);

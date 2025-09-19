@@ -2,10 +2,10 @@
 
 public class BeeMoveToTargetState : BeeStates
 {
-    public BeeMoveToTargetState(BeeStateMachine StateMachine, BeeAI Bee) : base(StateMachine, Bee) { }
+    public BeeMoveToTargetState(BeeStateMachine StateMachine, BasicBee Bee) : base(StateMachine, Bee) { }
     public override void EnterState()
     {
-        bee.beeState = BeeAI.BeeState.Moving;
+        bee.beeState = BeeState.Moving;
         stateMachine.animator.SetTrigger("Moving");
         bee.GetDestinationData();
     }

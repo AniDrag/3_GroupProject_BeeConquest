@@ -3,7 +3,7 @@ using UnityEngine;
 public class Ability : MonoBehaviour, IInteract
 {
     private string AbilityName = "Ability";
-    private BeeAI bee;
+    private BasicBee bee;
     float time;
     [SerializeField, Range(5,20)] float duration = 10;
     public void Interact(GameObject interactor)
@@ -20,7 +20,7 @@ public class Ability : MonoBehaviour, IInteract
     public bool CanInteract(GameObject interactor) => interactor.GetComponent<PlayerCore>() != null;
     public InteractionType Type() => InteractionType.WhenInRange;
 
-    public void SetAbilityData(BeeAI parentBee, string setName)
+    public void SetAbilityData(BasicBee parentBee, string setName)
     {
         AbilityName = setName;
         bee = parentBee;

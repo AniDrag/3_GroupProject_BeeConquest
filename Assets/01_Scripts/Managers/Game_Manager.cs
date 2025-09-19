@@ -16,7 +16,6 @@ public class PlayerServerData
     public Transform transform;
     public Vector3 lastKnownPosition;
     public PlayerCore playerCore;
-    public List<BeeCore> playerBees = new List<BeeCore>();
     public List<BeeAI> playerBeesTwo = new List<BeeAI>();
     public FieldGenerator currentField;// trigger this
     public PlayerServerData(int PlayerID, Transform PlayerTransform, PlayerCore Core, List<BeeAI> PlayerBees)
@@ -75,27 +74,10 @@ public class Game_Manager : MonoBehaviour
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private int beeCount;
-    void Start()
-    {
-        GameObject beeHolder = GameObject.Find("beeholder");
-        foreach (Transform child in beeHolder.transform)
-        {
-            BeeCore beeCore = child.GetComponent<BeeCore>();
-            if (beeCore != null)
-            {
-                beeCount++;
-
-                players[0].playerBees.Add(beeCore);
-            }
-        }
-
-        Debug.Log("Added: " + beeCount + " bees");
-
-    }
     #region fixed tick variables
-    private float beeStateUpdateInterval = 3f;        // seconds between calls
-    private float beeRareTimer = 0f;
-    private float beeNextRareTime = 0f;
+    //private float beeStateUpdateInterval = 3f;        // seconds between calls
+    //private float beeRareTimer = 0f;
+    //private float beeNextRareTime = 0f;
 
     private float fieldStateUpdateInterval = .1f;
     private float fieldRareTimer = 0f;
@@ -103,29 +85,29 @@ public class Game_Manager : MonoBehaviour
     #endregion
     private void FixedUpdate()
     {
-        beeRareTimer += Time.fixedDeltaTime;
+        //beeRareTimer += Time.fixedDeltaTime;
         fieldRareTimer += Time.fixedDeltaTime;
 
         // ───────────── BEE REQUEST UPDATE FIXED TICK RATE ─────────────
-        if (beeRareTimer >= beeNextRareTime)
-        {
-            beeRareTimer = 0f;
-            beeNextRareTime = Mathf.Max(0.01f, beeStateUpdateInterval);
-
-            foreach (int player in players.Keys)
-            {
-                float distance = Vector3.Distance(Game_Manager.instance.players[player].lastKnownPosition, Game_Manager.instance.players[player].transform.position);
-                //Debug.Log(distance);
-                if (distance > 4)
-                {
-                    players[player].lastKnownPosition = players[player].transform.position;
-                    foreach (BeeCore bee in players[player].playerBees)
-                    {
-                        bee.CatchPlayer();
-                    }
-                }
-            }
-        }
+       //if (beeRareTimer >= beeNextRareTime)
+       //{
+       //    beeRareTimer = 0f;
+       //    beeNextRareTime = Mathf.Max(0.01f, beeStateUpdateInterval);
+       //
+       //    foreach (int player in players.Keys)
+       //    {
+       //        float distance = Vector3.Distance(Game_Manager.instance.players[player].lastKnownPosition, Game_Manager.instance.players[player].transform.position);
+       //        //Debug.Log(distance);
+       //        if (distance > 4)
+       //        {
+       //            players[player].lastKnownPosition = players[player].transform.position;
+       //            foreach (BeeCore bee in players[player].playerBees)
+       //            {
+       //                bee.CatchPlayer();
+       //            }
+       //        }
+       //    }
+       //}
 
         // ───────────── FIELD FIXED TICK RATE ─────────────
         if (fieldRareTimer >= fieldNextRareTime)
@@ -283,8 +265,8 @@ public class Game_Manager : MonoBehaviour
     public void BEE_PollinCollectionRequest(BeeAI bee)
     {
         //Debug.Log("Requesting field location from GM");
-        FieldGenerator generator = players[bee.playerID].currentField;
-        var cell = generator.GetRandomCellInRadius(players[bee.playerID].transform.position, 5);
+        FieldGenerator generator = bee.player.currentField;//players[bee.playerID].currentField;
+        var cell = generator.GetRandomCellInRadius(bee.player.transform.position, 5);
         if (cell != null)
         {
             bee.SetDestination(cell.transform.position);
@@ -309,7 +291,7 @@ public class Game_Manager : MonoBehaviour
         }
     }
 
-    public void DecreaseCellDurability(BeeAI bee, FieldCellData cell, long damage)
+    public void DecreaseCellDurability(BasicBee bee, FieldCellData cell, long damage)
     {
         CollectionData data = new CollectionData()
         {
@@ -335,13 +317,63 @@ public class Game_Manager : MonoBehaviour
         bee.SetDestination(players[bee.playerID].transform.position);
         bee.StateMachine.ChangeState(bee.chaseState);
     }
-    public void BeeMovementRequest(BeeCore bee)
-    {
-        Transform player = players[bee.GetPlayerID].transform;
-        Vector3 randomPosition = GetRandomPointInAnnulusXZ(player.position, 0.5f, 5f);
-        bee.MoveTo(randomPosition);
-    }
+    //public void BeeMovementRequest(BeeCore bee)
+    //{
+    //    Transform player = players[bee.GetPlayerID].transform;
+    //    Vector3 randomPosition = GetRandomPointInAnnulusXZ(player.position, 0.5f, 5f);
+    //    bee.MoveTo(randomPosition);
+    //}
 
+    #endregion
+
+    #region Bee Requests Var2
+    public void Bee_CellRequest(BasicBee bee)
+    {
+        //Debug.Log("Requesting field location from GM");
+        FieldGenerator generator = bee.player.currentField;//players[bee.playerID].currentField;
+        FieldCellData cell = generator.GetRandomCellInRadius(bee.player.transform.position, 5);
+        if (cell != null)
+        {
+            bee.SetDestination(cell.transform.position);
+
+            GenerateCollectionData(bee, cell, bee.modedFlowerDurabilityDamage);
+        }
+        else
+        {
+            Debug.Log("no cell found");
+        }
+    }
+    public void GenerateCollectionData(BasicBee bee, FieldCellData cell, int durabilityDamage)
+    {
+        // get travel (seconds) and total (travel + collection)
+        float travel = bee.GetTravelTime(cell.transform.position); // travel only now
+        float total = travel + bee.modedPollinCollectionSpeed;
+
+        CollectionData data = new CollectionData()
+        {
+            collectAmount = durabilityDamage,
+            playerID = bee.playerID,
+            fieldCellID = cell.ID,
+            field = bee.player.currentField,
+            triggerTime = Time.time + total,   // <-- store absolute timestamp
+        };
+        collectionDatas.Add(data);
+    }
+    public void Bee_FollowPlayer(BasicBee bee, bool order = false)
+    {
+        //Debug.Log("Requesting player  location from GM");
+        bee.SetDestination(players[bee.playerID].transform.position);
+        bee.StateMachine.ChangeState(bee.chaseState);
+        bee.playerComand = order;
+    }
+    public void Bee_IdleMove(BasicBee bee)
+    {
+        //Debug.Log("Requesting Idle movemen location from GM");
+        Transform player = players[bee.playerID].transform;
+        Vector3 randomPosition = GetRandomPointInAnnulusXZ(player.position, 0.5f, 5f);
+        //Debug.Log("SERVER: " + randomPosition);
+        bee.SetDestination(randomPosition);
+    }
     #endregion
     // ───────────── PLAYER REQUESTS & FNCTIONS ─────────────
     #region Player Server Calls

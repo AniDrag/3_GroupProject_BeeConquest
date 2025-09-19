@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 public class PlayerCore : MonoBehaviour
 {
+   // [SerializeField, ShowIf("showBeeData")] public BeeAI[] testBee;
+   // [ShowIf("showBeeData")] private Dictionary<int, List<BeeAI>> beeGroups = new Dictionary<int, List<BeeAI>>();// this is a dictionary of 3 squads of warrior and defender bees the player can asign adn then manipulate
+    
     [Header("----- UI refrences -----")]
     [SerializeField] public UI_Visuals visualsUI;
     [SerializeField] public UI_Dialogue dialogueUI;
@@ -13,22 +16,24 @@ public class PlayerCore : MonoBehaviour
     public bool showBeeData;
     [SerializeField,Range(5,25),ShowIf("showBeeData")] int startFollowDistance = 5;
     [SerializeField, ShowIf("showBeeData")] int spawnNumPerClick = 75;
-    [SerializeField, ShowIf("showBeeData")] public BeeAI[] testBee;
-    [ShowIf("showBeeData")] private Dictionary<int, List<BeeAI>> beeGroups = new Dictionary<int, List<BeeAI>>();// this is a dictionary of 3 squads of warrior and defender bees the player can asign adn then manipulate
-    [ShowIf("showBeeData")] public List<BeeAI> playerBees { get; private set; } = new List<BeeAI>();
     [SerializeField, ShowIf("showBeeData")] GameObject BeePRF;
+    [SerializeField, ShowIf("showBeeData"), Range(20, 1000)] int beeBatchPerUpdate = 100;
+    [ShowIf("showBeeData")] public List<BeeAI> playerBees { get; private set; } = new List<BeeAI>();
+    [ShowIf("showBeeData")] public List<BasicBee> allBees { get; private set; } = new List<BasicBee>();
 
     [Header("----- Field Data -----")]
     public FieldGenerator currentField {  get; private set; }
 
 
     [Header("----- Inventory Data -----")]
-    [SerializeField] private long polinStorage = 0;
-    [SerializeField] private long honeyStorage = 0;
+    [SerializeField] private long currentPollinAmount = 0;
+    [SerializeField] private long currentHoneyAmount = 0;
     [SerializeField] private bool showReceivedHoney = true;
     [SerializeField] private bool showReceivedPollen = true;
     [SerializeField] private long maxPollinStorage = 10000;
     private Queue<long> honeyQueue = new Queue<long>();
+
+    private int batchTracker;
 
     #region Getters
     public int playerID { get; private set; } = 0;
@@ -37,30 +42,31 @@ public class PlayerCore : MonoBehaviour
     
     private void Awake()
     {
-
-        foreach (var bee in testBee)
-        {
-            bee.SetMyParent(this);
-            playerBees.Add(bee);
-            
-        }
-        beeGroups.Add(1, playerBees);
-
         PlayerServerData data = new PlayerServerData(playerID, transform, this, playerBees) { };
         Game_Manager.instance.JoinServer(playerID, data);
-
     }
     void Start()
     {
-        visualsUI.pollinCounterText.text = $"Pollin: {polinStorage}/{maxPollinStorage}";
-        visualsUI.honeyCounterText.text = $"Nicterial: {honeyStorage}";
+        visualsUI.pollinCounterText.text = $"Pollin: {currentPollinAmount}/{maxPollinStorage}";
+        visualsUI.honeyCounterText.text = $"Nicterial: {currentHoneyAmount}";
         for (int i = 0; i < spawnNumPerClick; i++)
         {
             GameObject newBee = Instantiate(BeePRF);
+            
             BeeAI bee = newBee.GetComponent<BeeAI>();
-            bee.SetMyParent(this);
-            playerBees.Add(bee);
-            Game_Manager.instance.players[playerID].playerBeesTwo.Add(bee);
+            BasicBee beeTwo = newBee.GetComponent<BasicBee>();
+            if (bee != null)
+            {
+                bee.SetMyParent(this);
+                playerBees.Add(bee);
+                Game_Manager.instance.players[playerID].playerBeesTwo.Add(bee);
+            }
+            else
+            {
+                beeTwo.SetMyParent(this);
+                allBees.Add(beeTwo);
+                //Game_Manager.instance.players[playerID].playerBeesTwo.Add(bee);
+            }
             // bee nees a skin and a type
             //spawn bee and parent give the be the proper bee data and player data.
         }
@@ -77,18 +83,25 @@ public class PlayerCore : MonoBehaviour
     private void FixedUpdate()
     {
         //if (playerBees.Count > 0) Debug.Log(playerBees.Count + " Bee amount from Player");
-        for (int i = 0; i < playerBees.Count; i++)
+        if (playerBees.Count > 0)
         {
-            float distance = Vector3.Distance(transform.position, playerBees[i].transform.position);
-            if (distance >= startFollowDistance && currentField == null &&
-                playerBees[i].StateMachine.currentState != playerBees[i].pollinCollectionState && 
-                playerBees[i].StateMachine.currentState != playerBees[i].combatState)
+            for (int i = 0; i < playerBees.Count; i++)
             {
-                //Debug.Log("player requested bee to follow DISTANCE:" + distance);
-                Game_Manager.instance.BEE_PlayerRequestForBeeToFollowPlayer(playerBees[i]);
-            }
+                float distance = Vector3.Distance(transform.position, playerBees[i].transform.position);
+                if (distance >= startFollowDistance && currentField == null &&
+                    playerBees[i].StateMachine.currentState != playerBees[i].pollinCollectionState &&
+                    playerBees[i].StateMachine.currentState != playerBees[i].combatState)
+                {
+                    //Debug.Log("player requested bee to follow DISTANCE:" + distance);
+                    //Game_Manager.instance.BEE_PlayerRequestForBeeToFollowPlayer(playerBees[i]);
+                    playerBees[i].SetDestination(this.transform.position);
+                    playerBees[i].StateMachine.ChangeState(playerBees[i].chaseState);
+                }
 
+            }
         }
+
+        
 
         playerRareTimer += Time.fixedDeltaTime;
         polinPerSecTime += Time.fixedDeltaTime;
@@ -102,57 +115,61 @@ public class PlayerCore : MonoBehaviour
                 honeySum += val;
             }
             ActuallyShowHoneyVisual(honeySum);
+            if (allBees == null || allBees.Count == 0) return;
+            FollowPlayerLogic();
         }
         if (polinPerSecTime >= pollinPerSecRareTime)
         {
             //Debug.Log("Pollin per sec update");
             polinPerSecTime = 0f;
             pollinPerSecRareTime = Mathf.Max(0.01f, perSecond);
-            float perSec = (polinStorage - oldPollinAmount) / perSecond;
+            float perSec = (currentPollinAmount - oldPollinAmount) / perSecond;
             if(perSec < 0) perSec = 0;
             visualsUI.pollinPerSecText.text = $"{perSec:F1}/s";
-            oldPollinAmount = polinStorage;
+            oldPollinAmount = currentPollinAmount;
         }
+
+        
     }
     #region Collection and currency FUNCTIONS
     public long RemovePollin(long amount)
     {
         long tempNum = amount;
-        if (amount > polinStorage)
+        if (amount > currentPollinAmount)
         {
-            tempNum = polinStorage;
-            polinStorage = 0;
-            visualsUI.pollinCounterText.text = $"Pollin: {polinStorage}/{maxPollinStorage}";
-            visualsUI.UI_UpdatePollin(polinStorage, maxPollinStorage);
+            tempNum = currentPollinAmount;
+            currentPollinAmount = 0;
+            visualsUI.pollinCounterText.text = $"Pollin: {currentPollinAmount}/{maxPollinStorage}";
+            visualsUI.UI_UpdatePollin(currentPollinAmount, maxPollinStorage);
             return tempNum;
         }
         else
         {
-            polinStorage -= amount;
-            visualsUI.pollinCounterText.text = $"Pollin: {polinStorage}/{maxPollinStorage}";
-            visualsUI.UI_UpdatePollin(polinStorage, maxPollinStorage);
+            currentPollinAmount -= amount;
+            visualsUI.pollinCounterText.text = $"Pollin: {currentPollinAmount}/{maxPollinStorage}";
+            visualsUI.UI_UpdatePollin(currentPollinAmount, maxPollinStorage);
             return amount;
         }
         
     }
     public void AddPollin(long pollen, long honey)
     {
-        polinStorage += pollen;
-        if(polinStorage >= maxPollinStorage)
+        currentPollinAmount += pollen;
+        if(currentPollinAmount >= maxPollinStorage)
         {
-            polinStorage = maxPollinStorage;
+            currentPollinAmount = maxPollinStorage;
             RemoveField();
         }
-        visualsUI.pollinCounterText.text = $"Pollin: {polinStorage}/{maxPollinStorage}";
-        visualsUI.UI_UpdatePollin(polinStorage,maxPollinStorage);
+        visualsUI.pollinCounterText.text = $"Pollin: {currentPollinAmount}/{maxPollinStorage}";
+        visualsUI.UI_UpdatePollin(currentPollinAmount,maxPollinStorage);
     }
     public void AddHoney(long amount)
     {
-        honeyStorage += amount;
+        currentHoneyAmount += amount;
         ShowHoneyVisual(amount);
-        visualsUI.pollinCounterText.text = $"Pollin: {polinStorage}/{maxPollinStorage}";
-        visualsUI.honeyCounterText.text = $"Nicterial: {honeyStorage}";
-        visualsUI.UI_UpdatePollin(polinStorage, maxPollinStorage);
+        visualsUI.pollinCounterText.text = $"Pollin: {currentPollinAmount}/{maxPollinStorage}";
+        visualsUI.honeyCounterText.text = $"Nicterial: {currentHoneyAmount}";
+        visualsUI.UI_UpdatePollin(currentPollinAmount, maxPollinStorage);
     }
     public void ShowPollinVisual(long pollen, Vector3 position, ColorAtribute color)
     {
@@ -176,7 +193,7 @@ public class PlayerCore : MonoBehaviour
     #region Field Associated Functions
     public void AsignField(FieldGenerator newField)
     {// by not having a field asigned we bees will not collect pollin
-        if (polinStorage >= maxPollinStorage) return;
+        if (currentPollinAmount >= maxPollinStorage) return;
 
         currentField = newField;
     }
@@ -193,12 +210,21 @@ public class PlayerCore : MonoBehaviour
         for (int i = 0; i < spawnNumPerClick; i++)
         {
             GameObject newBee = Instantiate(BeePRF);
+
             BeeAI bee = newBee.GetComponent<BeeAI>();
-            bee.SetMyParent(this);
-            playerBees.Add(bee);
-            Game_Manager.instance.players[playerID].playerBeesTwo.Add(bee);
-            // bee nees a skin and a type
-            //spawn bee and parent give the be the proper bee data and player data.
+            BasicBee beeTwo = newBee.GetComponent<BasicBee>();
+            if (bee != null)
+            {
+                bee.SetMyParent(this);
+                playerBees.Add(bee);
+                Game_Manager.instance.players[playerID].playerBeesTwo.Add(bee);
+            }
+            else
+            {
+                beeTwo.SetMyParent(this);
+                allBees.Add(beeTwo);
+                //Game_Manager.instance.players[playerID].playerBeesTwo.Add(bee);
+            }
         }
     }
 
@@ -242,5 +268,31 @@ public class PlayerCore : MonoBehaviour
         }
     }
     #endregion
+
+    void FollowPlayerLogic()
+    {
+        if (currentField == null)
+        {
+            float distance = Vector3.Distance(Game_Manager.instance.players[playerID].lastKnownPosition, this.transform.position);
+            if (distance < 2f) return;
+
+            int count = allBees.Count;
+            int processed = 0;
+            while (processed < beeBatchPerUpdate && count > 0)
+            {
+                int idx = (batchTracker + processed) % count;
+                var bee = allBees[idx];
+
+                float beeToPlayerDist = Vector3.Distance(transform.position, bee.transform.position);
+                if (beeToPlayerDist > startFollowDistance && bee.beeState != BeeState.Collecting)
+                {
+                    bee.SetDestination(transform.position);
+                    bee.StateMachine.ChangeState(bee.chaseState);
+                }
+                processed++;
+            }
+            batchTracker = (batchTracker + processed) % count;
+        }
+    }
 
 }

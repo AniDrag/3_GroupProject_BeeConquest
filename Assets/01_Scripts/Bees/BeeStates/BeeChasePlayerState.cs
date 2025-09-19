@@ -2,11 +2,11 @@ using UnityEngine;
 
 public class BeeChasePlayerState : BeeStates
 {
-    public BeeChasePlayerState(BeeStateMachine StateMachine, BeeAI Bee) : base(StateMachine, Bee) { }
+    public BeeChasePlayerState(BeeStateMachine StateMachine, BasicBee Bee) : base(StateMachine, Bee) { }
 
     public override void EnterState() {
         //Debug.Log("Bee is in chase player moving State");
-        bee.beeState = BeeAI.BeeState.Following;
+        bee.beeState = BeeState.Following;
     }
     public override void ExitState() { }
     public override void LogicUpdate() { }
@@ -15,7 +15,7 @@ public class BeeChasePlayerState : BeeStates
     {
         if (!bee.playerComand && bee.atDestination)// playe comand prevents it from moving to another state and always follow
         {
-            Debug.Log("Chasing State BEE");
+            //Debug.Log("Chasing State BEE");
             stateMachine.ChangeState(bee.moveingState);
             return;
         }

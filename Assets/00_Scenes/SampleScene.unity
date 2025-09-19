@@ -83868,8 +83868,7 @@ Transform:
   m_LocalPosition: {x: 9.86, y: 0.66, z: -1.43}
   m_LocalScale: {x: 0.54038, y: 0.54038, z: 1.0259115}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1698270389}
+  m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1475035431
@@ -91284,14 +91283,14 @@ MonoBehaviour:
   questUI: {fileID: 1710873244}
   showBeeData: 1
   startFollowDistance: 5
-  spawnNumPerClick: 50
-  testBee:
-  - {fileID: 1698270392}
-  BeePRF: {fileID: 1698270390}
-  polinStorage: 0
-  honeyStorage: 0
+  spawnNumPerClick: 10000
+  BeePRF: {fileID: 4710626226976754925, guid: f7b08ebf57feb564b982626fa1cb9461, type: 3}
+  beeBatchPerUpdate: 100
+  currentPollinAmount: 0
+  currentHoneyAmount: 0
   showReceivedHoney: 1
   showReceivedPollen: 1
+  maxPollinStorage: 10000
 --- !u!1 &1625342382
 GameObject:
   m_ObjectHideFlags: 0
@@ -95975,116 +95974,6 @@ Transform:
   - {fileID: 1760366822}
   m_Father: {fileID: 55529257}
   m_LocalEulerAnglesHint: {x: 0, y: 30, z: 0}
---- !u!1001 &1698270388
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 1474394691}
-    m_Modifications:
-    - target: {fileID: 1496351642241623577, guid: 9d38b062c1044da49ba08a052c27c4c1, type: 3}
-      propertyPath: m_Name
-      value: LoveBee
-      objectReference: {fileID: 0}
-    - target: {fileID: 3642967171159045804, guid: 9d38b062c1044da49ba08a052c27c4c1, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -13.443812
-      objectReference: {fileID: 0}
-    - target: {fileID: 3642967171159045804, guid: 9d38b062c1044da49ba08a052c27c4c1, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -0.4
-      objectReference: {fileID: 0}
-    - target: {fileID: 3642967171159045804, guid: 9d38b062c1044da49ba08a052c27c4c1, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -3.1320453
-      objectReference: {fileID: 0}
-    - target: {fileID: 3642967171159045804, guid: 9d38b062c1044da49ba08a052c27c4c1, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3642967171159045804, guid: 9d38b062c1044da49ba08a052c27c4c1, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3642967171159045804, guid: 9d38b062c1044da49ba08a052c27c4c1, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3642967171159045804, guid: 9d38b062c1044da49ba08a052c27c4c1, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3642967171159045804, guid: 9d38b062c1044da49ba08a052c27c4c1, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3642967171159045804, guid: 9d38b062c1044da49ba08a052c27c4c1, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3642967171159045804, guid: 9d38b062c1044da49ba08a052c27c4c1, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 1242067696804816896, guid: 9d38b062c1044da49ba08a052c27c4c1, type: 3}
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1496351642241623577, guid: 9d38b062c1044da49ba08a052c27c4c1, type: 3}
-      insertIndex: 1
-      addedObject: {fileID: 1698270392}
-  m_SourcePrefab: {fileID: 100100000, guid: 9d38b062c1044da49ba08a052c27c4c1, type: 3}
---- !u!4 &1698270389 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 3642967171159045804, guid: 9d38b062c1044da49ba08a052c27c4c1, type: 3}
-  m_PrefabInstance: {fileID: 1698270388}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1698270390 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1496351642241623577, guid: 9d38b062c1044da49ba08a052c27c4c1, type: 3}
-  m_PrefabInstance: {fileID: 1698270388}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1698270391 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8710215986607500564, guid: 9d38b062c1044da49ba08a052c27c4c1, type: 3}
-  m_PrefabInstance: {fileID: 1698270388}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1698270390}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d594d5a3e1001041a71aa4e2461b2d3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1698270392
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1698270390}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 04f6b83e0373cab44a5aa59bbe4b82cf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  TargetComand: {fileID: 0}
-  playerComand: 0
-  beeAttribute: 0
-  beeState: 0
-  speed: 0
-  heightOffsetY: 0.4
-  critDamage: 1
-  collectionCap: 20
-  beeVitality: 1
-  beeStrength: 1
-  beeDexterity: 1
-  beeAgility: 1
-  beeStaminaMulti: 1
-  beeAbility: {fileID: 11400000, guid: 42655b78847e2a8438c04835af8c4541, type: 2}
-  StateMachine: {fileID: 1698270391}
-  beeName: name
 --- !u!1 &1700187598
 GameObject:
   m_ObjectHideFlags: 0

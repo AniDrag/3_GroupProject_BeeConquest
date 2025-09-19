@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class LovingBee : BeeAI
+public class LovingBee : BasicBee
 {
     [SerializeField] private string beeName = "name";
     protected override void Start()
@@ -9,7 +9,7 @@ public class LovingBee : BeeAI
 
         SetName(beeName);
     }
-    public override void TriggerAbilityLogic(BeeAI bee, PlayerCore player, Vector3 origin)
+    public override void TriggerAbilityLogic(BasicBee bee, PlayerCore player, Vector3 origin)
     {
         //base.TriggerAbilityLogic();
         //bee.collectionStrength *= 2;

@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class LightningBee : BeeAI
+public class LightningBee : BasicBee
 {
     [SerializeField] private string beeName = "name";
     [SerializeField] private float buffEffectRadious;
@@ -11,14 +11,14 @@ public class LightningBee : BeeAI
 
         SetName(beeName);
     }
-    public override void TriggerAbilityLogic(BeeAI bee, PlayerCore player, Vector3 origin)
+    public override void TriggerAbilityLogic(BasicBee bee, PlayerCore player, Vector3 origin)
     {
         // Start the coroutine so you can yield inside it
         // If this class is not a MonoBehaviour, call StartCoroutine on a MonoBehaviour instance (e.g. Game_Manager.instance)
         StartCoroutine(TriggerAbilityCoroutine(bee, player, origin));
     }
 
-    private IEnumerator TriggerAbilityCoroutine(BeeAI bee, PlayerCore player, Vector3 origin)
+    private IEnumerator TriggerAbilityCoroutine(BasicBee bee, PlayerCore player, Vector3 origin)
     {
         long DebugDamage = 0;
         int loops = bee.CharacterLevel + 2;
@@ -46,8 +46,8 @@ public class LightningBee : BeeAI
                     var cell = player.currentField.GetCellByXY(j + cellCoordinates.x, k + cellCoordinates.y);
                     if (cell == null) continue;
 
-                    long damage = (long)(bee.collectionStrength * 10f);
-                    if (cell.Color == bee.beeAttribute)
+                    long damage = (long)(bee.modedFlowerDurabilityDamage * 10f);
+                    if (cell.Color == bee.beeAtribute)
                         damage *= (long)2f;
                     Game_Manager.instance.DecreaseCellDurability(bee, cell, damage);
                     DebugDamage += damage;

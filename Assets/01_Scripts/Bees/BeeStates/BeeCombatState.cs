@@ -2,13 +2,13 @@ using UnityEngine;
 
 public class BeeCombatState : BeeStates
 {
-    public BeeCombatState(BeeStateMachine StateMachine, BeeAI Bee) : base(StateMachine, Bee) { }
+    public BeeCombatState(BeeStateMachine StateMachine, BasicBee Bee) : base(StateMachine, Bee) { }
 
     private float attackInterval = 1f; // seconds per attack
     private float nextAttackTime;
 
     public override void EnterState() {
-        bee.beeState = BeeAI.BeeState.Attacking;
+        bee.beeState = BeeState.Attacking;
         nextAttackTime = Time.time; // can attack immediately
     }
     public override void ExitState() { }
@@ -34,7 +34,7 @@ public class BeeCombatState : BeeStates
         // Attack only when cooldown has passed
         if (Time.time < nextAttackTime) return;
 
-        bee.TargetEnemy.TakeDamage(bee.damage);
+        //bee.TargetEnemy.TakeDamage(bee.damage);
         nextAttackTime = Time.time + attackInterval; // reset cooldown
     }
     public override void AnimationTriggerEvent() { }//PlayerMovemant.AnimationTriggers triggerType) { }

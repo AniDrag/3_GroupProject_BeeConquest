@@ -2,13 +2,13 @@ using UnityEngine;
 
 public class BeeCollectingPolinState : BeeStates
 {
-    public BeeCollectingPolinState(BeeStateMachine StateMachine, BeeAI Bee) : base(StateMachine, Bee) { }
+    public BeeCollectingPolinState(BeeStateMachine StateMachine, BasicBee Bee) : base(StateMachine, Bee) { }
     private float nextCollectTime;
     bool spawnAbility;
     public override void EnterState() {
-        bee.beeState = BeeAI.BeeState.Collecting;
-        nextCollectTime = Time.time + bee.GetModifiedStat(StatType.CollectionSpeed,bee.collectionSpeed);
-        spawnAbility = Random.value < bee.GetModifiedStat(StatType.SpawnTokenChance,bee.SpawnTokenChance);
+        bee.beeState = BeeState.Collecting;
+        nextCollectTime = Time.time + bee.modedPollinCollectionSpeed;
+        spawnAbility = Random.value < bee.modedSpawnTokenChance;
         Debug.Log("Collected polin" + nextCollectTime);
         stateMachine.animator.SetTrigger("Pollinating");
     }

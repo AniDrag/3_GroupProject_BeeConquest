@@ -99,11 +99,11 @@ public class BeeAI : Stats
         //      States initialization
         //-------------------
 
-        idleState = new BeeIdleState(StateMachine, this);
-        chaseState = new BeeChasePlayerState(StateMachine, this);
-        moveingState = new BeeMoveToTargetState(StateMachine, this);
-        pollinCollectionState = new BeeCollectingPolinState(StateMachine, this);
-        combatState = new BeeCombatState(StateMachine, this);
+        //idleState = new BeeIdleState(StateMachine, this);
+        //chaseState = new BeeChasePlayerState(StateMachine, this);
+        //moveingState = new BeeMoveToTargetState(StateMachine, this);
+        //pollinCollectionState = new BeeCollectingPolinState(StateMachine, this);
+        //combatState = new BeeCombatState(StateMachine, this);
         if (idleState == null) Debug.LogWarning("No idle state ");
         if (chaseState == null) Debug.LogWarning("No chase state ");
         if (moveingState == null) Debug.LogWarning("No moving state ");
@@ -242,14 +242,14 @@ public class BeeAI : Stats
     #region Abilitie Logic
     public virtual void TriggerAbilityLogic(BeeAI bee, PlayerCore player, Vector3 origin)
     {
-
+        Debug.Log("Nothing");
     }
     [Button]
     public void SpawnAbility()
     {
         GameObject ability = Instantiate(beeAbility.abilityVisualPrefab, transform.position, Quaternion.identity);
         ability.transform.GetChild(0).GetComponent<Image>().sprite = beeAbility.sprite;
-        ability.GetComponent<Ability>().SetAbilityData(this, beeAbility.AbilityName);
+        //ability.GetComponent<Ability>().SetAbilityData(this, beeAbility.AbilityName);
     }
     #endregion
 
