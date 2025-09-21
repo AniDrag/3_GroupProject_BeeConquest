@@ -55,22 +55,13 @@ public class PlayerCore : MonoBehaviour
         {
             GameObject newBee = Instantiate(BeePRF);
             
-            BeeAI bee = newBee.GetComponent<BeeAI>();
             BasicBee beeTwo = newBee.GetComponent<BasicBee>();
-            if (bee != null)
-            {
-                bee.SetMyParent(this);
-                playerBees.Add(bee);
-                Game_Manager.instance.players[playerID].playerBeesTwo.Add(bee);
-            }
-            else
-            {
-                beeTwo.SetMyParent(this);
-                allBees.Add(beeTwo);
-                //Game_Manager.instance.players[playerID].playerBeesTwo.Add(bee);
-            }
-            // bee nees a skin and a type
-            //spawn bee and parent give the be the proper bee data and player data.
+
+            beeTwo.SetMyParent(this);
+            allBees.Add(beeTwo);
+
+            newBee.transform.position = transform.position + Vector3.up;
+
         }
     }
 
@@ -178,7 +169,6 @@ public class PlayerCore : MonoBehaviour
     public void RemoveHoney(long amount)
     {
         currentHoneyAmount -= amount;
-        ShowHoneyVisual(amount);
         visualsUI.pollinCounterText.text = $"Pollin: {currentPollinAmount}/{maxPollinStorage}";
         visualsUI.honeyCounterText.text = $"Nicterial: {currentHoneyAmount}";
         visualsUI.UI_UpdatePollin(currentPollinAmount, maxPollinStorage);

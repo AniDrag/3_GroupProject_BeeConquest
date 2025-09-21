@@ -46,8 +46,10 @@ public class BuyBee : MonoBehaviour, IInteract
 
     public void Buy(int index)
     {
-        if (cellCounter >= playerCore.allBees.Count && playerCore.currentHoneyAmount >= bees[index].Cost)
+        Debug.Log($"You want to by {bees[index].BeeName}, and you have to pay {bees[index].Cost}, also {cellCounter >= playerCore.allBees.Count}, and {playerCore.currentHoneyAmount >= bees[index].Cost}");
+        if (cellCounter > playerCore.allBees.Count && playerCore.currentHoneyAmount >= bees[index].Cost)
         {
+            Debug.Log("Suck");
             playerCore.BuyBee(bees[index].Bee, transform);
             currentBees.text = "Bees: " + playerCore.allBees.Count;
             playerCore.RemoveHoney(bees[index].Cost);
