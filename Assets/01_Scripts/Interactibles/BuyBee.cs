@@ -15,9 +15,9 @@ public class BuyBee : MonoBehaviour, IInteract
 {
     [SerializeField] private string InteractText;
     [SerializeField] private List<BeeTypesForTheShopDontUseThisPlease> bees = new List<BeeTypesForTheShopDontUseThisPlease>();
-    [SerializeField] private int CellStartPrice = 1000;
+    [SerializeField] private long CellStartPrice = 1000;
     [SerializeField] private float CellPriceMultiplier = 4.23f;
-    private int currentCellPrice;
+    private long currentCellPrice;
 
     [SerializeField] private GameObject beeSelectionUI;
     [SerializeField] private TextMeshProUGUI currentBees;
@@ -31,8 +31,8 @@ public class BuyBee : MonoBehaviour, IInteract
 
     void Start()
     {
-        currentCellPrice = CellStartPrice;
         cellCounter = 1;
+        currentCellPrice = CellStartPrice + (long)Mathf.Pow((CellStartPrice * ((float)cellCounter * CellPriceMultiplier)), cellCounter / 20f);
         currentCells.text = "Cells: 1";
         currentBees.text = "Bees: 1";
         buyCellButton.text = currentCellPrice.ToString();
@@ -62,7 +62,7 @@ public class BuyBee : MonoBehaviour, IInteract
         {
             cellCounter++;
             playerCore.RemoveHoney(currentCellPrice);
-            currentCellPrice *= (int)CellPriceMultiplier;
+            currentCellPrice = CellStartPrice + (long)Mathf.Pow((CellStartPrice * ((float)cellCounter * CellPriceMultiplier)), cellCounter / 20f);
             currentCells.text = "Cells: " + cellCounter.ToString();
             buyCellButton.text = currentCellPrice.ToString();
         }

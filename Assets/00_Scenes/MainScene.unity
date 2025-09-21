@@ -5495,7 +5495,7 @@ MonoBehaviour:
     Cost: 1000
     Bee: {fileID: 4710626226976754925, guid: f7b08ebf57feb564b982626fa1cb9461, type: 3}
   CellStartPrice: 1000
-  CellPriceMultiplier: 2.56
+  CellPriceMultiplier: 2
   beeSelectionUI: {fileID: 1295677222}
   currentBees: {fileID: 1319853502}
   currentCells: {fileID: 129357664}
@@ -55773,7 +55773,7 @@ Transform:
   m_GameObject: {fileID: 1624816713}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -117.3, y: 18.67, z: 0}
+  m_LocalPosition: {x: -134.24, y: 18.67, z: 0.44}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -55971,7 +55971,7 @@ MonoBehaviour:
   spawnNumPerClick: 1
   BeePRF: {fileID: 5726431347990252037, guid: b78a48e25870b0844859debd30a6c8b6, type: 3}
   beeBatchPerUpdate: 100
-  currentPollinAmount: 61
+  currentPollinAmount: 0
   showReceivedHoney: 1
   showReceivedPollen: 1
   maxPollinStorage: 10000

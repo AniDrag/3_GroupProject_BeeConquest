@@ -29,7 +29,7 @@ public class LightningBee : BasicBee
         for (int i = 0; i < loops; i++)
         {
             // Random.Range for ints: max is exclusive — use Count to include last index
-            var targetBee = player.allBees[Random.Range(0, player.allBees.Count)];
+            var targetBee = player.allBees[Random.Range(0, player.allBees.Count - 1)];
             if (targetBee == null) continue;
 
             var targetPos = targetBee.transform.position;
@@ -46,7 +46,7 @@ public class LightningBee : BasicBee
                     var cell = player.currentField.GetCellByXY(j + cellCoordinates.x, k + cellCoordinates.y);
                     if (cell == null) continue;
 
-                    long damage = (long)(bee.modedFlowerDurabilityDamage * 10f);
+                    long damage = (long)(bee.modedFlowerDurabilityDamage * 4f);
                     if (cell.Color == bee.beeAtribute)
                         damage *= (long)2f;
                     Game_Manager.instance.DecreaseCellDurability(bee, cell, damage);

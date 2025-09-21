@@ -149,20 +149,13 @@ public class BasicBee : Stats
         {
             beeStateTimer = 0f;
             beeNextStateTime = Mathf.Max(0.3f, beeStateUpdateInterval);
-
-            UpdateAtDestination();
             StateMachine.currentState.FixedLogicUpdate();
+        UpdateAtDestination();
         }
         // ───── MOVEMENT ANIMATION TICK RATE ─────
         if (beeState != BeeState.Following && beeState != BeeState.Moving) return;
         moveaAnimTimer += Time.fixedDeltaTime;
-        //if (moveaAnimTimer >= moveaAnimNextTime)
-        //{
-        //    moveaAnimTimer = 0f;
-        //    moveaAnimNextTime = Mathf.Max(0.3f, moveaAnimUpdateTimer);
-        //    
-        //}
-            SmoothMove(destinationPoint);
+        SmoothMove(destinationPoint);
     }
     #endregion
     #region BEE MOVEMENT FUNCTIONS
@@ -183,7 +176,7 @@ public class BasicBee : Stats
         }
         else if (!atDestination)
         {
-            beeStateUpdateInterval = distance / modedBeeSpeed;
+            beeStateUpdateInterval = (distance - tolerance) / modedBeeSpeed;
             getTravelingTime = beeStateUpdateInterval;
         }
     }
@@ -251,7 +244,7 @@ public class BasicBee : Stats
     #region STAT RELATED FUNCTIONS
     void UpdateBeeStats()
     {
-        spawnTokenChance = .1f + beeLuck / 10f;
+        spawnTokenChance = .1f + beeLuck / 100f;
         beeSpeed = 3 + (Agility * CharacterLevel) / 10f;
         flowerDurabilityDamage = Mathf.RoundToInt(Mathf.Min(flowerDurabilityCap, Strength * CharacterLevel + Dexterity / 2f));
         pollinCollectionSpeed = Mathf.Max(1, 5 - ((Agility * CharacterLevel) / 100f));

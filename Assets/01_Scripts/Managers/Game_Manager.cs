@@ -382,7 +382,7 @@ public class Game_Manager : MonoBehaviour
     public void ConvertPolinToHoney(long amount, int playerID)
     {
         PlayerCore player = players[playerID].playerCore;
-        long honey = player.RemovePollin(amount) / 3;
+        long honey = player.RemovePollin(amount); //Add buffs here if neccessaryy
         players[playerID].playerCore.AddHoney(honey);
         Debug.Log($"converting polling:{amount}, to honey: {honey}");
     }
