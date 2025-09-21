@@ -118,6 +118,7 @@ public class ServerLabelAgregator : IDisposable
             bd.sumAmount += ev.amount;
             bd.weightedX += ev.worldX * ev.amount;
             bd.weightedZ += ev.worldZ * ev.amount;
+            bd.weightedY = ev.worldY;
 
             if (ev.sourcePlayerId >= 0)
             {
@@ -149,7 +150,7 @@ public class ServerLabelAgregator : IDisposable
                 color = bd.color,
                 totalAmount = bd.sumAmount,
                 clusterX = cx,
-                clusterY = 0f,
+                clusterY = bd.weightedY,
                 clusterZ = cz,
                 representativePlayerId = bd.representativePlayerId,
                 playerX = bd.playerPosX,
@@ -167,6 +168,7 @@ public class ServerLabelAgregator : IDisposable
         public ColorAtribute color;
         public float sumAmount;
         public float weightedX;
+        public float weightedY;
         public float weightedZ;
 
         public int representativePlayerId;

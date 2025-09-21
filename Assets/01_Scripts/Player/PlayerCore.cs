@@ -45,7 +45,6 @@ public class PlayerCore : MonoBehaviour
     {
         PlayerServerData data = new PlayerServerData(playerID, transform, this, playerBees) { };
         Game_Manager.instance.JoinServer(playerID, data);
-        currentHoneyAmount += 100000;
     }
     void Start()
     {

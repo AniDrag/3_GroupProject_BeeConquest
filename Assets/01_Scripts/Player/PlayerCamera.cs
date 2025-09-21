@@ -43,7 +43,7 @@ public class PlayerCamera : MonoBehaviour
 
     private void Update()
     {
-        if (disableCamRotation) return;
+        if (!disableCamRotation) return;
         HandleRotation();
     }
 

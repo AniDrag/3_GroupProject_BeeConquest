@@ -21,15 +21,15 @@ public class LightningBee : BasicBee
     private IEnumerator TriggerAbilityCoroutine(BasicBee bee, PlayerCore player, Vector3 origin)
     {
         long DebugDamage = 0;
-        int loops = bee.CharacterLevel + 2;
+        int loops = bee.CharacterLevel;
 
-        if (player.playerBees == null || player.playerBees.Count == 0)
+        if (player.allBees == null || player.allBees.Count == 0)
             yield break;
 
         for (int i = 0; i < loops; i++)
         {
             // Random.Range for ints: max is exclusive — use Count to include last index
-            var targetBee = player.playerBees[Random.Range(0, player.playerBees.Count)];
+            var targetBee = player.allBees[Random.Range(0, player.allBees.Count)];
             if (targetBee == null) continue;
 
             var targetPos = targetBee.transform.position;

@@ -61,7 +61,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   beeState: 0
-  StateMachine: {fileID: 0}
+  StateMachine: {fileID: 4164149923213995902}
   beeVitality: 8
   beeStrength: 4
   beeDexterity: 4
@@ -76,7 +76,7 @@ MonoBehaviour:
   beeLevelUpMulti: 2
   flowerDurabilityCap: 20
   spawnTokenChance: 0.1
-  beeAbility: {fileID: 0}
+  beeAbility: {fileID: 11400000, guid: 42655b78847e2a8438c04835af8c4541, type: 2}
   modedBeeSpeed: 0
   modedFlowerDurabilityDamage: 0
   modedPollinCollectionSpeed: 0
@@ -89,7 +89,7 @@ MonoBehaviour:
   normalBeeTickSpeed: 1.5
   followPlayerTickSpeed: 1.5
   moveaAnimUpdateTimer: 0.05
-  beeName: name
+  beeName: Moxie
 --- !u!95 &8250061140543787979
 Animator:
   serializedVersion: 7
