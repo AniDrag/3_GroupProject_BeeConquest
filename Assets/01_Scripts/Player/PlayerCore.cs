@@ -27,13 +27,14 @@ public class PlayerCore : MonoBehaviour
 
     [Header("----- Inventory Data -----")]
     [SerializeField] private long currentPollinAmount = 0;
-    [SerializeField] private long currentHoneyAmount = 0;
+    [SerializeField] public long currentHoneyAmount { get; private set; } = 0;
     [SerializeField] private bool showReceivedHoney = true;
     [SerializeField] private bool showReceivedPollen = true;
     [SerializeField] private long maxPollinStorage = 10000;
     private Queue<long> honeyQueue = new Queue<long>();
 
     private int batchTracker;
+
 
     #region Getters
     public int playerID { get; private set; } = 0;
@@ -44,6 +45,7 @@ public class PlayerCore : MonoBehaviour
     {
         PlayerServerData data = new PlayerServerData(playerID, transform, this, playerBees) { };
         Game_Manager.instance.JoinServer(playerID, data);
+        currentHoneyAmount += 100000;
     }
     void Start()
     {
@@ -155,6 +157,7 @@ public class PlayerCore : MonoBehaviour
     public void AddPollin(long pollen, long honey)
     {
         currentPollinAmount += pollen;
+        Debug.Log("What da fak" + currentPollinAmount + " I GOT " + pollen);
         if(currentPollinAmount >= maxPollinStorage)
         {
             currentPollinAmount = maxPollinStorage;
@@ -166,6 +169,15 @@ public class PlayerCore : MonoBehaviour
     public void AddHoney(long amount)
     {
         currentHoneyAmount += amount;
+        ShowHoneyVisual(amount);
+        visualsUI.pollinCounterText.text = $"Pollin: {currentPollinAmount}/{maxPollinStorage}";
+        visualsUI.honeyCounterText.text = $"Nicterial: {currentHoneyAmount}";
+        visualsUI.UI_UpdatePollin(currentPollinAmount, maxPollinStorage);
+    }
+
+    public void RemoveHoney(long amount)
+    {
+        currentHoneyAmount -= amount;
         ShowHoneyVisual(amount);
         visualsUI.pollinCounterText.text = $"Pollin: {currentPollinAmount}/{maxPollinStorage}";
         visualsUI.honeyCounterText.text = $"Nicterial: {currentHoneyAmount}";
@@ -226,6 +238,16 @@ public class PlayerCore : MonoBehaviour
                 //Game_Manager.instance.players[playerID].playerBeesTwo.Add(bee);
             }
         }
+    }
+
+    public void BuyBee(GameObject bee, Transform spawnPosition)
+    {
+        GameObject newBee = Instantiate(bee);
+        var basicBee = newBee.GetComponent<BasicBee>();
+        basicBee.SetMyParent(this);
+        allBees.Add(basicBee);
+        newBee.transform.position = spawnPosition.position;
+
     }
 
     // Controling bees

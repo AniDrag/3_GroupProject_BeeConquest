@@ -105,6 +105,7 @@ public class UI_Visuals : MonoBehaviour
         float percent = (float)currentPollin / (float)maxPollin;
         StopAllCoroutines(); // avoid stacking multiple coroutines
         StartCoroutine(PollinLerp(percent));
+        //Debug.Log("Updating visuals");
     }
 
     IEnumerator PollinLerp(float newPercent)

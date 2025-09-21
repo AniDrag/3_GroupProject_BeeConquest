@@ -83,22 +83,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   beeState: 0
-  StateMachine: {fileID: 1674133375856974191}
-  beeVitality: 6
-  beeStrength: 4
-  beeDexterity: 2
-  beeAgility: 9
-  beeLuck: 5
-  vitIncrease: 1
-  strIncrease: 1
-  dexIncrease: 2
-  agiIncrease: 3
-  lucIncrease: 3
+  StateMachine: {fileID: 4164149923213995902, guid: 9b1e09b36fc71a245bfbb36b19b6121e, type: 3}
+  beeVitality: 2
+  beeStrength: 3
+  beeDexterity: 7
+  beeAgility: 4
+  beeLuck: 3
+  vitIncrease: 2
+  strIncrease: 3
+  dexIncrease: 1
+  agiIncrease: 2
+  lucIncrease: 4
   beeStaminaMulti: 1
   beeLevelUpMulti: 2
   flowerDurabilityCap: 70
   spawnTokenChance: 0.1
-  beeAbility: {fileID: 11400000, guid: 24ed61603a80aa94dbf5e7aff6549275, type: 2}
+  beeAbility: {fileID: 11400000, guid: 42655b78847e2a8438c04835af8c4541, type: 2}
   modedBeeSpeed: 0
   modedFlowerDurabilityDamage: 0
   modedPollinCollectionSpeed: 0
@@ -111,8 +111,8 @@ MonoBehaviour:
   normalBeeTickSpeed: 1.5
   followPlayerTickSpeed: 1.5
   moveaAnimUpdateTimer: 0.05
-  beeName: Buzz
-  buffEffectRadious: 4
+  beeName: Moxie
+  buffEffectRadious: 0
 --- !u!1001 &3117539694642777739
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -1,0 +1,176 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &5431693064816467033
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5752145501359875719}
+  - component: {fileID: 4164149923213995902}
+  - component: {fileID: 8553120329766013499}
+  - component: {fileID: 8250061140543787979}
+  m_Layer: 0
+  m_Name: MoxiebeePRF
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5752145501359875719
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5431693064816467033}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -47.203617, y: -0.28602287, z: 0.87441266}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2496965569909879068}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4164149923213995902
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5431693064816467033}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d594d5a3e1001041a71aa4e2461b2d3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animator: {fileID: 8250061140543787979}
+--- !u!114 &8553120329766013499
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5431693064816467033}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04f6b83e0373cab44a5aa59bbe4b82cf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  beeState: 0
+  StateMachine: {fileID: 0}
+  beeVitality: 8
+  beeStrength: 4
+  beeDexterity: 4
+  beeAgility: 4
+  beeLuck: 8
+  vitIncrease: 1
+  strIncrease: 1
+  dexIncrease: 1
+  agiIncrease: 1
+  lucIncrease: 1
+  beeStaminaMulti: 1
+  beeLevelUpMulti: 2
+  flowerDurabilityCap: 20
+  spawnTokenChance: 0.1
+  beeAbility: {fileID: 0}
+  modedBeeSpeed: 0
+  modedFlowerDurabilityDamage: 0
+  modedPollinCollectionSpeed: 0
+  modedSpawnTokenChance: 0
+  player: {fileID: 0}
+  playerComand: 0
+  heightOffsetY: 0.4
+  stopBeforeTarget: 0.5
+  stopBeforePlayerReached: 3
+  normalBeeTickSpeed: 1.5
+  followPlayerTickSpeed: 1.5
+  moveaAnimUpdateTimer: 0.05
+  beeName: name
+--- !u!95 &8250061140543787979
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5431693064816467033}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: cebb9abeee22249479a946a25f66a10b, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!1001 &2679001354309375735
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 5752145501359875719}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: e021ab531a5caf94789d2f97c085fbf6, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: e021ab531a5caf94789d2f97c085fbf6, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: e021ab531a5caf94789d2f97c085fbf6, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: e021ab531a5caf94789d2f97c085fbf6, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: e021ab531a5caf94789d2f97c085fbf6, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: e021ab531a5caf94789d2f97c085fbf6, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: e021ab531a5caf94789d2f97c085fbf6, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: e021ab531a5caf94789d2f97c085fbf6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: e021ab531a5caf94789d2f97c085fbf6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: e021ab531a5caf94789d2f97c085fbf6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: e021ab531a5caf94789d2f97c085fbf6, type: 3}
+      propertyPath: m_Name
+      value: Moxie
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: e021ab531a5caf94789d2f97c085fbf6, type: 3}
+--- !u!4 &2496965569909879068 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: e021ab531a5caf94789d2f97c085fbf6, type: 3}
+  m_PrefabInstance: {fileID: 2679001354309375735}
+  m_PrefabAsset: {fileID: 0}

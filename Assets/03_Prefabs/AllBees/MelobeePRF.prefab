@@ -60,21 +60,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae80eeffb66b0d14f8bbea8f176aa2e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TargetComand: {fileID: 0}
-  playerComand: 0
-  beeAttribute: 0
   beeState: 0
-  speed: 0
-  heightOffsetY: 0.4
-  critDamage: 1
-  collectionCap: 20
+  StateMachine: {fileID: 5251347584107673416}
   beeVitality: 4
   beeStrength: 2
   beeDexterity: 4
   beeAgility: 5
+  beeLuck: 1
+  vitIncrease: 1
+  strIncrease: 1
+  dexIncrease: 1
+  agiIncrease: 1
+  lucIncrease: 1
   beeStaminaMulti: 1
+  beeLevelUpMulti: 2
+  flowerDurabilityCap: 20
+  spawnTokenChance: 0.1
   beeAbility: {fileID: 11400000, guid: f1ecc331f59a004448f3cf388ab88919, type: 2}
-  StateMachine: {fileID: 5251347584107673416}
+  modedBeeSpeed: 0
+  modedFlowerDurabilityDamage: 0
+  modedPollinCollectionSpeed: 0
+  modedSpawnTokenChance: 0
+  player: {fileID: 0}
+  playerComand: 0
+  heightOffsetY: 0.4
+  stopBeforeTarget: 0.5
+  stopBeforePlayerReached: 3
+  normalBeeTickSpeed: 1.5
+  followPlayerTickSpeed: 1.5
+  moveaAnimUpdateTimer: 0.05
   beeName: Melobee
   buffEffectRadious: 5
 --- !u!95 &3288746180892112497

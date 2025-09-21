@@ -200,7 +200,7 @@ public class Game_Manager : MonoBehaviour
         if (cell == null) return;
 
         int pollin = 0;
-        float actualTaken = 0f;
+        long actualTaken = 0;
 
         if (cell.CurrentDurability < data.collectAmount)
         {
@@ -216,8 +216,9 @@ public class Game_Manager : MonoBehaviour
         // Give resources to player but DO NOT spawn a visual here:
         PlayerCore player = players[data.playerID].playerCore;
         if (player == null) Debug.LogWarning("no player core found");
-        else player.AddPollin(pollin, 0);
+        else player.AddPollin(actualTaken, 0);
 
+        //Debug.Log("Player has received pollen");
         // Enqueue damage for aggregator visual grouping (local)
         if (serverLabelAgregator != null && actualTaken > 0f)
         {
