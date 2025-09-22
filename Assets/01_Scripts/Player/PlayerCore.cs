@@ -27,10 +27,11 @@ public class PlayerCore : MonoBehaviour
 
     [Header("----- Inventory Data -----")]
     [SerializeField] private long currentPollinAmount = 0;
+    [SerializeField] private long maxPollinStorage = 10000;
+    [SerializeField] public int ownedCellsAmount { get; private set; } = 1;
     [SerializeField] public long currentHoneyAmount { get; private set; } = 0;
     [SerializeField] private bool showReceivedHoney = true;
     [SerializeField] private bool showReceivedPollen = true;
-    [SerializeField] private long maxPollinStorage = 10000;
     private Queue<long> honeyQueue = new Queue<long>();
 
     private int batchTracker;

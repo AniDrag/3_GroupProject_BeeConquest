@@ -9,6 +9,7 @@ public class BeeTypesForTheShopDontUseThisPlease
 {
     public string BeeName;
     public long Cost;
+    public Sprite beeSprite;
     public GameObject Bee;
 }
 public class BuyBee : MonoBehaviour, IInteract
@@ -27,7 +28,7 @@ public class BuyBee : MonoBehaviour, IInteract
     private int cellCounter;
 
     private GameObject playerInteractor;
-    private PlayerCore playerCore;
+    [SerializeField] private PlayerCore playerCore;
 
     void Start()
     {

@@ -48,6 +48,11 @@ public class UI_Visuals : MonoBehaviour
     [SerializeField, ShowIf("enableVarsMO")] private Button logOutBtn;
     [SerializeField, ShowIf("enableVarsMO")] private Button closeBtn;
     private bool menuOpen = false;
+    [Header("----- Shop Visuals -----")]
+    [SerializeField] bool enableVarsS = true;
+    [SerializeField, Required, ShowIf("enableVarsS")] private GameObject shopPanel;
+    private bool shopOpen = false;
+
 
     #region ─────────────────────────────  Default Functions ───────────────────────────── 
     private void Awake()
@@ -222,6 +227,14 @@ public class UI_Visuals : MonoBehaviour
     public void ResetBackpack()
     {
         UI_UpdatePollin(0, 20);
+    }
+    #endregion
+    #region ─────────────────────────────  Shop Fucnctions ─────────────────────────────
+    public void EnableDisableShopPanel()
+    {
+        shopOpen = !shopOpen;
+        shopPanel.SetActive(shopOpen);
+        Camera.main.GetComponent<PlayerCamera>().disableCamRotation = !shopOpen;
     }
     #endregion
 }
