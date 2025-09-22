@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 1153236108306918197}
   - component: {fileID: 3288746180892112497}
   m_Layer: 0
-  m_Name: MelobeePRF
+  m_Name: MusicBeePRF
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

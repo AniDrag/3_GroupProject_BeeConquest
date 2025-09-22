@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 3642880853598198927}
   - component: {fileID: 3422893595454944488}
   m_Layer: 0
-  m_Name: BuzzBeePRF
+  m_Name: ElectroBeePRF
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -113,9 +113,6 @@ MonoBehaviour:
   moveaAnimUpdateTimer: 0.05
   beeName: BuzzBee
   buffEffectRadious: 0
-  lightningPrefab: {fileID: 7115785285361748118, guid: c95d84c8fffebd44594477789093d7af, type: 3}
-  lightningExplosionPrefab: {fileID: 3930367914576491872, guid: 17473764cc22d834fa15857e162d443b, type: 3}
-  lightningMovementPrefab: {fileID: 4503133156325458418, guid: 32f94ade7e89e554b81219d2d95b4857, type: 3}
 --- !u!1001 &3117539694642777739
 PrefabInstance:
   m_ObjectHideFlags: 0

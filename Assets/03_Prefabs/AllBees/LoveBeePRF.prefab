@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 8553120329766013499}
   - component: {fileID: 8250061140543787979}
   m_Layer: 0
-  m_Name: MoxiebeePRF
+  m_Name: LoveBeePRF
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
