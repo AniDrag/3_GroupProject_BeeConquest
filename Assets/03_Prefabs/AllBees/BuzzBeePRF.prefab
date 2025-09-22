@@ -113,6 +113,7 @@ MonoBehaviour:
   moveaAnimUpdateTimer: 0.05
   beeName: BuzzBee
   buffEffectRadious: 0
+  lightningPrefab: {fileID: 7115785285361748118, guid: c95d84c8fffebd44594477789093d7af, type: 3}
 --- !u!1001 &3117539694642777739
 PrefabInstance:
   m_ObjectHideFlags: 0

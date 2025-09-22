@@ -149,7 +149,7 @@ public class PlayerCore : MonoBehaviour
     public void AddPollin(long pollen, long honey)
     {
         currentPollinAmount += pollen;
-        Debug.Log("What da fak" + currentPollinAmount + " I GOT " + pollen);
+        //Debug.Log("What da fak" + currentPollinAmount + " I GOT " + pollen);
         if(currentPollinAmount >= maxPollinStorage)
         {
             currentPollinAmount = maxPollinStorage;

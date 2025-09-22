@@ -131,7 +131,7 @@ public class BasicBee : Stats
         SetBaseStats(beeVitality, beeStrength, beeDexterity, beeAgility, beeLuck);
         SetMultipliers(1, 1, beeStaminaMulti);
         SetLevel(1);
-        Debug.Log($"Agility={Agility}, Level={CharacterLevel}, beeSpeed={beeSpeed}");
+        //Debug.Log($"Agility={Agility}, Level={CharacterLevel}, beeSpeed={beeSpeed}");
 
         UpdateBeeStats();
         if (player == null) Debug.LogWarning("I have no player parent");
