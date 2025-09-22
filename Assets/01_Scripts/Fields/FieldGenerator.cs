@@ -381,10 +381,37 @@ public class FieldGenerator : MonoBehaviour, IInteract
     public FieldCellData GetCellAtWorldPos(Vector3 worldPos)
     {
         if (allCells == null) return null;
+
+        // local coords relative to origin (same origin used when generating cells)
         Vector3 local = worldPos - origin;
-        int x = Mathf.FloorToInt(local.x / cellSize);
-        int y = Mathf.FloorToInt(local.z / cellSize);
-        return GetCellByXY(x, y);
+        float half = cellSize * 0.5f;
+
+        // Map world pos -> grid index using the same center-offset convention used when generating:
+        // generation used: origin + (x + 0.5f) * cellSize for cell centers,
+        // so subtract half-cell before flooring to get the correct index.
+        int x = Mathf.FloorToInt((local.x - half) / cellSize);
+        int y = Mathf.FloorToInt((local.z - half) / cellSize);
+
+        // Quick direct hit
+        var cell = GetCellByXY(x, y);
+        if (cell != null) return cell;
+
+        // Fallback: check small neighborhood around (x,y) to tolerate FP / tiny offsets
+        for (int dx = -1; dx <= 1; dx++)
+        {
+            for (int dy = -1; dy <= 1; dy++)
+            {
+                if (dx == 0 && dy == 0) continue;
+                var n = GetCellByXY(x + dx, y + dy);
+                if (n != null) return n;
+            }
+        }
+
+        // Helpful diagnostic log when nothing found (remove or comment out later)
+        Debug.LogWarningFormat("GetCellAtWorldPos: not found. world={0} local={1} mapped=({2},{3})",
+                               worldPos, local, x, y);
+
+        return null;
     }
 
     public Vector2Int GetCellArrayPosition(FieldCellData cellData)

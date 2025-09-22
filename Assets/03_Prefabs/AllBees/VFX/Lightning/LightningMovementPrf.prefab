@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4095440765321629895}
   m_Layer: 0
-  m_Name: LightningMovement
+  m_Name: LightningMovementPrf
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

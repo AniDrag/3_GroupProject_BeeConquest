@@ -56,7 +56,7 @@ LineRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 079369511f5ded0468c19102c2902363, type: 2}
+  - {fileID: 2100000, guid: b3542e4dce492234783f4448b9cb5540, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -82,7 +82,7 @@ LineRenderer:
   - {x: 0, y: 0, z: 6.81}
   m_Parameters:
     serializedVersion: 3
-    widthMultiplier: 0.1
+    widthMultiplier: 0.5
     widthCurve:
       serializedVersion: 2
       m_Curve:
@@ -108,7 +108,7 @@ LineRenderer:
       key5: {r: 0, g: 0, b: 0, a: 0}
       key6: {r: 0, g: 0, b: 0, a: 0}
       key7: {r: 0, g: 0, b: 0, a: 0}
-      ctime0: 0
+      ctime0: 12143
       ctime1: 65535
       ctime2: 0
       ctime3: 0
@@ -132,11 +132,11 @@ LineRenderer:
     numCapVertices: 0
     alignment: 0
     textureMode: 0
-    textureScale: {x: 1, y: 1}
+    textureScale: {x: 0.9, y: 1.16}
     shadowBias: 0.5
     generateLightingData: 0
   m_MaskInteraction: 0
-  m_UseWorldSpace: 0
+  m_UseWorldSpace: 1
   m_Loop: 0
   m_ApplyActiveColorSpace: 1
 --- !u!1 &7115785285361748118
@@ -150,7 +150,7 @@ GameObject:
   - component: {fileID: 964503232478133566}
   - component: {fileID: 935413716094684192}
   m_Layer: 0
-  m_Name: LightningVFX
+  m_Name: LightningRailPrf
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -6,15 +6,6 @@ public class LightningBee : BasicBee
 {
     [SerializeField] private string beeName = "name";
     [SerializeField] private float buffEffectRadious;
-
-    [SerializeField] private GameObject lightningPrefab;
-    [SerializeField] private GameObject lightningExplosionPrefab;
-    [SerializeField] private GameObject lightningMovementPrefab;
-
-    private GameObject explosionHolder;
-    private GameObject movementHolder;
-    private GameObject myLightningVFX;
-    private LightningLineController lightningLineController;
     private HashSet<BasicBee> visitedBees = new HashSet<BasicBee>();
 
     BasicBee lastBee;
@@ -23,16 +14,6 @@ public class LightningBee : BasicBee
         base.Start(); // <---- this is crucial!
 
         SetName(beeName);
-        GameObject newAbilityVFX = Instantiate(lightningPrefab);
-        newAbilityVFX.SetActive(false);
-        lightningLineController = newAbilityVFX.GetComponent<LightningLineController>();
-        myLightningVFX = newAbilityVFX;
-
-        explosionHolder = Instantiate(lightningExplosionPrefab);
-        explosionHolder.SetActive(false);
-
-        movementHolder = Instantiate(lightningMovementPrefab);
-        movementHolder.SetActive(false);
     }
     public override void TriggerAbilityLogic(BasicBee bee, PlayerCore player, Vector3 origin)
     {
@@ -43,18 +24,11 @@ public class LightningBee : BasicBee
 
     private IEnumerator TriggerAbilityCoroutine(BasicBee bee, PlayerCore player, Vector3 origin)
     {
-        myLightningVFX.SetActive(true);
         visitedBees.Clear();
         visitedBees.Add(bee);
 
         long debugDamage = 0;
-        int requestedLoops = bee.CharacterLevel + 1;
-
-        if (player.allBees == null || player.allBees.Count == 0)
-        {
-            myLightningVFX.SetActive(false);
-            yield break;
-        }
+        int requestedLoops = bee.CharacterLevel + 8;
 
         int maxPossibleJumps = Mathf.Min(requestedLoops, Mathf.Max(0, player.allBees.Count - visitedBees.Count));
         lastBee = bee;
@@ -77,26 +51,50 @@ public class LightningBee : BasicBee
 
             Vector3 targetPos = targetBee.transform.position;
             currentStart = lastBee.transform.position;
-
+            if (player.currentField == null) break;
             var c = player.currentField.GetCellAtWorldPos(targetPos);
             if (c == null)
             {
                 lastBee = targetBee;
-                Debug.Log("No cell found, skipping.");
+                Debug.Log($"No cell found, skipping.{player.currentField.GetCellAtWorldPos(targetPos)}, where targetPos is {targetPos}");
                 continue;
             }
 
-            if (lightningLineController != null)
-                lightningLineController.SetPositions(currentStart, targetPos);
+            // VFX
+            GameObject rail = AbilityVfxPooler.Instance.Get("LightningRail");
+            if (rail != null)
+            {
+                var line = rail.GetComponent<LightningLineController>();
+                if (line != null)
+                {
+                    rail.transform.position = Vector3.zero;
+                    line.SetPositions(currentStart, targetPos);
+                    rail.SetActive(true);
+                }
+            }
 
-            movementHolder.transform.position = targetPos; // Position the VFX
-            movementHolder.transform.LookAt(currentStart); // Make it face the last position 
-            movementHolder.SetActive(true);
+            GameObject movement = AbilityVfxPooler.Instance.Get("LightningMovement");    // key defined in pool config
+            if (movement != null)
+            {
+                movement.transform.position = targetPos;
+                movement.transform.LookAt(currentStart);
+                movement.SetActive(true);
+            }
 
             yield return new WaitForEndOfFrame();
 
-            explosionHolder.transform.position = targetPos; // DO VFX explosion
-            explosionHolder.SetActive(true);
+            GameObject explosion = AbilityVfxPooler.Instance.Get("LightningExplosion");
+            if (explosion != null)
+            {
+                explosion.transform.position = targetPos;
+                explosion.SetActive(true);
+
+                // Auto return when finished
+                explosion.GetComponent<PoolableVfx>().StartAutoReturn(2f);
+
+            }
+
+            //VFX END
 
             Vector2Int cellCoordinates = player.currentField.GetCellArrayPosition(c);
             for (int j = -1; j <= 1; j++)
@@ -114,21 +112,19 @@ public class LightningBee : BasicBee
                 }
             }
 
-            Debug.Log($"I damaged this much: {debugDamage}, by jumping to {targetBee.name} bee. Current iteration {i} / {maxPossibleJumps}");
-            yield return new WaitForSeconds(.1f);
 
-            if (lightningLineController != null)
-                lightningLineController.ClearLines();
+            yield return new WaitForSeconds(.05f);
 
-            yield return new WaitForSeconds(0.45f);
+            AbilityVfxPooler.Instance.Return(rail);
 
-            explosionHolder.SetActive(false);
-            movementHolder.SetActive(false);
+            yield return new WaitForSeconds(0.1f);
 
+            AbilityVfxPooler.Instance.Return(movement);
+
+            // Write down the new last pos
             lastBee = targetBee;
         }
 
-        myLightningVFX.SetActive(false);
         visitedBees.Clear();
     }
 }

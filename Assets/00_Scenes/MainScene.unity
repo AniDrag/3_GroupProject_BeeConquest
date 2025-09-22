@@ -57906,7 +57906,7 @@ MonoBehaviour:
   questUI: {fileID: 1710873244}
   showBeeData: 1
   startFollowDistance: 5
-  spawnNumPerClick: 3
+  spawnNumPerClick: 11
   BeePRF: {fileID: 5726431347990252037, guid: b78a48e25870b0844859debd30a6c8b6, type: 3}
   beeBatchPerUpdate: 100
   currentPollinAmount: 0
@@ -75115,6 +75115,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2086208263}
   - component: {fileID: 2086208262}
+  - component: {fileID: 2086208264}
   m_Layer: 0
   m_Name: Pooler
   m_TagString: Untagged
@@ -75151,6 +75152,28 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2086208264
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2086208261}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e011c394736e62646a57c575afae0127, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  configs:
+  - key: LightningExplosion
+    prefab: {fileID: 3930367914576491872, guid: 17473764cc22d834fa15857e162d443b, type: 3}
+    prewarm: 0
+  - key: LightningMovement
+    prefab: {fileID: 4503133156325458418, guid: 32f94ade7e89e554b81219d2d95b4857, type: 3}
+    prewarm: 0
+  - key: LightningRail
+    prefab: {fileID: 7115785285361748118, guid: c95d84c8fffebd44594477789093d7af, type: 3}
+    prewarm: 0
 --- !u!1 &2093722644
 GameObject:
   m_ObjectHideFlags: 0
