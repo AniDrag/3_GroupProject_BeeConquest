@@ -13,7 +13,7 @@ public class LovingBee : BasicBee
     {
         //base.TriggerAbilityLogic();
         //bee.collectionStrength *= 2;
-        foreach(var playerBee in player.playerBees)
+        foreach(var playerBee in player.allBees)
         {
             Debug.Log("Added buff--> LOVe u XD");
             float increseChance = 1.1f; // 10% increase to overall chance

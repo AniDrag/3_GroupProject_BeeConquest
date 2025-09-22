@@ -106,7 +106,6 @@ public class Stats : MonoBehaviour,IDamageable
     public void SetRace(string race) => characterRace = race;
     public void SetClass(string characterClass) => this.characterClass = characterClass;
     #endregion
-    public event System.Action OnBuffed;
     // overwriten by other users
     public virtual void LevelUp()
     {

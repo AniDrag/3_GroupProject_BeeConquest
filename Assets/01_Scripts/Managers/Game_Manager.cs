@@ -16,9 +16,9 @@ public class PlayerServerData
     public Transform transform;
     public Vector3 lastKnownPosition;
     public PlayerCore playerCore;
-    public List<BeeAI> playerBeesTwo = new List<BeeAI>();
+    public List<BasicBee> playerBeesTwo = new List<BasicBee>();
     public FieldGenerator currentField;// trigger this
-    public PlayerServerData(int PlayerID, Transform PlayerTransform, PlayerCore Core, List<BeeAI> PlayerBees)
+    public PlayerServerData(int PlayerID, Transform PlayerTransform, PlayerCore Core, List<BasicBee> PlayerBees)
     {
         playerID = PlayerID;
         transform = PlayerTransform;
@@ -199,9 +199,8 @@ public class Game_Manager : MonoBehaviour
         var cell = generator.GetCellById(data.fieldCellID);
         if (cell == null) return;
 
-        int pollin = 0;
-        long actualTaken = 0;
 
+        long actualTaken = 0;
         if (cell.CurrentDurability < data.collectAmount)
         {
             actualTaken = Mathf.RoundToInt(cell.PollinMultiplier * data.collectAmount * 1);
@@ -255,42 +254,7 @@ public class Game_Manager : MonoBehaviour
     }
     #endregion
     // ───────────── BEE REQUESTS ─────────────
-    #region Bee Requests
-    /// <summary>
-    /// This function is called by a bee when it is ready to collect a new polin.
-    /// This function handles asigning a Call for collecting polin and details sorounding that process.
-    /// Server has info of where the bee is so we also send that info so no inconsistencies occure
-    /// </summary>
-    /// <param name="bee"> the bee that requested this</param>
-    /// <param name="collectionTime"> time it will take to collect polin</param>
-    public void BEE_PollinCollectionRequest(BeeAI bee)
-    {
-        //Debug.Log("Requesting field location from GM");
-        FieldGenerator generator = bee.player.currentField;//players[bee.playerID].currentField;
-        var cell = generator.GetRandomCellInRadius(bee.player.transform.position, 5);
-        if (cell != null)
-        {
-            bee.SetDestination(cell.transform.position);
-
-            // get travel (seconds) and total (travel + collection)
-            float travel = bee.GetTravelTime(cell.transform.position); // travel only now
-            float total = travel + bee.CollectionDuration;
-
-            CollectionData data = new CollectionData()
-            {
-                collectAmount = bee.GetModifiedStat(StatType.CollectionStrength, bee.collectionStrength),
-                playerID = bee.playerID,
-                fieldCellID = cell.ID,
-                field = generator,
-                triggerTime = Time.time + total,   // <-- store absolute timestamp
-            };
-            collectionDatas.Add(data);
-        }
-        else
-        {
-            Debug.Log("no cell found");
-        }
-    }
+    #region Bee Requests Var2
 
     public void DecreaseCellDurability(BasicBee bee, FieldCellData cell, long damage)
     {
@@ -304,30 +268,6 @@ public class Game_Manager : MonoBehaviour
         };
         collectionDatas.Add(data);
     }
-    public void BEE_IdleMoveRequest(BeeAI bee)
-    {
-        //Debug.Log("Requesting Idle movemen location from GM");
-        Transform player = players[bee.playerID].transform;
-        Vector3 randomPosition = GetRandomPointInAnnulusXZ(player.position, 0.5f, 5f);
-        //Debug.Log("SERVER: " + randomPosition);
-        bee.SetDestination(randomPosition);
-    }
-    public void BEE_PlayerRequestForBeeToFollowPlayer(BeeAI bee, bool order = false)
-    {
-        //Debug.Log("Requesting player  location from GM");
-        bee.SetDestination(players[bee.playerID].transform.position);
-        bee.StateMachine.ChangeState(bee.chaseState);
-    }
-    //public void BeeMovementRequest(BeeCore bee)
-    //{
-    //    Transform player = players[bee.GetPlayerID].transform;
-    //    Vector3 randomPosition = GetRandomPointInAnnulusXZ(player.position, 0.5f, 5f);
-    //    bee.MoveTo(randomPosition);
-    //}
-
-    #endregion
-
-    #region Bee Requests Var2
     public void Bee_CellRequest(BasicBee bee)
     {
         //Debug.Log("Requesting field location from GM");

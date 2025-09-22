@@ -118,7 +118,7 @@ public class Server_Manager : MonoBehaviour
         }
     }
 
-    public void Server_RequestSpawnBees(int playerID, List<BeeAI> bees)
+    public void Server_RequestSpawnBees(int playerID, List<BasicBee> bees)
     {
         if (players.TryGetValue(playerID, out var data))
         {
@@ -129,19 +129,6 @@ public class Server_Manager : MonoBehaviour
         }
     }
 
-    public void Server_RequestBeeFollow(int playerID, BeeAI bee)
-    {
-        if (players.TryGetValue(playerID, out var data))
-        {
-            if (data.playerBeesTwo.Contains(bee))
-            {
-               // bee.SetFollowTarget(data.target);
-               // Debug.Log($"[Server] Player {playerID} ordered bee to follow.");
-            }
-        }
-    }
-
-    // ================= Example Server Reconciliation =================
     public void Server_UpdatePlayerPosition(int playerID, Vector3 predictedPos)
     {
         if (players.TryGetValue(playerID, out var data))

@@ -150,7 +150,7 @@ public class BasicBee : Stats
             beeStateTimer = 0f;
             beeNextStateTime = Mathf.Max(0.3f, beeStateUpdateInterval);
             StateMachine.currentState.FixedLogicUpdate();
-        UpdateAtDestination();
+            UpdateAtDestination();
         }
         // ───── MOVEMENT ANIMATION TICK RATE ─────
         if (beeState != BeeState.Following && beeState != BeeState.Moving) return;
@@ -177,7 +177,7 @@ public class BasicBee : Stats
         else if (!atDestination)
         {
             beeStateUpdateInterval = (distance - tolerance) / modedBeeSpeed;
-            getTravelingTime = beeStateUpdateInterval;
+            getTravelingTime = beeState == BeeState.Following && followPlayerTickSpeed < beeStateUpdateInterval? followPlayerTickSpeed: beeStateUpdateInterval;
         }
     }
     public void SetDestination(Vector3 newDestination)

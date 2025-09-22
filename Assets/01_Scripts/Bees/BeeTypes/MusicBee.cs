@@ -15,7 +15,7 @@ public class MusicBee : BasicBee
         // Boost collection strenght flat stat
         //base.TriggerAbilityLogic();
         //bee.collectionStrength *= 2;
-        foreach (var playerBee in player.playerBees)
+        foreach (var playerBee in player.allBees)
         {
             if (Vector3.Distance(bee.transform.position, playerBee.transform.position) > buffEffectRadious) return;
             Debug.Log("Added buff--> LOVe u XD");

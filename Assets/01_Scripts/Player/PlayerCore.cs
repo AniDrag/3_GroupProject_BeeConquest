@@ -18,7 +18,7 @@ public class PlayerCore : MonoBehaviour
     [SerializeField, ShowIf("showBeeData")] int spawnNumPerClick = 75;
     [SerializeField, ShowIf("showBeeData")] GameObject BeePRF;
     [SerializeField, ShowIf("showBeeData"), Range(20, 1000)] int beeBatchPerUpdate = 100;
-    [ShowIf("showBeeData")] public List<BeeAI> playerBees { get; private set; } = new List<BeeAI>();
+    //[ShowIf("showBeeData")] public List<BeeAI> playerBees { get; private set; } = new List<BeeAI>();
     [ShowIf("showBeeData")] public List<BasicBee> allBees { get; private set; } = new List<BasicBee>();
 
     [Header("----- Field Data -----")]
@@ -47,7 +47,7 @@ public class PlayerCore : MonoBehaviour
 
     private void Awake()
     {
-        PlayerServerData data = new PlayerServerData(playerID, transform, this, playerBees) { };
+        PlayerServerData data = new PlayerServerData(playerID, transform, this, allBees) { };
         Game_Manager.instance.JoinServer(playerID, data);
         currentHoneyAmount = 10000000000000;
     }
@@ -80,19 +80,19 @@ public class PlayerCore : MonoBehaviour
     private void FixedUpdate()
     {
         //if (playerBees.Count > 0) Debug.Log(playerBees.Count + " Bee amount from Player");
-        if (playerBees.Count > 0)
+        if (allBees.Count > 0)
         {
-            for (int i = 0; i < playerBees.Count; i++)
+            for (int i = 0; i < allBees.Count; i++)
             {
-                float distance = Vector3.Distance(transform.position, playerBees[i].transform.position);
+                float distance = Vector3.Distance(transform.position, allBees[i].transform.position);
                 if (distance >= startFollowDistance && currentField == null &&
-                    playerBees[i].StateMachine.currentState != playerBees[i].pollinCollectionState &&
-                    playerBees[i].StateMachine.currentState != playerBees[i].combatState)
+                    allBees[i].StateMachine.currentState != allBees[i].pollinCollectionState &&
+                    allBees[i].StateMachine.currentState != allBees[i].combatState)
                 {
                     //Debug.Log("player requested bee to follow DISTANCE:" + distance);
                     //Game_Manager.instance.BEE_PlayerRequestForBeeToFollowPlayer(playerBees[i]);
-                    playerBees[i].SetDestination(this.transform.position);
-                    playerBees[i].StateMachine.ChangeState(playerBees[i].chaseState);
+                    allBees[i].SetDestination(this.transform.position);
+                    allBees[i].StateMachine.ChangeState(allBees[i].chaseState);
                 }
 
             }
@@ -217,75 +217,13 @@ public class PlayerCore : MonoBehaviour
         {
             GameObject newBee = Instantiate(BeePRF);
 
-            BeeAI bee = newBee.GetComponent<BeeAI>();
             BasicBee beeTwo = newBee.GetComponent<BasicBee>();
-            if (bee != null)
-            {
-                bee.SetMyParent(this);
-                playerBees.Add(bee);
-                Game_Manager.instance.players[playerID].playerBeesTwo.Add(bee);
-            }
-            else
-            {
-                beeTwo.SetMyParent(this);
-                allBees.Add(beeTwo);
-                //Game_Manager.instance.players[playerID].playerBeesTwo.Add(bee);
-            }
+            beeTwo.SetMyParent(this);
+            allBees.Add(beeTwo);
+            //Game_Manager.instance.players[playerID].playerBeesTwo.Add(bee);
+
         }
     }
-
-    public void BuyBee(GameObject bee, Transform spawnPosition)
-    {
-        GameObject newBee = Instantiate(bee);
-        var basicBee = newBee.GetComponent<BasicBee>();
-        basicBee.SetMyParent(this);
-        allBees.Add(basicBee);
-        newBee.transform.position = spawnPosition.position;
-
-    }
-
-    // Controling bees
-
-    public void SetBeeStatesToFollow(BeeAI orderedBee)
-    {
-        Game_Manager.instance.BEE_PlayerRequestForBeeToFollowPlayer(orderedBee, true);
-
-    }
-    public void FocusTargetedEnemy()
-    {
-
-    }
-    public void MoveToTargetedSpot()
-    {
-
-    }
-    public void StartComandingBees()
-    {
-
-    }
-    public void StopComandingBees() { }
-    public void FollowTarget(BeeAI bee, Transform target)
-    {
-
-    }
-    public void DepositPollin(Transform target)
-    {
-        foreach (var bee in playerBees)
-        {
-            bee.playerComand = true;
-            bee.TargetComand = target;
-            bee.SetDestination(target.position);
-        }
-    }
-    public void CleareComands()
-    {
-        foreach (var bee in playerBees)
-        {
-            bee.playerComand = false;
-        }
-    }
-    #endregion
-
     void FollowPlayerLogic()
     {
         if (currentField == null)
@@ -311,6 +249,58 @@ public class PlayerCore : MonoBehaviour
             batchTracker = (batchTracker + processed) % count;
         }
     }
+
+    public void BuyBee(GameObject bee, Transform spawnPosition)
+    {
+        GameObject newBee = Instantiate(bee);
+        var basicBee = newBee.GetComponent<BasicBee>();
+        basicBee.SetMyParent(this);
+        allBees.Add(basicBee);
+        newBee.transform.position = spawnPosition.position;
+
+    }
+
+    // Controling bees
+
+    public void SetBeeStatesToFollow(BasicBee orderedBee)
+    {
+        Game_Manager.instance.Bee_FollowPlayer(orderedBee, true);
+
+    }
+    public void FocusTargetedEnemy()
+    {
+
+    }
+    public void MoveToTargetedSpot()
+    {
+
+    }
+    public void StartComandingBees()
+    {
+
+    }
+    public void StopComandingBees() { }
+    public void FollowTarget(BasicBee bee, Transform target)
+    {
+
+    }
+    public void DepositPollin(Transform target)
+    {
+        foreach (var bee in allBees)
+        {
+            bee.playerComand = true;
+            bee.SetDestination(target.position);
+        }
+    }
+    public void CleareComands()
+    {
+        foreach (var bee in allBees)
+        {
+            bee.playerComand = false;
+        }
+    }
+    #endregion
+    #region Shop and Upgrade Fuctions
     public void AddCell()
     {
         ownedCellsAmount++;
@@ -334,4 +324,5 @@ public class PlayerCore : MonoBehaviour
             foodStorage.Add(food, 1);
         }
     }
+    #endregion
 }
