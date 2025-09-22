@@ -8,8 +8,13 @@ public class LightningBee : BasicBee
     [SerializeField] private float buffEffectRadious;
 
     [SerializeField] private GameObject lightningPrefab;
-    private LightningLineController lightningLineController;
+    [SerializeField] private GameObject lightningExplosionPrefab;
+    [SerializeField] private GameObject lightningMovementPrefab;
+
+    private GameObject explosionHolder;
+    private GameObject movementHolder;
     private GameObject myLightningVFX;
+    private LightningLineController lightningLineController;
     private HashSet<BasicBee> visitedBees = new HashSet<BasicBee>();
 
     BasicBee lastBee;
@@ -22,6 +27,12 @@ public class LightningBee : BasicBee
         newAbilityVFX.SetActive(false);
         lightningLineController = newAbilityVFX.GetComponent<LightningLineController>();
         myLightningVFX = newAbilityVFX;
+
+        explosionHolder = Instantiate(lightningExplosionPrefab);
+        explosionHolder.SetActive(false);
+
+        movementHolder = Instantiate(lightningMovementPrefab);
+        movementHolder.SetActive(false);
     }
     public override void TriggerAbilityLogic(BasicBee bee, PlayerCore player, Vector3 origin)
     {
@@ -71,12 +82,21 @@ public class LightningBee : BasicBee
             if (c == null)
             {
                 lastBee = targetBee;
+                Debug.Log("No cell found, skipping.");
                 continue;
             }
 
             if (lightningLineController != null)
                 lightningLineController.SetPositions(currentStart, targetPos);
 
+            movementHolder.transform.position = targetPos; // Position the VFX
+            movementHolder.transform.LookAt(currentStart); // Make it face the last position 
+            movementHolder.SetActive(true);
+
+            yield return new WaitForEndOfFrame();
+
+            explosionHolder.transform.position = targetPos; // DO VFX explosion
+            explosionHolder.SetActive(true);
 
             Vector2Int cellCoordinates = player.currentField.GetCellArrayPosition(c);
             for (int j = -1; j <= 1; j++)
@@ -102,6 +122,8 @@ public class LightningBee : BasicBee
 
             yield return new WaitForSeconds(0.45f);
 
+            explosionHolder.SetActive(false);
+            movementHolder.SetActive(false);
 
             lastBee = targetBee;
         }
