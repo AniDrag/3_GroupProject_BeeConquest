@@ -284,7 +284,8 @@ public class UI_Visuals : MonoBehaviour
         Debug.Log("Disable Inventory. activeUI =" + activeUI);
     }
     #endregion
-    #region  ─────────────────────────────  Inventory Toggle
+
+    #region  ─────────────────────────────  Bee Shop Toggle
     public void UI_BTNToggleShop()
     {
         if (inventoryActive|| menuOpen) return;

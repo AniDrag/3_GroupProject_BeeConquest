@@ -13,7 +13,10 @@ public class BeeUpgradeSytem : MonoBehaviour
     [SerializeField] private GameObject InventoryItemPRF;
     [SerializeField] private Transform beePanel;
     [SerializeField] private Transform foodPanel;
+    [SerializeField] private Transform spawnBeeInViewPort;
     [SerializeField] private TextMeshProUGUI statPointsLeftText;
+    [SerializeField] private Slider beeXpBar;
+    [SerializeField] private GameObject beeInViewPort;
 
     [Header("----- Stat Buttons -----")]
     [SerializeField] private Button UpgradeBee;
@@ -26,8 +29,6 @@ public class BeeUpgradeSytem : MonoBehaviour
     [Header("----- Visual Buttons -----")]
     [SerializeField] private Button zoomIN;
     [SerializeField] private Button zoomOUT;
-    [SerializeField] private Transform spawnBeeInViewPort;
-    [SerializeField] private GameObject beeInViewPort;
 
     [Header("----- Input -----")]
     [SerializeField] private PlayerInput inputs;
@@ -39,6 +40,7 @@ public class BeeUpgradeSytem : MonoBehaviour
     private int usedFoodIndex;
     private bool isDragging = false;
     private float rotationSpeed = 5f;
+    private long xpToAdd;
 
     private void Reset()
     {
@@ -139,8 +141,11 @@ public class BeeUpgradeSytem : MonoBehaviour
     }
     void SelectFoodAsUpgradeConsumable(BeeFood food, int index)
     {
-        selectedUpgradeConsumable = food;
-        usedFoodIndex = index;
+
+       long tempVal= xpToAdd +  food.heldXP;
+        if (tempVal <= beeXpBar.maxValue)
+            xpToAdd = tempVal;
+            beeXpBar.value = xpToAdd;
     }
     #endregion
     #region Bee Selection logic
