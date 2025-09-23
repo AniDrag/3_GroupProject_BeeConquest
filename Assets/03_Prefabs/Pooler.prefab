@@ -69,3 +69,9 @@ MonoBehaviour:
   - key: LightningRail
     prefab: {fileID: 7115785285361748118, guid: c95d84c8fffebd44594477789093d7af, type: 3}
     prewarm: 0
+  - key: MeloBeeAbility
+    prefab: {fileID: 3879809807759759452, guid: f8c4d4188c5cda042ab1ef2c637517df, type: 3}
+    prewarm: 0
+  - key: MeloBeeAura
+    prefab: {fileID: 1725687685469331812, guid: 8e54e35fc3bc5994c92d8efdc3eb3bf9, type: 3}
+    prewarm: 0

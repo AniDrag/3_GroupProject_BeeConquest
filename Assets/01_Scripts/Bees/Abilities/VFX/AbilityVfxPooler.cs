@@ -19,7 +19,6 @@ public class AbilityVfxPooler : MonoBehaviour
     // internal state
     private readonly Dictionary<string, Stack<GameObject>> pools = new Dictionary<string, Stack<GameObject>>();
     private readonly Dictionary<string, GameObject> prefabByKey = new Dictionary<string, GameObject>();
-    private readonly List<(GameObject go, float returnAt)> scheduledReturns = new List<(GameObject, float)>();
 
     void Awake()
     {
@@ -90,39 +89,6 @@ public class AbilityVfxPooler : MonoBehaviour
     }
 
 
-    /// <summary>
-    /// Schedule this pooled GameObject to be returned after `seconds` (measured in realtime seconds).
-    /// If the object is already scheduled, the schedule will be updated.
-    /// </summary>
-    public void ScheduleReturn(GameObject go, float seconds)
-    {
-        if (go == null) return;
-        // remove existing schedule if present
-        CancelScheduledReturn(go);
-        float when = Time.time + Mathf.Max(0f, seconds);
-        scheduledReturns.Add((go, when));
-    }
-
-    /// <summary>
-    /// Cancel a previously scheduled return for this object (if any).
-    /// </summary>
-    public void CancelScheduledReturn(GameObject go)
-    {
-        if (go == null) return;
-        for (int i = scheduledReturns.Count - 1; i >= 0; i--)
-        {
-            if (scheduledReturns[i].go == go)
-                scheduledReturns.RemoveAt(i);
-        }
-    }
-
-    /// <summary>
-    /// Call this from Return() to ensure no leftover scheduled returns exist for the object.
-    /// </summary>
-    void RemoveScheduledOnReturn(GameObject go)
-    {
-        CancelScheduledReturn(go);
-    }
 
 
     /// <summary>
@@ -131,8 +97,6 @@ public class AbilityVfxPooler : MonoBehaviour
     public void Return(GameObject go)
     {
         if (go == null) return;
-
-        RemoveScheduledOnReturn(go);
 
         var poolable = go.GetComponent<PoolableVfx>();
         string key = poolable != null ? poolable.PoolKey : null;
