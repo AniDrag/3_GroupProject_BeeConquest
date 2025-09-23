@@ -134,6 +134,7 @@ public class FieldGenerator : MonoBehaviour, IInteract
         if (generateOnStart) GenerateField();
         else
         {
+            debugClickDamageMode = false;
             // Read existing children
             var existingCells = GetComponentsInChildren<FieldCellData>(true); // include inactive just in case
             if (existingCells.Length == 0) return;
