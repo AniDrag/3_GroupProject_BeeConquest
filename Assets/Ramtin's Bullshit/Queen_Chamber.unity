@@ -98565,6 +98565,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Queen_Chamber_Updated_brrrrrr
       objectReference: {fileID: 0}
+    - target: {fileID: 627998264732081418, guid: 4bc3e531f5ec3c74ba008876737734a4, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5576710240469400716, guid: 4bc3e531f5ec3c74ba008876737734a4, type: 3}
       propertyPath: m_LocalPosition.x
       value: -13.399947
