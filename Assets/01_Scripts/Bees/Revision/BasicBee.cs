@@ -51,6 +51,14 @@ public class BasicBee : Stats
     public int modedFlowerDurabilityDamage;// Durability damage to flowers
     public float modedPollinCollectionSpeed; // Time in s before bee collects Pollin
     public float modedSpawnTokenChance;
+
+    // Geters for stats
+    public int GetBeeVit => beeVitality;
+    public int GetBeeStr=>beeStrength ;
+    public int GetBeeDex=>beeDexterity ;
+    public int GetBeeAgi=>beeAgility ;
+    public int GetBeeLuc=>beeLuck ;
+
     #endregion
     #region ───────────── PLAYER DATA ─────────────
     [Header(" ───────────── Player Info ─────────────")]
@@ -138,6 +146,8 @@ public class BasicBee : Stats
         SetBaseStats(beeVitality, beeStrength, beeDexterity, beeAgility, beeLuck);
         SetMultipliers(1, 1, beeStaminaMulti);
         SetLevel(1);
+
+        SetLevelUpPrice();
         //Debug.Log($"Agility={Agility}, Level={CharacterLevel}, beeSpeed={beeSpeed}");
 
         UpdateBeeStats();
@@ -251,10 +261,13 @@ public class BasicBee : Stats
     #region STAT RELATED FUNCTIONS
     void UpdateBeeStats()
     {
+        // UN modified stats / not efected by buffs
         spawnTokenChance = .1f + beeLuck / 100f;
         beeSpeed = 3 + (Agility * CharacterLevel) / 10f;
         flowerDurabilityDamage = Mathf.RoundToInt(Mathf.Min(flowerDurabilityCap, Strength * CharacterLevel + Dexterity / 2f));
         pollinCollectionSpeed = Mathf.Max(1, 5 - ((Agility * CharacterLevel) / 100f));
+
+        // == MODED STATS
         //Debug.Log(GetModifiedStat(StatType.Speed, beeSpeed));
         modedBeeSpeed = GetModifiedStat(StatType.Speed, beeSpeed);
         modedFlowerDurabilityDamage = (int)GetModifiedStat(StatType.CollectionStrength, flowerDurabilityDamage);
@@ -262,20 +275,10 @@ public class BasicBee : Stats
         modedSpawnTokenChance = GetModifiedStat(StatType.SpawnTokenChance, spawnTokenChance);
         //Debug.Log($"modedBeeSpeed after buffs={modedBeeSpeed}");
     }
-    public override void LevelUp()
-    {
-        base.LevelUp();
-
-        UpdateStats();
-
-        if (CharacterLevel % 4 == 0)
-            maxXP *= 4;
-        else
-            maxXP *= 2;
-    }
     public void StatIncrese(StatType type)
     {
-        switch(type)
+        Debug.Log("Incresed stat: " + type.ToString());
+        switch (type)
         {
             case StatType.Vitality: beeVitality++; break;
             case StatType.Strength: beeStrength++; break;
@@ -283,7 +286,7 @@ public class BasicBee : Stats
             case StatType.Agility: beeAgility++; break;
             case StatType.Luck: beeLuck++; break;
         }
-        UpdateStats();
+        UpdateBeeStats();
     }
     public override void UpdateStats()
     {
@@ -292,31 +295,21 @@ public class BasicBee : Stats
         beeDexterity += dexIncrease;
         beeAgility += agiIncrease;
         beeLuck += lucIncrease;
-        //Debug.Log($"Agility={Agility}, Level={CharacterLevel}, raw beeSpeed={beeSpeed}");
-        //Debug.Log($"modedBeeSpeed before buffs={modedBeeSpeed}");
-        UpdateBeeStats();
-       
-        //When bee levels up
     }
     public void AddXP(long amount)
     {
         _curentXP += amount;
-        if(_curentXP > maxXP)
+        while(_curentXP >= maxXP)
         {
             _curentXP -= maxXP;
-            RepetedLevelUp(_curentXP);
+            statPoints += statpointIncrese;
+            IncreseLevel();
+            SetLevelUpPrice();
+            UpdateStats();
         }
+        UpdateBeeStats();
     }
-    private void RepetedLevelUp(long amount)
-    {
-        statPoints += statpointIncrese;
-        if (_curentXP > maxXP)
-        {
-            _curentXP -= maxXP;
-            LevelUp();
-            RepetedLevelUp(_curentXP);
-        }
-    }
+    
     #endregion
     #region OTHER FUNCTIONS
     public long XpToLevelUP => maxXP;
@@ -341,4 +334,8 @@ public class BasicBee : Stats
         }
     }
     #endregion
+    public override void SetLevelUpPrice()
+    {
+        maxXP = 100 + Mathf.RoundToInt(CharacterLevel * maxXP * 1.73f);
+    }
 }

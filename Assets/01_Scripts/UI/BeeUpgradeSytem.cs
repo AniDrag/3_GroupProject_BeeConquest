@@ -24,9 +24,9 @@ public class BeeUpgradeSytem : MonoBehaviour
     [SerializeField] private GameObject beeVisualObject;
 
     [Header("----- Bee UI Stat Refrences -----")]
-    [SerializeField] private Button UpgradeBee;
     [SerializeField] private TextMeshProUGUI statPointsLeftText;
     [SerializeField] private Slider beeXpBar;
+    [SerializeField] private TextMeshProUGUI xpVaueText;
     [SerializeField] private Button zoomIN;
     [SerializeField] private Button zoomOUT;
     private long xpCach;
@@ -71,7 +71,6 @@ public class BeeUpgradeSytem : MonoBehaviour
         clickAction = inputs.actions["RightClick"];
         SpawnAllBeesFromPlayerInventory();
         SpawnAllFoodInInventory();
-        UpgradeBee.onClick.AddListener(() => FeedBee());
         Vitality.onClick.AddListener(() => IncreseStat(StatType.Vitality));
         Strength.onClick.AddListener(() => IncreseStat(StatType.Strength));
         Dexterity.onClick.AddListener(() => IncreseStat(StatType.Dexterity));
@@ -154,10 +153,7 @@ public class BeeUpgradeSytem : MonoBehaviour
             selectedBee.AddXP(food.heldXP);
             foodPanel.GetChild(index).GetComponent<InventoryItem>().UpdateText(player.foodStorage[food].ToString());
             long xp = selectedBee._curentXP + food.heldXP;
-            if(xp > selectedBee.XpToLevelUP)
-            {
-                VisualizeStats();
-            }
+            VisualizeStats();
             UpdateXpBar();
         }
     }
@@ -213,15 +209,22 @@ public class BeeUpgradeSytem : MonoBehaviour
     }
     void VisualizeStats()
     {
-        Vitality.transform.parent.GetChild(1).GetComponent<TMP_Text>().text = $"Vitality: {selectedBee.Vitality}";
-        Strength.transform.parent.GetChild(1).GetComponent<TMP_Text>().text = $"Strenght: {selectedBee.Strength}";
-        Dexterity.transform.parent.GetChild(1).GetComponent<TMP_Text>().text = $"Dexterity: {selectedBee.Dexterity}";
-        Agility.transform.parent.GetChild(1).GetComponent<TMP_Text>().text = $"Agility: {selectedBee.Agility}";
-        Luck.transform.parent.GetChild(1).GetComponent<TMP_Text>().text = $"Luck: {selectedBee.Luck}";
+        statPointsLeftText.text = $"SP: {selectedBee.statPoints}";
+        Vitality.transform.parent.GetChild(1).GetComponent<TMP_Text>().text = $"Vitality: {selectedBee.GetBeeVit}";
+        Strength.transform.parent.GetChild(1).GetComponent<TMP_Text>().text = $"Strenght: {selectedBee.GetBeeStr}";
+        Dexterity.transform.parent.GetChild(1).GetComponent<TMP_Text>().text = $"Dexterity: {selectedBee.GetBeeDex}";
+        Agility.transform.parent.GetChild(1).GetComponent<TMP_Text>().text = $"Agility: {selectedBee.GetBeeAgi}";
+        Luck.transform.parent.GetChild(1).GetComponent<TMP_Text>().text = $"Luck: {selectedBee.GetBeeLuc}";
     }
     void IncreseStat(StatType type)
     {
-        selectedBee.StatIncrese(type);
+        if (selectedBee.statPoints > 0)
+        {
+            Debug.Log("Incresed stat: " + type.ToString());
+            selectedBee.StatIncrese(type);
+            selectedBee.statPoints--;
+            VisualizeStats();
+        }
     }
 
     void UpdateViewPort(int i)
@@ -240,6 +243,7 @@ public class BeeUpgradeSytem : MonoBehaviour
     {
         beeXpBar.maxValue = selectedBee.XpToLevelUP;
         beeXpBar.value = selectedBee._curentXP;
+        xpVaueText.text = $"XP {selectedBee._curentXP} / {selectedBee.XpToLevelUP} "; 
     }
     #endregion
 }

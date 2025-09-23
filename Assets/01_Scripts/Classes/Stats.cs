@@ -108,10 +108,14 @@ public class Stats : MonoBehaviour,IDamageable
     public void SetClass(string characterClass) => this.characterClass = characterClass;
     #endregion
     // overwriten by other users
+    public void IncreseLevel() => characterLevel++;
     public virtual void LevelUp()
     {
-        characterLevel++;
         UpdateStats();
+    }
+    public virtual void SetLevelUpPrice()
+    {
+
     }
     public virtual void OnDeath()
     {
