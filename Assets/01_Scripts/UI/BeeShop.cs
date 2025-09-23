@@ -52,9 +52,11 @@ public class BeeShop : MonoBehaviour
     private long _currentCellPrice;
 
     [Header("---------- Inventory uprade price settings ----------")]
+    [SerializeField] private int maxInventoryUpgrades = 6;
     [SerializeField] private long inventoryUpgradeStartPrice = 1000;
     [SerializeField] private float inventoryPriceMulti = 1.98f;
     private long _currentInventoryPrice;
+    private int _currentInventoryUpgrades;
 
     private int _emptyCells;
     private int _usedCells;
@@ -84,8 +86,9 @@ public class BeeShop : MonoBehaviour
     }
     public void UpgradeInventory()
     {
-        if (_player.currentHoneyAmount >= _currentInventoryPrice)
+        if (_player.currentHoneyAmount >= _currentInventoryPrice && maxInventoryUpgrades > _currentInventoryUpgrades)
         {
+            _currentInventoryUpgrades++;
             _player.UpgradeMaxPollinStorage();
             _player.RemoveHoney(_currentInventoryPrice);
             _currentInventoryPrice = inventoryUpgradeStartPrice + (long)Mathf.Pow((inventoryUpgradeStartPrice * ((float)_player.pollinStorageLevel * inventoryPriceMulti)), _player.pollinStorageLevel / 20f);
@@ -235,5 +238,6 @@ public class BeeShop : MonoBehaviour
                 cell.SetActive(false);
             }
         _totalFoundCells = unPurchasedCells.Count();
+        _totalCells = 0;
     }
 }

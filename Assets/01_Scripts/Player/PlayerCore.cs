@@ -33,7 +33,7 @@ public class PlayerCore : MonoBehaviour
     [SerializeField] private long currentPollinAmount = 0;
     [SerializeField] private long maxPollinStorage = 10000;
     public Dictionary<BeeFood,int> foodStorage = new Dictionary<BeeFood,int>();
-    [SerializeField] public int ownedCellsAmount { get; private set; } = 1;
+    [SerializeField] public int ownedCellsAmount { get; private set; } = 0;
     [SerializeField] public long currentHoneyAmount { get; private set; } = 0;
     [SerializeField] private bool showReceivedHoney = true;
     [SerializeField] private bool showReceivedPollen = true;
@@ -51,7 +51,7 @@ public class PlayerCore : MonoBehaviour
     {
         PlayerServerData data = new PlayerServerData(playerID, transform, this, savedBees) { };
         Game_Manager.instance.JoinServer(playerID, data);
-        currentHoneyAmount = 10000000000000;
+        currentHoneyAmount = 100000;
     }
     void Start()
     {

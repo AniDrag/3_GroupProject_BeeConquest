@@ -44,6 +44,8 @@ public class FieldGenerator : MonoBehaviour, IInteract
     public bool damageRandomCell = false;
     public bool showDebugText = false;
     private bool lastKnownDebugText = true; // Should be the opposite of showDebugText.
+
+    private PlayerCore player;
     [ContextMenu("Debug - Damage Random Cell")]
 
     [Button]
@@ -67,14 +69,16 @@ public class FieldGenerator : MonoBehaviour, IInteract
     {
         Debug.Log($"Player: {interactor.name} || Has entered field: {transform.name}");
 
-        Game_Manager.instance.AsignCurrentFieldToPlayer(interactor.GetComponent<PlayerCore>().playerID, this);
+        player = interactor.GetComponent<PlayerCore>();
+        Game_Manager.instance.AsignCurrentFieldToPlayer(player.playerID, this);
         //interactor.GetComponent<PlayerCore>().AsignField(this);
     }
     public void DeInteract(GameObject interactor)
     {
         Debug.Log($"Player: {interactor.name} || Has Exited field: {transform.name}");
         interactor.GetComponent<PlayerCore>().RemoveField();
-        Game_Manager.instance.ExitCurrentFieldFromPlayer(interactor.GetComponent<PlayerCore>().playerID);
+        Game_Manager.instance.ExitCurrentFieldFromPlayer(player.playerID);
+        player = null;
     }
     public bool CanInteract(GameObject interactor) => interactor.GetComponent<PlayerCore>() != null;    
     public InteractionType Type() => InteractionType.WhenInRange;
@@ -125,6 +129,7 @@ public class FieldGenerator : MonoBehaviour, IInteract
         }
         existingCells = valid.ToArray();
     }*/ // U could use this ? idk
+
         origin = transform.position;
         if (generateOnStart) GenerateField();
         else
@@ -223,7 +228,7 @@ public class FieldGenerator : MonoBehaviour, IInteract
 
     private void Update()
     {
-        if (debugClickDamageMode && Input.GetMouseButtonDown(0))
+        if (player != null && debugClickDamageMode && Input.GetMouseButtonDown(0))
         {
             // raycast into XZ plane at y = origin.y
             Camera cam = Camera.main;
