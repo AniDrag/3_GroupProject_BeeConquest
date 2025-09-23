@@ -93,6 +93,8 @@ public class BeeShop : MonoBehaviour
             _player.RemoveHoney(_currentInventoryPrice);
             _currentInventoryPrice = inventoryUpgradeStartPrice + (long)Mathf.Pow((inventoryUpgradeStartPrice * ((float)_player.pollinStorageLevel * inventoryPriceMulti)), _player.pollinStorageLevel / 20f);
             upgradeCellCount.updatePrice(_currentCellPrice);
+
+
             // Get the ShopItem that upgrades cells and update its price?
             //currentCells.text = "Cells: " + cellCounter.ToString();
             //buyCellButton.text = currentCellPrice.ToString();
