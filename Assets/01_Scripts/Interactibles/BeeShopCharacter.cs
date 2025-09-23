@@ -2,27 +2,20 @@ using UnityEngine;
 
 public class BeeShopCharacter : MonoBehaviour, IInteract
 {
-    public BeeShop beeShop;
+    //public BeeShop beeShop;
 
     [SerializeField] private string InteractText;
 
     public void Interact(GameObject interactor)
     {
-        beeShop = interactor.gameObject.GetComponent<PlayerCore>().visualsUI.shopPanel.GetComponent<BeeShop>();
-        beeShop.gameObject.SetActive(true);
-        beeShop.GetDataFromInteractor(interactor.GetComponent<PlayerCore>());
-        Camera.main.GetComponent<PlayerCamera>().disableCamRotation = false;
-        Cursor.lockState = CursorLockMode.Confined;
-        Cursor.visible = true;
+        Debug.Log("Triggered shop");
+        interactor.gameObject.GetComponent<PlayerCore>().visualsUI.UI_BTNToggleShop();
     }
 
     public void DeInteract(GameObject interactor)
     {
-        beeShop.gameObject.SetActive(false);
-        beeShop = null;
-        Camera.main.GetComponent<PlayerCamera>().disableCamRotation = true;
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        Debug.Log("removed from shop");
+        interactor.gameObject.GetComponent<PlayerCore>().visualsUI.UI_BTNToggleShop();
     }
     public string GetInteractionText() => InteractText;
 

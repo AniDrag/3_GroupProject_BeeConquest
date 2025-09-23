@@ -50,13 +50,13 @@ public class UI_Visuals : MonoBehaviour
     [SerializeField, ShowIf("enableVarsMO")] private Button closeBtn;
     private bool menuOpen = false;
     [Header("----- Shop Visuals -----")]
-    [SerializeField] bool enableVarsS = true;
-    [SerializeField, Required, ShowIf("enableVarsS")] public GameObject shopPanel;
+    [SerializeField] public GameObject beeShopPanel;
     [SerializeField] public GameObject inventoryPanel;
     private bool inventoryActive = false;
+    private bool beeShopActive = false;
 
     private bool activeUI = false;
-    #region ─────────────────────────────  Default Functions ───────────────────────────── 
+    #region ─────────────────────────────  Default Unity Functions ───────────────────────────── 
     private void Awake()
     {
         if (menuPanel == null) Debug.LogError("❌ menuPanel is not assigned!", this);
@@ -80,7 +80,7 @@ public class UI_Visuals : MonoBehaviour
 
         menuPanel.SetActive(false);
         optionsPanel.SetActive(false);
-        shopPanel.SetActive(false);
+        beeShopPanel.SetActive(false);
         inventoryPanel.SetActive(false);
         // force PlayerInput to detect scheme
         if (string.IsNullOrEmpty(inputs.currentControlScheme))
@@ -242,6 +242,7 @@ public class UI_Visuals : MonoBehaviour
 
     public void UI_SetInteractText(string text) => interactedItemText.text = interactionText + text;
     #endregion
+
     #region  ─────────────────────────────  Inventory Toggle
     private void UI_ToggleInventory(InputAction.CallbackContext ctx)
     {
@@ -281,6 +282,40 @@ public class UI_Visuals : MonoBehaviour
         ControllPlayerCamAndMove();
         ApplyControlScheme(inputs.currentControlScheme);
         Debug.Log("Disable Inventory. activeUI =" + activeUI);
+    }
+    #endregion
+    #region  ─────────────────────────────  Inventory Toggle
+    public void UI_BTNToggleShop()
+    {
+        if (inventoryActive|| menuOpen) return;
+        Debug.Log("BTN BeeShop action pressed!" + beeShopActive);
+        if (!beeShopActive) UI_OpenBeeShop();
+        else UI_CloseBeeShop();
+    }
+
+    private void UI_OpenBeeShop()
+    {
+        beeShopActive = true;
+        activeUI = true;
+
+        beeShopPanel.SetActive(true);
+
+        ControllPlayerCamAndMove();
+        ApplyControlScheme(inputs.currentControlScheme);
+
+        Debug.Log("Enable Bee Shop. activeUI =" + activeUI);
+    }
+
+    private void UI_CloseBeeShop()
+    {
+        beeShopActive = false;
+        activeUI = menuPanel.activeSelf || inventoryPanel.activeSelf; // if menu is still open, keep UI active
+
+        beeShopPanel.SetActive(false);
+
+        ControllPlayerCamAndMove();
+        ApplyControlScheme(inputs.currentControlScheme);
+        Debug.Log("Disable Bee SHop. activeUI =" + activeUI);
     }
     #endregion
     #endregion
