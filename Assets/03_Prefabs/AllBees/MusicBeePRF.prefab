@@ -90,8 +90,9 @@ MonoBehaviour:
   stopBeforePlayerReached: 3
   normalBeeTickSpeed: 1.5
   followPlayerTickSpeed: 1.5
+  _curentXP: 0
   beeName: Melobee
-  buffEffectRadious: 5
+  buffEffectRadious: 10
 --- !u!95 &3288746180892112497
 Animator:
   serializedVersion: 7

@@ -260,6 +260,7 @@ public class PlayerCore : MonoBehaviour
     {
         GameObject newBee = Instantiate(bee);
         BasicBee basicBee = newBee.GetComponent<BasicBee>();
+        basicBee.homeCoordinates = spawnPosition.position;
         basicBee.SetMyParent(this);
         allBees.Add(basicBee);
         PlayerBeeSaved newSavedBee = new PlayerBeeSaved(basicBee, newBee);

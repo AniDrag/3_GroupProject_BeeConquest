@@ -77,6 +77,8 @@ public class BasicBee : Stats
 
     [Header(" ───────────── Movemant data ─────────────")]
     public Vector3 destinationPoint { get; private set; }
+
+    public Vector3 homeCoordinates;// Add
     public bool atDestination { get; private set; }
     public EnemyCore TargetEnemy { get; private set; }
     public FieldCell TargetField { get; private set; }

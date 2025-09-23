@@ -1,9 +1,11 @@
 using AniDrag.Utility;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using NUnit.Framework;
 
 [System.Serializable]
 public class BeeTypesForTheShopDontUseThisPlease
@@ -12,6 +14,7 @@ public class BeeTypesForTheShopDontUseThisPlease
     public long Cost;
     public Sprite beeSprite;
     public GameObject Bee;
+    public GameObject beeCellImage;
 }
 [System.Serializable]
 public class BeeFood
@@ -45,6 +48,7 @@ public class BeeShop : MonoBehaviour
     [Header("---------- Cell price settings ----------")]
     [SerializeField] private long cellStartPrice = 1000;
     [SerializeField] private float cellMulti = 4.23f;
+    [SerializeField] private Transform cellHolder;
     private long _currentCellPrice;
 
     [Header("---------- Inventory uprade price settings ----------")]
@@ -55,13 +59,19 @@ public class BeeShop : MonoBehaviour
     private int _emptyCells;
     private int _usedCells;
     private int _totalCells;
+    private int _totalFoundCells;
+
+    private List<GameObject> purchasedCells = new List<GameObject>();
+    private List<GameObject> unPurchasedCells = new List<GameObject>();
+    private List<GameObject> usedCells = new List<GameObject>();
     private void Awake()
     {
         upgradeInventory.transform.GetChild(2).GetComponent<Button>().onClick.AddListener(() => UpgradeInventory());
-        upgradeCellCount.transform.GetChild(2).GetComponent<Button>().onClick.AddListener(() => UpgradeCellAmount());
+        upgradeCellCount.transform.GetChild(2).GetComponent<Button>().onClick.AddListener(() => BuyCell());
         SetUpBees();
         SetUpFood();
         UpdateCellCounter();
+        SetUpCells();
     }
     [Button]
     public void GetDataFromInteractor(PlayerCore player)
@@ -85,14 +95,14 @@ public class BeeShop : MonoBehaviour
             //buyCellButton.text = currentCellPrice.ToString();
         }
     }
-    public void UpgradeCellAmount()
+    public void BuyCell()
     {
         if (_player == null)
         {
             Debug.Log("No player here yet");
             return;
         }
-        if (_player.currentHoneyAmount >= _currentCellPrice)
+        if (_player.currentHoneyAmount >= _currentCellPrice && _totalCells < _totalFoundCells)
         {
             _totalCells++;
             _player.RemoveHoney(_currentCellPrice);
@@ -104,6 +114,11 @@ public class BeeShop : MonoBehaviour
             //currentCells.text = "Cells: " + cellCounter.ToString();
             //buyCellButton.text = currentCellPrice.ToString();
             Debug.Log($"You have {_player.ownedCellsAmount - _player.allBees.Count} free cells");
+
+            GameObject newCell = unPurchasedCells[UnityEngine.Random.Range(0, unPurchasedCells.Count - 1)];
+            purchasedCells.Add(newCell);
+            unPurchasedCells.Remove(newCell);
+            newCell.SetActive(true);
         }
     }
     public void BuyBee(int index)
@@ -124,9 +139,20 @@ public class BeeShop : MonoBehaviour
         }
 
         Debug.Log($"Buying bee {beesForSale[index].BeeName} for {price} honey");
-        _player.BuyBee(beesForSale[index].Bee, beeSpawner);
+
+
+        GameObject cellForNewBee = purchasedCells[UnityEngine.Random.Range(0, purchasedCells.Count - 1)];
+        usedCells.Add(cellForNewBee);
+        purchasedCells.Remove(cellForNewBee);
+        Instantiate(beesForSale[index].beeCellImage, cellForNewBee.transform.position, Quaternion.identity, cellForNewBee.transform);
+
+
+        _player.BuyBee(beesForSale[index].Bee, cellForNewBee.transform);
+        
         _player.RemoveHoney(price);
         UpdateCellCounter();
+
+
     }
     public void BuyFood(int index)
     {
@@ -189,5 +215,25 @@ public class BeeShop : MonoBehaviour
             int index = i; // capture index correctly
             materialData.button.onClick.AddListener(() => BuyFood(index));
         }
+    }
+
+    void SetUpCells()
+    {
+        var transforms = cellHolder.GetComponentsInChildren<Transform>(true);
+
+        foreach (var t in transforms)
+        {
+            var go = t.gameObject;
+            if (go == cellHolder) continue;
+            if (go.name.StartsWith("Cell", StringComparison.OrdinalIgnoreCase))
+                unPurchasedCells.Add(go);
+        }
+
+        if (unPurchasedCells.Count > 0)
+            foreach (var cell in unPurchasedCells)
+            {
+                cell.SetActive(false);
+            }
+        _totalFoundCells = unPurchasedCells.Count();
     }
 }
