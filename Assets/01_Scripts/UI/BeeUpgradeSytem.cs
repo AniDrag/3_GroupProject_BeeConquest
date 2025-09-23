@@ -1,5 +1,6 @@
 ﻿using AniDrag.Utility;
 using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -7,39 +8,45 @@ using UnityEngine.UI;
 
 public class BeeUpgradeSytem : MonoBehaviour
 {
-    [Header("----- External Refrences -----")]
-    [SerializeField] private PlayerCore player;
-    [SerializeField] private GameObject InventoryItemPRF;
+
+    [Header("----- Inventory UI refrences -----")]
+    [SerializeField] private GameObject InventoryItemPRF; 
     [SerializeField] private Transform beePanel;
     [SerializeField] private Transform foodPanel;
-    [SerializeField] private Transform spawnBeeInViewPort;
+
+    [Header("----- Player Refrences -----")]
+    [SerializeField] private PlayerCore player;
+    [SerializeField] private List<PlayerBeeSaved> playerBees = new List<PlayerBeeSaved>();
+
+    [Header("----- Bee UI Refrences -----")]
+    [SerializeField] private Transform beeVisualInstanceTransform;
+    [SerializeField] private GameObject beeVisualObject;
+
+    [Header("----- Bee UI Stat Refrences -----")]
+    [SerializeField] private Button UpgradeBee;
     [SerializeField] private TextMeshProUGUI statPointsLeftText;
     [SerializeField] private Slider beeXpBar;
-    [SerializeField] private GameObject beeInViewPort;
+    [SerializeField] private Button zoomIN;
+    [SerializeField] private Button zoomOUT;
+    private long xpCach;
 
     [Header("----- Stat Buttons -----")]
-    [SerializeField] private Button UpgradeBee;
     [SerializeField] private Button Vitality;
     [SerializeField] private Button Strength;
     [SerializeField] private Button Dexterity;
     [SerializeField] private Button Agility;
     [SerializeField] private Button Luck;
 
-    [Header("----- Visual Buttons -----")]
-    [SerializeField] private Button zoomIN;
-    [SerializeField] private Button zoomOUT;
-
     [Header("----- Input -----")]
     [SerializeField] private PlayerInput inputs;
     [SerializeField] private InputAction lookAction;   // Mouse Delta
     [SerializeField] private InputAction clickAction;  // Left Click
 
-    private BeeFood selectedUpgradeConsumable;
-    private BasicBee BeeBeingUpgraded;
+    private BeeFood selectedFood;
+    private BasicBee selectedBee;
     private int usedFoodIndex;
     private bool isDragging = false;
     private float rotationSpeed = 5f;
-    private long xpToAdd;
 
     private void Reset()
     {
@@ -90,28 +97,28 @@ public class BeeUpgradeSytem : MonoBehaviour
     }
     void ViewPortControlls()
     {
-        if (beeInViewPort == null || !isDragging) return;
+        if (beeVisualObject == null || !isDragging) return;
 
         Vector2 delta = lookAction.ReadValue<Vector2>();
 
         // Rotate around Y (horizontal drag)
-        beeInViewPort.transform.Rotate(Vector3.up, -delta.x * rotationSpeed * Time.deltaTime, Space.World);
+        beeVisualObject.transform.Rotate(Vector3.up, -delta.x * rotationSpeed * Time.deltaTime, Space.World);
 
         // Rotate around X (vertical drag, clamped)
-        beeInViewPort.transform.Rotate(Vector3.right, delta.y * rotationSpeed * Time.deltaTime, Space.World);
+        beeVisualObject.transform.Rotate(Vector3.right, delta.y * rotationSpeed * Time.deltaTime, Space.World);
     }
     #endregion
 
     #region Bee Food Logic
     void FeedBee()
     {
-        if(selectedUpgradeConsumable == null) return;
-        BeeBeingUpgraded.AddXP(selectedUpgradeConsumable.heldXP);
-        if(BeeBeingUpgraded._curentXP > BeeBeingUpgraded.XpToLevelUP)
-        player.foodStorage[selectedUpgradeConsumable]--;
-        foodPanel.GetChild(usedFoodIndex).GetComponent<InventoryItem>().UpdateText(player.foodStorage[selectedUpgradeConsumable].ToString());
+        if(selectedFood == null) return;
+        selectedBee.AddXP(selectedFood.heldXP);
+        if(selectedBee._curentXP > selectedBee.XpToLevelUP)
+        player.foodStorage[selectedFood]--;
+        foodPanel.GetChild(usedFoodIndex).GetComponent<InventoryItem>().UpdateText(player.foodStorage[selectedFood].ToString());
 
-        VusualizeStats();
+        VisualizeStats();
     }
     void SpawnAllFoodInInventory()
     {
@@ -140,11 +147,18 @@ public class BeeUpgradeSytem : MonoBehaviour
     }
     void SelectFoodAsUpgradeConsumable(BeeFood food, int index)
     {
-
-       long tempVal= xpToAdd +  food.heldXP;
-        if (tempVal <= beeXpBar.maxValue)
-            xpToAdd = tempVal;
-            beeXpBar.value = xpToAdd;
+        if (player.foodStorage[food] > 0)
+        {
+            player.foodStorage[food]--;
+            selectedBee.AddXP(food.heldXP);
+            foodPanel.GetChild(index).GetComponent<InventoryItem>().UpdateText(player.foodStorage[food].ToString());
+            long xp = selectedBee._curentXP + food.heldXP;
+            if(xp > selectedBee.XpToLevelUP)
+            {
+                VisualizeStats();
+            }
+            UpdateXpBar();
+        }
     }
     #endregion
     #region Bee Selection logic
@@ -153,8 +167,9 @@ public class BeeUpgradeSytem : MonoBehaviour
         // Clear old buttons if needed
         foreach (Transform child in beePanel)
             Destroy(child.gameObject);
-
-        for (int i = 0; i < player.savedBees.Count; i++)
+        playerBees.Clear();
+        playerBees = player.savedBees;
+        for (int i = 0; i < playerBees.Count; i++)
         {
             int capturedIndex = i; // 👈 Fix closure issue
 
@@ -162,8 +177,8 @@ public class BeeUpgradeSytem : MonoBehaviour
             InventoryItem beeData = newBee.GetComponent<InventoryItem>();
 
             // Assign sprite (safety check in case sprite is missing)
-            if (player.savedBees[capturedIndex].beeScritp != null)
-                beeData.AsignData(player.savedBees[capturedIndex].beeScritp.BeeSprite);
+            if (playerBees[capturedIndex].beeScritp != null)
+                beeData.AsignData(playerBees[capturedIndex].beeScritp.BeeSprite);
 
             // Correctly bind button click to this bee
             beeData.button.onClick.AddListener(() => SelectedBee(capturedIndex));
@@ -180,38 +195,50 @@ public class BeeUpgradeSytem : MonoBehaviour
         }
 
         // Clean up previously spawned bee in viewport
-        if (beeInViewPort != null)
-            Destroy(beeInViewPort);
-
-        // Instantiate the bee in the viewport (child[0] = actual model)
-        GameObject beePrefab = player.savedBees[index].beeObject;
-        if (beePrefab != null && beePrefab.transform.childCount > 0)
-        {
-            beeInViewPort = Instantiate(
-                beePrefab.transform.GetChild(0).gameObject,
-                spawnBeeInViewPort
-            );
-        }
-
+        if (beeVisualObject != null)
+            Destroy(beeVisualObject);
         // Make sure allBees matches savedBees before indexing
-        if (index < player.allBees.Count)
-            BeeBeingUpgraded = player.allBees[index];
+        if (index < playerBees.Count)
+            selectedBee = playerBees[index].beeScritp;
         else
             Debug.LogWarning($"allBees list out of sync with savedBees at index {index}");
 
-        VusualizeStats();
+        UpdateViewPort(index);
+        UpdateXpBar();
+
+        
+
+        VisualizeStats();
     }
-    void VusualizeStats()
+    void VisualizeStats()
     {
-        Vitality.transform.parent.GetChild(1).GetComponent<TMP_Text>().text = $"Vitality: {BeeBeingUpgraded.Vitality}";
-        Strength.transform.parent.GetChild(1).GetComponent<TMP_Text>().text = $"Strenght: {BeeBeingUpgraded.Strength}";
-        Dexterity.transform.parent.GetChild(1).GetComponent<TMP_Text>().text = $"Dexterity: {BeeBeingUpgraded.Dexterity}";
-        Agility.transform.parent.GetChild(1).GetComponent<TMP_Text>().text = $"Agility: {BeeBeingUpgraded.Agility}";
-        Luck.transform.parent.GetChild(1).GetComponent<TMP_Text>().text = $"Luck: {BeeBeingUpgraded.Luck}";
+        Vitality.transform.parent.GetChild(1).GetComponent<TMP_Text>().text = $"Vitality: {selectedBee.Vitality}";
+        Strength.transform.parent.GetChild(1).GetComponent<TMP_Text>().text = $"Strenght: {selectedBee.Strength}";
+        Dexterity.transform.parent.GetChild(1).GetComponent<TMP_Text>().text = $"Dexterity: {selectedBee.Dexterity}";
+        Agility.transform.parent.GetChild(1).GetComponent<TMP_Text>().text = $"Agility: {selectedBee.Agility}";
+        Luck.transform.parent.GetChild(1).GetComponent<TMP_Text>().text = $"Luck: {selectedBee.Luck}";
     }
     void IncreseStat(StatType type)
     {
-        BeeBeingUpgraded.StatIncrese(type);
+        selectedBee.StatIncrese(type);
+    }
+
+    void UpdateViewPort(int i)
+    {
+        GameObject beePrefab = player.savedBees[i].beeObject;
+        if (beePrefab != null && beePrefab.transform.childCount > 0)
+        {
+            beeVisualObject = Instantiate(
+                beePrefab.transform.GetChild(0).gameObject,
+                beeVisualInstanceTransform
+            );
+        }
+    }
+    // Set up xp bar and update ui
+    void UpdateXpBar()
+    {
+        beeXpBar.maxValue = selectedBee.XpToLevelUP;
+        beeXpBar.value = selectedBee._curentXP;
     }
     #endregion
 }
