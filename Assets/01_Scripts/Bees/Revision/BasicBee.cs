@@ -319,7 +319,7 @@ public class BasicBee : Stats
     }
     #endregion
     #region OTHER FUNCTIONS
-    public int XpToLevelUP => maxXP;
+    public long XpToLevelUP => maxXP;
     public override void OnDeath()
     {
         base.OnDeath();

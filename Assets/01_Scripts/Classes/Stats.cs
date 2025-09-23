@@ -14,7 +14,7 @@ public class Stats : MonoBehaviour,IDamageable
 
     // Level details
     private int characterLevel = 1;
-    protected int maxXP;
+    protected long maxXP;
     private float xpToLevelMulti = 1.5f;
 
     // Multipliers
