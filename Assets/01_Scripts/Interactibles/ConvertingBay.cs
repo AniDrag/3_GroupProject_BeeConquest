@@ -52,7 +52,8 @@ public class ConvertingBay : MonoBehaviour, IInteract
 
     void GeneratePollin()
     {
-        Game_Manager.instance.ConvertPolinToHoney(500 * systemLevel, registeredPlayer.playerID);
+        long convertAmount = (long)Mathf.Pow((long)500, (long)registeredPlayer.allBees.Count);
+        Game_Manager.instance.ConvertPolinToHoney(convertAmount * systemLevel, registeredPlayer.playerID);
     }
 
     private void FixedUpdate()
