@@ -18,8 +18,8 @@ public class MusicBee : BasicBee
         //bee.collectionStrength *= 2;
         float increseChance = 25; //1. 10% increase to overall chance
         float actualChance = 1 + increseChance / 100;
-        int flatStatincrease = 500;
-        float buffDuration = 10;
+        int flatStatincrease = 10;
+        float buffDuration = 30;
 
         GameObject explosion = AbilityVfxPooler.Instance.Get("MeloBeeAbility");
         if (explosion != null)

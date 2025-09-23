@@ -78,3 +78,6 @@ MonoBehaviour:
   - key: LovingAura
     prefab: {fileID: 3960130105468984406, guid: 2d208d0e7da510c4f9d8fab6ecd28916, type: 3}
     prewarm: 0
+  - key: LovingExplosion
+    prefab: {fileID: 2101929471371606709, guid: 125541b40c14c3f40aed28deabef68ba, type: 3}
+    prewarm: 0
