@@ -1,6 +1,7 @@
 using AniDrag.Utility;
 using System.Collections.Generic;
 using UnityEngine;
+
 public class PlayerCore : MonoBehaviour
 {
     // [SerializeField, ShowIf("showBeeData")] public BeeAI[] testBee;
@@ -20,6 +21,7 @@ public class PlayerCore : MonoBehaviour
     [SerializeField, ShowIf("showBeeData"), Range(20, 1000)] int beeBatchPerUpdate = 100;
     //[ShowIf("showBeeData")] public List<BeeAI> playerBees { get; private set; } = new List<BeeAI>();
     [ShowIf("showBeeData")] public List<BasicBee> allBees { get; private set; } = new List<BasicBee>();
+    public List<PlayerBeeSaved> savedBees = new List<PlayerBeeSaved>();
 
     [Header("----- Field Data -----")]
     public FieldGenerator currentField { get; private set; }
@@ -47,7 +49,7 @@ public class PlayerCore : MonoBehaviour
 
     private void Awake()
     {
-        PlayerServerData data = new PlayerServerData(playerID, transform, this, allBees) { };
+        PlayerServerData data = new PlayerServerData(playerID, transform, this, savedBees) { };
         Game_Manager.instance.JoinServer(playerID, data);
         currentHoneyAmount = 10000000000000;
     }
@@ -63,6 +65,8 @@ public class PlayerCore : MonoBehaviour
 
             beeTwo.SetMyParent(this);
             allBees.Add(beeTwo);
+            PlayerBeeSaved newSavedBee = new PlayerBeeSaved(beeTwo,newBee);
+            savedBees.Add(newSavedBee);
 
             newBee.transform.position = transform.position + Vector3.up;
 
@@ -220,6 +224,8 @@ public class PlayerCore : MonoBehaviour
             BasicBee beeTwo = newBee.GetComponent<BasicBee>();
             beeTwo.SetMyParent(this);
             allBees.Add(beeTwo);
+            PlayerBeeSaved newSavedBee = new PlayerBeeSaved(beeTwo, newBee);
+            savedBees.Add(newSavedBee);
             //Game_Manager.instance.players[playerID].playerBeesTwo.Add(bee);
 
         }
@@ -253,9 +259,11 @@ public class PlayerCore : MonoBehaviour
     public void BuyBee(GameObject bee, Transform spawnPosition)
     {
         GameObject newBee = Instantiate(bee);
-        var basicBee = newBee.GetComponent<BasicBee>();
+        BasicBee basicBee = newBee.GetComponent<BasicBee>();
         basicBee.SetMyParent(this);
         allBees.Add(basicBee);
+        PlayerBeeSaved newSavedBee = new PlayerBeeSaved(basicBee, newBee);
+        savedBees.Add(newSavedBee);
         newBee.transform.position = spawnPosition.position;
 
     }
@@ -325,4 +333,15 @@ public class PlayerCore : MonoBehaviour
         }
     }
     #endregion
+}
+public class PlayerBeeSaved
+{
+    public BasicBee beeScritp;
+    public GameObject beeObject;
+    // List<Mutations> beeMutations = new Lsit<Mutation>();
+    public PlayerBeeSaved(BasicBee bee, GameObject objectOfBee)
+    {
+        beeScritp = bee;
+        beeObject = objectOfBee;
+    }
 }

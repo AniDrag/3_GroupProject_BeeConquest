@@ -74,6 +74,7 @@ public class Stats : MonoBehaviour,IDamageable
 
     #endregion
     #region Setters
+
     public void SetMultipliers(
         float xpToLevelMulti = 1, float healthMulti = 1, float staminaMulti = 1,
         float physicalDefMulti = 1, float magicDefMulti = 1, float statusDefMulti = 1)

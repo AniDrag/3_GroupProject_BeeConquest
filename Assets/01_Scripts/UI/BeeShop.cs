@@ -1,5 +1,6 @@
-using System.Collections.Generic;
 using AniDrag.Utility;
+using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,9 +16,9 @@ public class BeeTypesForTheShopDontUseThisPlease
 [System.Serializable]
 public class BeeFood
 {
-    public string materialName;
+    public string foodName;
     public long Cost;
-    public Sprite materialSprite;
+    public Sprite foodSprite;
     public long heldXP;
 }
 public class BeeShop : MonoBehaviour
@@ -58,6 +59,9 @@ public class BeeShop : MonoBehaviour
     {
         upgradeInventory.transform.GetChild(2).GetComponent<Button>().onClick.AddListener(() => UpgradeInventory());
         upgradeCellCount.transform.GetChild(2).GetComponent<Button>().onClick.AddListener(() => UpgradeCellAmount());
+        SetUpBees();
+        SetUpFood();
+        UpdateCellCounter();
     }
     [Button]
     public void GetDataFromInteractor(PlayerCore player)
@@ -65,7 +69,7 @@ public class BeeShop : MonoBehaviour
         _player = player;
 
         //SetUpBees();
-        UpdateCellConter();
+        UpdateCellCounter();
 
     }
     public void UpgradeInventory()
@@ -83,48 +87,68 @@ public class BeeShop : MonoBehaviour
     }
     public void UpgradeCellAmount()
     {
+        if (_player == null)
+        {
+            Debug.Log("No player here yet");
+            return;
+        }
         if (_player.currentHoneyAmount >= _currentCellPrice)
         {
             _totalCells++;
             _player.RemoveHoney(_currentCellPrice);
             _currentCellPrice = cellStartPrice + (long)Mathf.Pow((cellStartPrice * ((float)_totalCells * cellMulti)), _totalCells / 20f);
-            UpdateCellConter();
+            _player.AddCell();
+            UpdateCellCounter();
             upgradeCellCount.updatePrice(_currentCellPrice);
             // Get the ShopItem that upgrades cells and update its price?
             //currentCells.text = "Cells: " + cellCounter.ToString();
             //buyCellButton.text = currentCellPrice.ToString();
+            Debug.Log($"You have {_player.ownedCellsAmount - _player.allBees.Count} free cells");
         }
     }
     public void BuyBee(int index)
     {
+        UpdateCellCounter();
         long price = beesForSale[index].Cost;
-        Debug.Log($"You want to by {beesForSale[index].BeeName}, and you have to pay {price}, you have {_emptyCells} empty cells, and do we have enough money: {_player.currentHoneyAmount >= price}");
-        if (_emptyCells > 0 && _player.currentHoneyAmount >= price)
+
+        if (_emptyCells <= 0)
         {
-            Debug.Log("Suck");
-            _player.BuyBee(beesForSale[index].Bee, beeSpawner);
-            cellsUsedText.text = "Bees: " + _player.allBees.Count;
-            _player.RemoveHoney(price);
-            UpdateCellConter();
+            Debug.Log("No empty cells to buy a bee!");
+            return;
         }
+
+        if (_player.currentHoneyAmount < price)
+        {
+            Debug.Log("Not enough honey to buy this bee!");
+            return;
+        }
+
+        Debug.Log($"Buying bee {beesForSale[index].BeeName} for {price} honey");
+        _player.BuyBee(beesForSale[index].Bee, beeSpawner);
+        _player.RemoveHoney(price);
+        UpdateCellCounter();
     }
     public void BuyFood(int index)
     {
         long price = foodForSale[index].Cost;
-        Debug.Log($"You want to by {foodForSale[index].materialName}, and you have to pay {price}, do we have enough money: {_player.currentHoneyAmount >= price}");
-        if (_player.currentHoneyAmount >= price)
+
+        if (_player.currentHoneyAmount < price)
         {
-            _player.AddFoodItem(foodForSale[index]);
-            _player.RemoveHoney(price);
+            Debug.Log("Not enough honey to buy this food!");
+            return;
         }
+
+        Debug.Log($"Buying food {foodForSale[index].foodName} for {price} honey");
+        _player.AddFoodItem(foodForSale[index]);
+        _player.RemoveHoney(price);
     }
 
-    private void UpdateCellConter()
+    private void UpdateCellCounter()
     {
         _usedCells = _player.allBees.Count;
         _totalCells = _player.ownedCellsAmount;
         _emptyCells = _totalCells - _usedCells;
-        cellsUsedText.text = $"Cells space: {_usedCells} out off {_totalCells}";
+        cellsUsedText.text = $"Cells space: {_usedCells} / {_totalCells}, empty {_emptyCells}";
     }
     //obsolete
     public void SetAction(Button button,UnityEngine.Events.UnityAction action)
@@ -137,31 +161,33 @@ public class BeeShop : MonoBehaviour
     [Button]
     void SetUpBees()
     {
-        for (int i = beesForSale.Count - 1; i == 0; i--) 
-        {
-            Destroy(beeContent.transform.GetChild(i).gameObject);
-        }
+        for (int i = beeContent.childCount - 1; i >= 0; i--)
+            Destroy(beeContent.GetChild(i).gameObject);
         for (int i = 0; i < beesForSale.Count; i++)
         {
-            GameObject newbee = Instantiate(ShopItemPRF, beeContent);
-            ShopItem beeData = newbee.GetComponent<ShopItem>();
+            GameObject newBee = Instantiate(ShopItemPRF, beeContent);
+            ShopItem beeData = newBee.GetComponent<ShopItem>();
             beeData.AsignData(beesForSale[i].BeeName, beesForSale[i].Cost, beesForSale[i].beeSprite);
-            beeData.button.onClick.AddListener(() => BuyBee(i));
+
+            int index = i; // capture index correctly
+            beeData.button.onClick.AddListener(() => BuyBee(index));
         }
     }
     [Button]
-    void SetUpmaterials()
+    void SetUpFood()
     {
-        for (int i = beesForSale.Count - 1; i == 0; i--)
-        {
-            Destroy(foodContent.transform.GetChild(i).gameObject);
-        }
+        // Clear previous food items
+        for (int i = foodContent.childCount - 1; i >= 0; i--)
+            Destroy(foodContent.GetChild(i).gameObject);
+
         for (int i = 0; i < foodForSale.Count; i++)
         {
-            GameObject newMaterial = Instantiate(ShopItemPRF, beeContent);
+            GameObject newMaterial = Instantiate(ShopItemPRF, foodContent);
             ShopItem materialData = newMaterial.GetComponent<ShopItem>();
-            materialData.AsignData(foodForSale[i].materialName, foodForSale[i].Cost, foodForSale[i].materialSprite);
-            materialData.button.onClick.AddListener(() => BuyBee(i));
+            materialData.AsignData(foodForSale[i].foodName, foodForSale[i].Cost, foodForSale[i].foodSprite);
+
+            int index = i; // capture index correctly
+            materialData.button.onClick.AddListener(() => BuyFood(index));
         }
     }
 }

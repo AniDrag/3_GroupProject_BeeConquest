@@ -16,9 +16,9 @@ public class PlayerServerData
     public Transform transform;
     public Vector3 lastKnownPosition;
     public PlayerCore playerCore;
-    public List<BasicBee> playerBeesTwo = new List<BasicBee>();
+    public List<PlayerBeeSaved> playerBeesTwo = new List<PlayerBeeSaved>();
     public FieldGenerator currentField;// trigger this
-    public PlayerServerData(int PlayerID, Transform PlayerTransform, PlayerCore Core, List<BasicBee> PlayerBees)
+    public PlayerServerData(int PlayerID, Transform PlayerTransform, PlayerCore Core, List<PlayerBeeSaved> PlayerBees)
     {
         playerID = PlayerID;
         transform = PlayerTransform;

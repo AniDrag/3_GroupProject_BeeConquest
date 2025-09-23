@@ -9,6 +9,7 @@ public class BasicBee : Stats
     // ───────────── General Bee Info ─────────────
     [Header(" ───────────── General Bee Info ─────────────")]
     public string BeeName { get; private set; } = "Name";
+    public Sprite BeeSprite;
     public ColorAtribute beeAtribute { get; private set; }
     public BeeState beeState;
     [Header(" ───────────── Refrences ─────────────")]
@@ -28,16 +29,18 @@ public class BasicBee : Stats
     [SerializeField] private int dexIncrease = 1;
     [SerializeField] private int agiIncrease = 1;
     [SerializeField] private int lucIncrease = 1;
+    [SerializeField] private int statpointIncrese = 3;
 
     [Header(" ───────────── On level up multipliers ─────────────")]
     [SerializeField] private float beeStaminaMulti = 1;
-    [SerializeField] private float beeLevelUpMulti = 2;
+    //[SerializeField] private float beeLevelUpMulti = 2;
 
     [Header(" ───────────── Bee Stats ─────────────")]
     private float beeSpeed = 1;
     [SerializeField, Range(10, 100)] private int flowerDurabilityCap = 20; // collection strenght cant go above this
     private int flowerDurabilityDamage = 5;// Durability damage to flowers
     private float pollinCollectionSpeed = 5; // Time in s before bee collects Pollin
+    public int statPoints;
     
     [Header(" ───────────── Bee Ability details ─────────────")]
     [Range(0.01f, 1f)] public float spawnTokenChance = 0.1f;
@@ -89,15 +92,17 @@ public class BasicBee : Stats
     private float beeStateUpdateInterval = 0;
     private float beeStateTimer = 0f;
     private float beeNextStateTime = 0f;
+    public long _curentXP = 0;
 
 
-    [SerializeField, Range(.001f, .1f)] private float moveaAnimUpdateTimer = 0.05f;
+    //[SerializeField, Range(.001f, .1f)] private float moveaAnimUpdateTimer = 0.05f;
     private float moveaAnimTimer = 0f;
-    private float moveaAnimNextTime = 0f;
+    //private float moveaAnimNextTime = 0f;
     #endregion
     #region UNITY FUNCTION
     private void Awake()
     {
+        beeStateUpdateInterval = normalBeeTickSpeed;
         GenerateOffsets();
         //-------------------
         //      States initialization
@@ -266,6 +271,18 @@ public class BasicBee : Stats
         else
             maxXP *= 2;
     }
+    public void StatIncrese(StatType type)
+    {
+        switch(type)
+        {
+            case StatType.Vitality: beeVitality++; break;
+            case StatType.Strength: beeStrength++; break;
+            case StatType.Dexterity: beeDexterity++; break;
+            case StatType.Agility: beeAgility++; break;
+            case StatType.Luck: beeLuck++; break;
+        }
+        UpdateStats();
+    }
     public override void UpdateStats()
     {
         beeVitality += vitIncrease;
@@ -278,6 +295,25 @@ public class BasicBee : Stats
         UpdateBeeStats();
        
         //When bee levels up
+    }
+    public void AddXP(long amount)
+    {
+        _curentXP += amount;
+        if(_curentXP > maxXP)
+        {
+            _curentXP -= maxXP;
+            RepetedLevelUp(_curentXP);
+        }
+    }
+    private void RepetedLevelUp(long amount)
+    {
+        statPoints += statpointIncrese;
+        if (_curentXP > maxXP)
+        {
+            _curentXP -= maxXP;
+            LevelUp();
+            RepetedLevelUp(_curentXP);
+        }
     }
     #endregion
     #region OTHER FUNCTIONS

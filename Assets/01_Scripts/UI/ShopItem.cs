@@ -25,4 +25,5 @@ public class ShopItem: MonoBehaviour
     {
         itemPrice.text = amount.ToString("C0");
     }
+
 }

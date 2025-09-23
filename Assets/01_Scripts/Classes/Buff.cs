@@ -30,6 +30,7 @@ public enum StatType
     Strength,
     Dexterity,
     Agility,
+    Luck,
     MaxHealth,
     MaxStamina,
     Speed,

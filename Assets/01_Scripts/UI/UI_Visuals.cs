@@ -15,6 +15,7 @@ public class UI_Visuals : MonoBehaviour
     [Header("----- Input -----")]
     [SerializeField] private PlayerInput inputs;
     private InputAction menuAction;
+    private InputAction inventoryAction;
 
 
     [Header("----- Playr Visuals -----")]
@@ -51,8 +52,10 @@ public class UI_Visuals : MonoBehaviour
     [Header("----- Shop Visuals -----")]
     [SerializeField] bool enableVarsS = true;
     [SerializeField, Required, ShowIf("enableVarsS")] public GameObject shopPanel;
+    [SerializeField] public GameObject inventoryPanel;
+    private bool inventoryActive = false;
 
-
+    private bool activeUI = false;
     #region ─────────────────────────────  Default Functions ───────────────────────────── 
     private void Awake()
     {
@@ -62,6 +65,7 @@ public class UI_Visuals : MonoBehaviour
         if (logOutBtn == null) Debug.LogError("❌ logOutBtn is not assigned!", this);
         if (closeBtn == null) Debug.LogError("❌ closeBtn is not assigned!", this);
         menuAction = inputs.actions["Menu"];
+        inventoryAction = inputs.actions["Inventory"];
 
         if (menuAction == null)
             Debug.LogError("❌ Input Action 'Menu' not found in PlayerInput!");
@@ -76,6 +80,8 @@ public class UI_Visuals : MonoBehaviour
 
         menuPanel.SetActive(false);
         optionsPanel.SetActive(false);
+        shopPanel.SetActive(false);
+        inventoryPanel.SetActive(false);
         // force PlayerInput to detect scheme
         if (string.IsNullOrEmpty(inputs.currentControlScheme))
             inputs.SwitchCurrentControlScheme("Keyboard&Mouse", Keyboard.current, Mouse.current);
@@ -85,6 +91,7 @@ public class UI_Visuals : MonoBehaviour
     private void OnEnable()
     {
         menuAction.performed += UI_ToggleMenu;
+        inventoryAction.performed += UI_ToggleInventory;
         inputs.onControlsChanged += OnControlsChanged;
 
         optionsBtn.onClick.AddListener(UI_OpenOptions);
@@ -94,6 +101,7 @@ public class UI_Visuals : MonoBehaviour
     private void OnDisable()
     {
         menuAction.performed -= UI_ToggleMenu;
+        inventoryAction.performed -= UI_ToggleInventory;
         inputs.onControlsChanged -= OnControlsChanged;
 
         optionsBtn.onClick.RemoveListener(UI_OpenOptions);
@@ -135,26 +143,39 @@ public class UI_Visuals : MonoBehaviour
         if (menuOpen) UI_CloseMenu();
         else UI_OpenMenu();
     }
+    public void UI_BTNToggleMenu()
+    {
+        Debug.Log("BTN Menu action pressed!");
+        if (menuOpen) UI_CloseMenu();
+        else UI_OpenMenu();
+    }
 
     private void UI_OpenMenu()
     {
-        Debug.Log("Enable menu");
         menuOpen = true;
+        activeUI = true;
+
         menuPanel.SetActive(true);
         optionsPanel.SetActive(false);
 
         ControllPlayerCamAndMove();
         ApplyControlScheme(inputs.currentControlScheme);
+
+        Debug.Log("Enable menu. activeUI =" + activeUI);
     }
 
     private void UI_CloseMenu()
     {
-        Debug.Log("Disable menu");
         menuOpen = false;
+        activeUI = inventoryPanel.activeSelf;
+
         menuPanel.SetActive(false);
         optionsPanel.SetActive(false);
+
         ControllPlayerCamAndMove();
         ApplyControlScheme(inputs.currentControlScheme);
+
+        Debug.Log("Disable menu. activeUI =" +activeUI );
     }
     #endregion
 
@@ -173,11 +194,12 @@ public class UI_Visuals : MonoBehaviour
     #endregion
     //───────────────────────────── Player Control
     #region ───────────────────────────── Player Control
-    private void ControllPlayerCamAndMove()
+    public void ControllPlayerCamAndMove()
     {
-        bool enableGameplay = !menuPanel.activeSelf;
+        bool enableGameplay = !activeUI;
 
-        //player.GetComponent<PlayerMovemant>().enabled = enableGameplay;
+        // Example: disable movement + disable camera rotation
+        // player.GetComponent<PlayerMovemant>().enabled = enableGameplay;
         Camera.main.GetComponent<PlayerCamera>().disableCamRotation = enableGameplay;
     }
     // ───────────────────────────── Input Switching
@@ -187,33 +209,79 @@ public class UI_Visuals : MonoBehaviour
     }
     private void ApplyControlScheme(string scheme)
     {
-        bool menuIsOpen = menuPanel.activeSelf;
-
-        //Debug.Log("Scheme type: " + scheme + " || Is cursure visible: " + menuIsOpen);
         if (scheme == "Keyboard&Mouse")
         {
-            Cursor.visible = menuIsOpen;
-            Cursor.lockState = menuIsOpen ? CursorLockMode.Confined : CursorLockMode.Locked;
-            EventSystem.current.SetSelectedGameObject(null); // clear gamepad selection
+            if (activeUI) // Menu or Inventory is open
+            {
+                Cursor.visible = true;
+                Cursor.lockState = CursorLockMode.Confined;
+            }
+            else // Gameplay
+            {
+                Cursor.visible = false;
+                Cursor.lockState = CursorLockMode.Locked;
+            }
+
+            EventSystem.current.SetSelectedGameObject(null);
         }
         else if (scheme == "Gamepad")
         {
             Cursor.visible = false;
-            if (menuIsOpen)
-            {
-                // auto-select first button for controller navigation
+            Cursor.lockState = CursorLockMode.Locked;
+
+            if (activeUI)
                 EventSystem.current.SetSelectedGameObject(optionsBtn.gameObject);
-            }
         }
     }
     #endregion
 
-    #region Interaction system
+    #region  ────────────────────────  Interaction system
     // ───────────────────────────── Interaction system
     public void UI_ShowOrCloseInteractBox(bool state) =>
         interactionBox.gameObject.SetActive(state);
 
     public void UI_SetInteractText(string text) => interactedItemText.text = interactionText + text;
+    #endregion
+    #region  ─────────────────────────────  Inventory Toggle
+    private void UI_ToggleInventory(InputAction.CallbackContext ctx)
+    {
+        if (menuOpen) return;
+
+        Debug.Log("Inventory action pressed!");
+        if (inventoryActive) UI_CloseInventory();
+        else UI_OpenInventory();
+    }
+    public void UI_BTNToggleInventory()
+    {
+        Debug.Log("BTN Inventory action pressed!");
+        if (inventoryActive) UI_CloseInventory();
+        else UI_OpenInventory();
+    }
+
+    private void UI_OpenInventory()
+    {
+        inventoryActive = true;
+        activeUI = true;
+
+        inventoryPanel.SetActive(true);
+
+        ControllPlayerCamAndMove();
+        ApplyControlScheme(inputs.currentControlScheme);
+
+        Debug.Log("Enable Inventory. activeUI =" + activeUI);
+    }
+
+    private void UI_CloseInventory()
+    {
+        inventoryActive = false;
+        activeUI = menuPanel.activeSelf; // if menu is still open, keep UI active
+
+        inventoryPanel.SetActive(false);
+
+        ControllPlayerCamAndMove();
+        ApplyControlScheme(inputs.currentControlScheme);
+        Debug.Log("Disable Inventory. activeUI =" + activeUI);
+    }
     #endregion
     #endregion
     #region ─────────────────────────────  Debug Button Fucnctions ───────────────────────────── 
