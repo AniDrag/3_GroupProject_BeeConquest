@@ -75,3 +75,6 @@ MonoBehaviour:
   - key: MeloBeeAura
     prefab: {fileID: 1725687685469331812, guid: 8e54e35fc3bc5994c92d8efdc3eb3bf9, type: 3}
     prewarm: 0
+  - key: LovingAura
+    prefab: {fileID: 3960130105468984406, guid: 2d208d0e7da510c4f9d8fab6ecd28916, type: 3}
+    prewarm: 0
