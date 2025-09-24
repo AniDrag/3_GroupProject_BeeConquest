@@ -21,6 +21,7 @@ public class BeeIdleState : BeeStates
         if (bee.playerComand) return;
 
         if (waitEndTime >= Time.time && bee.player.currentField == null) return;
+        Debug.Log($"I was triggered and {bee.player.currentField != null}");
         // bee.player.currentField == null Added so tha if we are on feil bees wount wait around
         stateMachine.ChangeState(bee.moveingState);
     }

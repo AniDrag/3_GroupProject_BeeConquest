@@ -186,7 +186,7 @@ public class BasicBee : Stats
         float tolerance = beeState == BeeState.Following ? stopBeforePlayerReached : stopBeforeTarget;
         atDestination = distance <= tolerance;
 
-        if (atDestination) // only when we transition to arrived
+        if (atDestination || player.currentField != null) // only when we transition to arrived
         {
             beeStateUpdateInterval = 1.5f;
             //Debug.Log($"[ARRIVED] Actual arrival time: {Time.time:F3}. Expected: {expectedArrivalTime:F3}. Delta: {Time.time - expectedArrivalTime:F3}s");
@@ -232,6 +232,7 @@ public class BasicBee : Stats
     {
          if (player.currentField != null) Game_Manager.instance.Bee_CellRequest(this);
          else Game_Manager.instance.Bee_IdleMove(this);
+        Debug.Log($"There is a field: {player.currentField != null}");
     }
     #endregion
     #region PLAYER COMUNICATION FUNCTIONS
@@ -339,4 +340,13 @@ public class BasicBee : Stats
     {
         maxXP = 100 + Mathf.RoundToInt(CharacterLevel * maxXP * 1.73f);
     }
+
+#if UNITY_EDITOR
+        private void OnDrawGizmos()
+        {
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawSphere(destinationPoint, 0.3f);
+            //Gizmos.DrawSphere(player.transform.position, 0.3f);
+        }
+#endif
 }

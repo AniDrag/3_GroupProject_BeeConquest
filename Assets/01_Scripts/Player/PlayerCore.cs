@@ -96,7 +96,7 @@ public class PlayerCore : MonoBehaviour
         {
             for (int i = 0; i < allBees.Count; i++)
             {
-                float distance = Vector3.Distance(transform.position, allBees[i].transform.position);
+                float distance = Vector3.Distance(transform.position, allBees[i].destinationPoint);
                 if (distance >= startFollowDistance && currentField == null &&
                     allBees[i].StateMachine.currentState != allBees[i].pollinCollectionState &&
                     allBees[i].StateMachine.currentState != allBees[i].combatState &&

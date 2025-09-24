@@ -273,6 +273,7 @@ public class Game_Manager : MonoBehaviour
         //Debug.Log("Requesting field location from GM");
         FieldGenerator generator = bee.player.currentField;//players[bee.playerID].currentField;
         FieldCellData cell = generator.GetRandomCellInRadius(bee.player.transform.position, 5);
+        Debug.Log($"The location is {cell.ID}");
         if (cell != null)
         {
             bee.SetDestination(cell.transform.position);

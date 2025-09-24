@@ -13,9 +13,10 @@ public class BeeChasePlayerState : BeeStates
     public override void LateLogicUpdate() { }
     public override void FixedLogicUpdate() 
     {
-        if (!bee.playerComand && bee.atDestination)// playe comand prevents it from moving to another state and always follow
+        Debug.Log($"Chasing State update, currently i will check the field, is it null? {bee.player.currentField == null} ");
+        if (!bee.playerComand && bee.atDestination || bee.player.currentField != null)// playe comand prevents it from moving to another state and always follow
         {
-            //Debug.Log("Chasing State BEE");
+            Debug.Log("Chasing State BEE, should be called after Chasing State update");
             stateMachine.ChangeState(bee.moveingState);
             return;
         }
