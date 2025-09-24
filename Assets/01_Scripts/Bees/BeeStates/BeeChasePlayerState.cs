@@ -19,7 +19,7 @@ public class BeeChasePlayerState : BeeStates
             stateMachine.ChangeState(bee.moveingState);
             return;
         }
-        else 
+        else if (!bee.player.isConvertingPollen)
         {
             bee.SetDestination(bee.player.transform.position);
         }

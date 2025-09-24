@@ -23,7 +23,10 @@ public class ShopItem: MonoBehaviour
     }
     public void updatePrice(string amount)
     {
-        itemPrice.text = amount;
+        if (amount != "0")
+            itemPrice.text = amount;
+        else
+            itemPrice.text = "FREE";
     }
 
 }

@@ -77,6 +77,8 @@ public class BeeShop : MonoBehaviour
         SetUpFood();
         UpdateCellCounter();
         SetUpCells();
+        upgradeInventory.updatePrice(FormatNumber(_currentInventoryPrice));
+        upgradeCellCount.updatePrice(FormatNumber(_currentCellPrice));
     }
     [Button]
     public void GetDataFromInteractor(PlayerCore player)

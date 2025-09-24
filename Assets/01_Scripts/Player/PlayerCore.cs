@@ -24,6 +24,8 @@ public class PlayerCore : MonoBehaviour
     [ShowIf("showBeeData")] public List<BasicBee> allBees { get; private set; } = new List<BasicBee>();
     public List<PlayerBeeSaved> savedBees = new List<PlayerBeeSaved>();
 
+    public bool isConvertingPollen;
+
     [Header("----- Field Data -----")]
     public FieldGenerator currentField { get; private set; }
 
@@ -35,7 +37,7 @@ public class PlayerCore : MonoBehaviour
     [SerializeField] private long currentPollinAmount = 0;
     [SerializeField] private long maxPollinStorage = 100;
     private long _baseMaxPollinStorage;
-
+    public long GetCurrentPollin => currentPollinAmount;
     public Dictionary<BeeFood,int> foodStorage = new Dictionary<BeeFood,int>();
     [SerializeField] public int ownedCellsAmount { get; private set; } = 0;
     [SerializeField] public long currentHoneyAmount { get; private set; } = 0;
@@ -97,9 +99,10 @@ public class PlayerCore : MonoBehaviour
                 float distance = Vector3.Distance(transform.position, allBees[i].transform.position);
                 if (distance >= startFollowDistance && currentField == null &&
                     allBees[i].StateMachine.currentState != allBees[i].pollinCollectionState &&
-                    allBees[i].StateMachine.currentState != allBees[i].combatState)
+                    allBees[i].StateMachine.currentState != allBees[i].combatState &&
+                    !isConvertingPollen)
                 {
-                    //Debug.Log("player requested bee to follow DISTANCE:" + distance);
+                    //Debug.Log("player requested bee to follow DISTANCE:" + distance + " current bool is - " + isConvertingPollen);
                     //Game_Manager.instance.BEE_PlayerRequestForBeeToFollowPlayer(playerBees[i]);
                     allBees[i].SetDestination(this.transform.position);
                     allBees[i].StateMachine.ChangeState(allBees[i].chaseState);
@@ -123,7 +126,7 @@ public class PlayerCore : MonoBehaviour
             }
             ActuallyShowHoneyVisual(honeySum);
             if (allBees == null || allBees.Count == 0) return;
-            FollowPlayerLogic();
+            //FollowPlayerLogic();
         }
         if (polinPerSecTime >= pollinPerSecRareTime)
         {
@@ -236,31 +239,31 @@ public class PlayerCore : MonoBehaviour
 
         }
     }
-    void FollowPlayerLogic()
-    {
-        if (currentField == null)
-        {
-            float distance = Vector3.Distance(Game_Manager.instance.players[playerID].lastKnownPosition, this.transform.position);
-            if (distance < 2f) return;
+    //void FollowPlayerLogic()
+    //{
+    //    if (currentField == null)
+    //    {
+    //        float distance = Vector3.Distance(Game_Manager.instance.players[playerID].lastKnownPosition, this.transform.position);
+    //        if (distance < 2f) return;
 
-            int count = allBees.Count;
-            int processed = 0;
-            while (processed < beeBatchPerUpdate && count > 0)
-            {
-                int idx = (batchTracker + processed) % count;
-                var bee = allBees[idx];
+    //        int count = allBees.Count;
+    //        int processed = 0;
+    //        while (processed < beeBatchPerUpdate && count > 0)
+    //        {
+    //            int idx = (batchTracker + processed) % count;
+    //            var bee = allBees[idx];
 
-                float beeToPlayerDist = Vector3.Distance(transform.position, bee.transform.position);
-                if (beeToPlayerDist > startFollowDistance && bee.beeState != BeeState.Collecting)
-                {
-                    bee.SetDestination(transform.position);
-                    bee.StateMachine.ChangeState(bee.chaseState);
-                }
-                processed++;
-            }
-            batchTracker = (batchTracker + processed) % count;
-        }
-    }
+    //            float beeToPlayerDist = Vector3.Distance(transform.position, bee.transform.position);
+    //            if (beeToPlayerDist > startFollowDistance && bee.beeState != BeeState.Collecting)
+    //            {
+    //                bee.SetDestination(transform.position);
+    //                bee.StateMachine.ChangeState(bee.chaseState);
+    //            }
+    //            processed++;
+    //        }
+    //        batchTracker = (batchTracker + processed) % count;
+    //    }
+    //}
 
     public void BuyBee(GameObject bee, Transform spawnPosition)
     {
@@ -302,13 +305,18 @@ public class PlayerCore : MonoBehaviour
     {
 
     }
-    public void DepositPollin(Transform target)
+    public List<BasicBee> DepositPollin()
     {
+        isConvertingPollen = true;
         foreach (var bee in allBees)
         {
             bee.playerComand = true;
-            bee.SetDestination(target.position);
+            bee.SetDestination(bee.homeCoordinates, false);
+            Debug.Log($"Bee destination set to {bee.homeCoordinates}");
+
         }
+
+        return allBees;
     }
     public void CleareComands()
     {

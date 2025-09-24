@@ -1,5 +1,5 @@
 using UnityEngine;
-
+using System.Collections.Generic;
 public class ConvertingBay : MonoBehaviour, IInteract
 {
     [Header ("----- DATA -----")]
@@ -9,6 +9,8 @@ public class ConvertingBay : MonoBehaviour, IInteract
     [SerializeField] string interactionBayName = "Unregistered";
     [SerializeField] private int systemLevel = 1;
     bool activateCollection;
+
+    List<BasicBee> convertingBees = new List<BasicBee>  ();
     #region Tick stuff
     float beeRareTimer;
     float beeNextRareTime;
@@ -31,7 +33,7 @@ public class ConvertingBay : MonoBehaviour, IInteract
         else
         {
             Debug.Log($" {interactor.name} requested pollin fermentation");
-            registeredPlayer.DepositPollin(this.transform);
+            convertingBees = registeredPlayer.DepositPollin();
             interactionBayName = "Fermenting...";
             registeredPlayer.visualsUI.interactedItemText.text = interactionBayName;
             activateCollection = true;
@@ -48,16 +50,32 @@ public class ConvertingBay : MonoBehaviour, IInteract
         registeredPlayer.CleareComands();
         interactionBayName = "Ferment pollin?";
         registeredPlayer.visualsUI.interactedItemText.text = interactionBayName;
+        Debug.Log("Unsetting the bool");
+        registeredPlayer.isConvertingPollen = false;
     }
 
     void GeneratePollin()
     {
-        int count = registeredPlayer.allBees.Count;
-        const long CAP = 100_000L;
+        long convertionAmount = 0;
+        foreach (var bee in convertingBees)
+        {
+            if (bee.atDestination)
+                convertionAmount += (bee.GetBeeDex * bee.GetBeeStr);
+            Debug.Log($"Bee {bee.name} is at destination: {bee.atDestination}, and location is {bee.transform.position}, whereas the home is {bee.homeCoordinates}, current bool is {registeredPlayer.isConvertingPollen}");
+        }
 
-        double d = Mathf.Pow(12f, count);
+
+        int count = registeredPlayer.allBees.Count;
+        const long CAP = 100_000_000L;
+
+        double d = convertionAmount * 10;
         long convertAmount = (double.IsInfinity(d) || d >= CAP) ? CAP : (long)d;
+
         Game_Manager.instance.ConvertPolinToHoney(convertAmount * systemLevel, registeredPlayer.playerID);
+
+        if (registeredPlayer.GetCurrentPollin <= 0)
+            registeredPlayer.isConvertingPollen = false;
+
     }
 
     private void FixedUpdate()

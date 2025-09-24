@@ -197,9 +197,10 @@ public class BasicBee : Stats
             getTravelingTime = beeState == BeeState.Following && followPlayerTickSpeed < beeStateUpdateInterval? followPlayerTickSpeed: beeStateUpdateInterval;
         }
     }
-    public void SetDestination(Vector3 newDestination)
+    public void SetDestination(Vector3 newDestination, bool addOffset = true)
     {
-        destinationPoint = newDestination + RandomOffset();// Save data and have a random 10 offsets that we can roatate from
+        Debug.Log($"I was called to go to {newDestination}");
+        destinationPoint = newDestination + (addOffset ? RandomOffset() : Vector3.zero);// Save data and have a random 10 offsets that we can roatate from
         atDestination = false;
         transform.LookAt(destinationPoint);
     }
