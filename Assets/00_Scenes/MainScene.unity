@@ -103004,6 +103004,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2687485172875684253, guid: 34cd251d2900e8b4daf6a73c870ca3b1, type: 3}
+      propertyPath: maxPollinStorage
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 3275939344975177169, guid: 34cd251d2900e8b4daf6a73c870ca3b1, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
@@ -103196,6 +103200,22 @@ PrefabInstance:
       propertyPath: cellHolder
       value: 
       objectReference: {fileID: 1717136186}
+    - target: {fileID: 6335199388120287241, guid: 34cd251d2900e8b4daf6a73c870ca3b1, type: 3}
+      propertyPath: cellStartPrice
+      value: 500
+      objectReference: {fileID: 0}
+    - target: {fileID: 6335199388120287241, guid: 34cd251d2900e8b4daf6a73c870ca3b1, type: 3}
+      propertyPath: inventoryPriceMulti
+      value: 1.27
+      objectReference: {fileID: 0}
+    - target: {fileID: 6335199388120287241, guid: 34cd251d2900e8b4daf6a73c870ca3b1, type: 3}
+      propertyPath: maxInventoryUpgrades
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 6335199388120287241, guid: 34cd251d2900e8b4daf6a73c870ca3b1, type: 3}
+      propertyPath: inventoryUpgradeStartPrice
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 7499867214246585506, guid: 34cd251d2900e8b4daf6a73c870ca3b1, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1

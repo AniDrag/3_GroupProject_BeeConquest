@@ -52,7 +52,8 @@ public class BeeShop : MonoBehaviour
     private long _currentCellPrice;
 
     [Header("---------- Inventory uprade price settings ----------")]
-    [SerializeField] private int maxInventoryUpgrades = 6;
+
+    [SerializeField] private int maxInventoryUpgrades = 50;
     [SerializeField] private long inventoryUpgradeStartPrice = 1000;
     [SerializeField] private float inventoryPriceMulti = 1.98f;
     private long _currentInventoryPrice;
@@ -66,6 +67,8 @@ public class BeeShop : MonoBehaviour
     private List<GameObject> purchasedCells = new List<GameObject>();
     private List<GameObject> unPurchasedCells = new List<GameObject>();
     private List<GameObject> usedCells = new List<GameObject>();
+
+    private const long PRICE_CAP = 100_000L;
     private void Awake()
     {
         upgradeInventory.transform.GetChild(2).GetComponent<Button>().onClick.AddListener(() => UpgradeInventory());
@@ -92,7 +95,7 @@ public class BeeShop : MonoBehaviour
             _player.UpgradeMaxPollinStorage();
             _player.RemoveHoney(_currentInventoryPrice);
             _currentInventoryPrice = inventoryUpgradeStartPrice + (long)Mathf.Pow((inventoryUpgradeStartPrice * ((float)_player.pollinStorageLevel * inventoryPriceMulti)), _player.pollinStorageLevel / 20f);
-            upgradeCellCount.updatePrice(_currentCellPrice);
+            upgradeInventory.updatePrice(FormatNumber(_currentInventoryPrice));
 
 
             // Get the ShopItem that upgrades cells and update its price?
@@ -107,23 +110,44 @@ public class BeeShop : MonoBehaviour
             Debug.Log("No player here yet");
             return;
         }
+
         if (_player.currentHoneyAmount >= _currentCellPrice && _totalCells < _totalFoundCells)
         {
             _totalCells++;
             _player.RemoveHoney(_currentCellPrice);
-            _currentCellPrice = cellStartPrice + (long)Mathf.Pow((cellStartPrice * ((float)_totalCells * cellMulti)), _totalCells / 20f);
+
+            // ----- CAP SETTINGS -----
+            const long CELL_PRICE_CAP = 1_000_000_000_000_000_000L;
+
+            // _currentCellPrice = cellStartPrice + (long)Mathf.Pow((cellStartPrice * ((float)_totalCells * cellMulti)), _totalCells / 20f);
+
+            // Use double Math.Pow for more stable intermediate results, then clamp to cap:
+            double baseVal = (double)cellStartPrice * ((double)_totalCells * (double)cellMulti);
+            double exponent = (double)_totalCells / 20.0;
+            double powResult = Math.Pow(baseVal, exponent); // same math shape, higher precision
+
+            double newPriceDouble = (double)cellStartPrice + powResult;
+
+            if (double.IsNaN(newPriceDouble) || double.IsInfinity(newPriceDouble) || newPriceDouble >= CELL_PRICE_CAP)
+                _currentCellPrice = CELL_PRICE_CAP;
+            else
+                _currentCellPrice = (long)Math.Ceiling(newPriceDouble); // or (long)newPriceDouble if you prefer truncation
+
             _player.AddCell();
             UpdateCellCounter();
-            upgradeCellCount.updatePrice(_currentCellPrice);
-            // Get the ShopItem that upgrades cells and update its price?
-            //currentCells.text = "Cells: " + cellCounter.ToString();
-            //buyCellButton.text = currentCellPrice.ToString();
+
+            upgradeCellCount.updatePrice(FormatNumber(_currentCellPrice));
+
             Debug.Log($"You have {_player.ownedCellsAmount - _player.allBees.Count} free cells");
 
-            GameObject newCell = unPurchasedCells[UnityEngine.Random.Range(0, unPurchasedCells.Count - 1)];
-            purchasedCells.Add(newCell);
-            unPurchasedCells.Remove(newCell);
-            newCell.SetActive(true);
+            // pick a random unpurchased cell — use Count (exclusive max) so last item can be picked too
+            if (unPurchasedCells.Count > 0)
+            {
+                GameObject newCell = unPurchasedCells[UnityEngine.Random.Range(0, unPurchasedCells.Count)];
+                purchasedCells.Add(newCell);
+                unPurchasedCells.Remove(newCell);
+                newCell.SetActive(true);
+            }
         }
     }
     public void BuyBee(int index)
@@ -198,7 +222,7 @@ public class BeeShop : MonoBehaviour
         {
             GameObject newBee = Instantiate(ShopItemPRF, beeContent);
             ShopItem beeData = newBee.GetComponent<ShopItem>();
-            beeData.AsignData(beesForSale[i].BeeName, beesForSale[i].Cost, beesForSale[i].beeSprite);
+            beeData.AsignData(beesForSale[i].BeeName, FormatNumber(beesForSale[i].Cost), beesForSale[i].beeSprite);
 
             int index = i; // capture index correctly
             beeData.button.onClick.AddListener(() => BuyBee(index));
@@ -215,7 +239,7 @@ public class BeeShop : MonoBehaviour
         {
             GameObject newMaterial = Instantiate(ShopItemPRF, foodContent);
             ShopItem materialData = newMaterial.GetComponent<ShopItem>();
-            materialData.AsignData(foodForSale[i].foodName, foodForSale[i].Cost, foodForSale[i].foodSprite);
+            materialData.AsignData(foodForSale[i].foodName, FormatNumber(foodForSale[i].Cost), foodForSale[i].foodSprite);
 
             int index = i; // capture index correctly
             materialData.button.onClick.AddListener(() => BuyFood(index));
@@ -241,5 +265,22 @@ public class BeeShop : MonoBehaviour
             }
         _totalFoundCells = unPurchasedCells.Count();
         _totalCells = 0;
+    }
+
+    public static string FormatNumber(long amount)
+    {
+        if (amount < 1000) return amount.ToString();
+
+        string[] suffixes = { "K", "M", "B", "T", "Q", "Qi", "Sx", "Sp", "Oc", "No", "Dc" }; // extend as needed
+        double value = amount;
+        int index = 0;
+
+        while (value >= 1000 && index < suffixes.Length - 1)
+        {
+            value /= 1000.0;
+            index++;
+        }
+
+        return value.ToString("0.##") + suffixes[index - 1];
     }
 }
