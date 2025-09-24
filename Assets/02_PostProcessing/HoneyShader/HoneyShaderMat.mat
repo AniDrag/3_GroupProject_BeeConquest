@@ -102,7 +102,7 @@ Material:
     - _Blend: 0
     - _BlendModePreserveSpecular: 1
     - _BumpScale: 1
-    - _Circles: 6.08
+    - _Circles: 3
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
     - _Contrast: 1.5
@@ -117,7 +117,7 @@ Material:
     - _Glossiness: 0
     - _GlossyReflections: 0
     - _Metallic: 0
-    - _MoveOrNot: 1
+    - _MoveOrNot: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.005
     - _QueueControl: 0
@@ -131,7 +131,7 @@ Material:
     - _SrcBlend: 1
     - _SrcBlendAlpha: 1
     - _Surface: 0
-    - _TimeScale: 1
+    - _TimeScale: 0.75
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:
