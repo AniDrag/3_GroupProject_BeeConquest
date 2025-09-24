@@ -11,19 +11,19 @@ public class ShopItem: MonoBehaviour
     [SerializeField] private int maxFontSize = 150;
     public Button button;
 
-    public void AsignData(string headerText,long amount, Sprite image)
+    public void AsignData(string headerText,string amount, Sprite image)
     {
         itemName.text = headerText;
-        itemPrice.text = amount.ToString("C0");
+        itemPrice.text = amount; // .ToString("C0");
         itemImage.sprite = image;
         // Force auto-sizing
         itemPrice.enableAutoSizing = true;
         itemPrice.fontSizeMin = minFontSize;   // Minimum readable font
         itemPrice.fontSizeMax = maxFontSize;   // Max font size
     }
-    public void updatePrice(long amount)
+    public void updatePrice(string amount)
     {
-        itemPrice.text = amount.ToString("C0");
+        itemPrice.text = amount;
     }
 
 }

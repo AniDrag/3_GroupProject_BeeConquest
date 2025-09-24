@@ -1,6 +1,7 @@
 using AniDrag.Utility;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class PlayerCore : MonoBehaviour
 {
@@ -29,9 +30,12 @@ public class PlayerCore : MonoBehaviour
 
     [Header("----- Inventory Data -----")]
     public int pollinStorageLevel { get; private set; } = 1;
-    [SerializeField] private float pollinStorageMULTI = 2;
+
+    [SerializeField] private float pollinStorageMULTI = 1.3f;
     [SerializeField] private long currentPollinAmount = 0;
-    [SerializeField] private long maxPollinStorage = 10000;
+    [SerializeField] private long maxPollinStorage = 100;
+    private long _baseMaxPollinStorage;
+
     public Dictionary<BeeFood,int> foodStorage = new Dictionary<BeeFood,int>();
     [SerializeField] public int ownedCellsAmount { get; private set; } = 0;
     [SerializeField] public long currentHoneyAmount { get; private set; } = 0;
@@ -52,6 +56,8 @@ public class PlayerCore : MonoBehaviour
         PlayerServerData data = new PlayerServerData(playerID, transform, this, savedBees) { };
         Game_Manager.instance.JoinServer(playerID, data);
         currentHoneyAmount = 100000;
+
+        _baseMaxPollinStorage = Math.Max(1L, maxPollinStorage);
     }
     void Start()
     {
@@ -317,12 +323,52 @@ public class PlayerCore : MonoBehaviour
     {
         ownedCellsAmount++;
     }
+    /// <summary>
+    /// Upgrades pollin storage level and recalculates maxPollinStorage using:
+    ///   max = base * (pollinStorageMULTI)^(level-1)
+    /// This computes from the base each time to avoid accumulated floating-point drift.
+    /// </summary>
     public void UpgradeMaxPollinStorage()
     {
+        // increment level
         pollinStorageLevel++;
-        maxPollinStorage = Mathf.RoundToInt(pollinStorageLevel * pollinStorageMULTI * maxPollinStorage);
-        visualsUI.pollinCounterText.text = $"Pollin: {currentPollinAmount}/{maxPollinStorage}";
 
+        // exponent: level 1 -> exponent 0 (gives base), level 2 -> exponent 1, etc.
+        double exponent = Math.Max(0, pollinStorageLevel - 1);
+
+        // compute as double for numeric stability
+        double pow = Math.Pow((double)pollinStorageMULTI, exponent);
+        double newMaxDouble = (double)_baseMaxPollinStorage * pow;
+
+        // clamp / guard against NaN/Infinity and overflow beyond long.MaxValue
+        if (double.IsNaN(newMaxDouble) || double.IsInfinity(newMaxDouble) || newMaxDouble >= (double)long.MaxValue)
+        {
+            maxPollinStorage = long.MaxValue;
+        }
+        else
+        {
+            // round to nearest long (you can use Math.Floor or cast for truncation if you prefer)
+            long rounded = (long)Math.Round(newMaxDouble);
+            // also ensure it is >= 1
+            maxPollinStorage = Math.Max(1L, rounded);
+        }
+
+        // update UI text (adjust to your exact UI field if its name differs)
+        visualsUI.pollinCounterText.text = $"Pollin: {currentPollinAmount}/{maxPollinStorage}";
+    }
+
+    // Optional helper: compute required pollinStorageMULTI to reach 'target' from base in 'levels' upgrades.
+    // Example usage: pollinStorageMULTI = ComputeMultiplierForTarget(20_000_000, 50);
+    public float ComputeMultiplierForTarget(long targetMax, int levels)
+    {
+        if (levels <= 0 || _baseMaxPollinStorage <= 0) return pollinStorageMULTI;
+        // We want base * r^(levels) = target  if levels counts upgrades from base,
+        // but since our exponent uses (level-1) in the implementation, choose semantics you want.
+        // Here we assume: starting at level 1 (base), after `levels` upgrades (i.e. level 1->level 1+levels)
+        // the exponent should be `levels`.
+        double r = Math.Pow((double)targetMax / _baseMaxPollinStorage, 1.0 / levels);
+        if (double.IsNaN(r) || double.IsInfinity(r)) return pollinStorageMULTI;
+        return (float)r;
     }
 
     public void AddFoodItem(BeeFood food)
