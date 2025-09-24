@@ -213,7 +213,7 @@ public class FieldGenerator : MonoBehaviour, IInteract
             if ( cell != null )
                 foundedCells++;
 
-        Debug.Log($"Trying to add {foundedCells}/{allCells.Length} cells");
+       // Debug.Log($"Trying to add {foundedCells}/{allCells.Length} cells");
         existingCells = new FieldCellData[foundedCells];
         int i = 0;
         foreach (var cell in allCells)

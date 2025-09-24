@@ -37,11 +37,6 @@ public class BeeUpgradeSytem : MonoBehaviour
     [SerializeField] private Button Agility;
     [SerializeField] private Button Luck;
 
-    [Header("----- Input -----")]
-    [SerializeField] private PlayerInput inputs;
-    [SerializeField] private InputAction lookAction;   // Mouse Delta
-    [SerializeField] private InputAction clickAction;  // Left Click
-
     private BeeFood selectedFood;
     private BasicBee selectedBee;
     private int usedFoodIndex;
@@ -54,20 +49,15 @@ public class BeeUpgradeSytem : MonoBehaviour
     }
     void OnEnable()
     {
-        clickAction.performed += OnClick;
-        clickAction.canceled += OnRelease;
         SpawnAllFoodInInventory();
+        SpawnAllBeesFromPlayerInventory();
     }
 
     void OnDisable()
     {
-        clickAction.performed -= OnClick;
-        clickAction.canceled -= OnRelease;
     }
     void Start()
     {
-        lookAction = inputs.actions["Look"];
-        clickAction = inputs.actions["RightClick"];
         SpawnAllBeesFromPlayerInventory();
         SpawnAllFoodInInventory();
         Vitality.onClick.AddListener(() => IncreseStat(StatType.Vitality));
@@ -77,36 +67,6 @@ public class BeeUpgradeSytem : MonoBehaviour
         Luck.onClick.AddListener(() => IncreseStat(StatType.Luck));
         SelectedBee(0);
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        ViewPortControlls();
-    }
-    #region Bee UI Visual Logic
-    private void OnClick(InputAction.CallbackContext ctx)
-    {
-        // Optional: check if mouse is over bee viewport UI before allowing drag
-        isDragging = true;
-    }
-
-    private void OnRelease(InputAction.CallbackContext ctx)
-    {
-        isDragging = false;
-    }
-    void ViewPortControlls()
-    {
-        if (beeVisualObject == null || !isDragging) return;
-
-        Vector2 delta = lookAction.ReadValue<Vector2>();
-
-        // Rotate around Y (horizontal drag)
-        beeVisualObject.transform.Rotate(Vector3.up, -delta.x * rotationSpeed * Time.deltaTime, Space.World);
-
-        // Rotate around X (vertical drag, clamped)
-        beeVisualObject.transform.Rotate(Vector3.right, delta.y * rotationSpeed * Time.deltaTime, Space.World);
-    }
-    #endregion
 
     #region Bee Food Logic
     void FeedBee()
@@ -159,11 +119,13 @@ public class BeeUpgradeSytem : MonoBehaviour
     #endregion
     #region Bee Selection logic
     void SpawnAllBeesFromPlayerInventory()
-    { 
+    {
+        Debug.Log("Getting All Player Bees");
         // Clear old buttons if needed
         foreach (Transform child in beePanel)
             Destroy(child.gameObject);
-        playerBees.Clear();
+        //playerBees.Clear();
+        Debug.Log("Saved bees amount:" + player.savedBees.Count);
         playerBees = player.savedBees;
         for (int i = 0; i < playerBees.Count; i++)
         {

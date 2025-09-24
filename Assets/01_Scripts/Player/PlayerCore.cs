@@ -258,13 +258,16 @@ public class PlayerCore : MonoBehaviour
 
     public void BuyBee(GameObject bee, Transform spawnPosition)
     {
+        if (bee == null) Debug.Log("Noo bee object");
         GameObject newBee = Instantiate(bee);
         BasicBee basicBee = newBee.GetComponent<BasicBee>();
         basicBee.homeCoordinates = spawnPosition.position;
         basicBee.SetMyParent(this);
         allBees.Add(basicBee);
         PlayerBeeSaved newSavedBee = new PlayerBeeSaved(basicBee, newBee);
+        Debug.Log("Saving bee Data");
         savedBees.Add(newSavedBee);
+        Debug.Log("Saved bees count = " + savedBees.Count);
         newBee.transform.position = spawnPosition.position;
 
     }

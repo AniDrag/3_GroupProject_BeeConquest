@@ -1,110 +1,174 @@
-﻿using UnityEngine;
-using UnityEngine.InputSystem;
+﻿    using UnityEngine;
+    using UnityEngine.InputSystem;
 
-public class PlayerCamera : MonoBehaviour
-{
-    [Header("References")]
-    [SerializeField] private PlayerInput playerInput;
-    [SerializeField] private Transform player;          // player root
-    [SerializeField] private Transform orientation;     // used for player movement yaw
-    [SerializeField] private Transform camPivot;        // pivot behind player head
-
-    [Header("Camera Settings")]
-    [SerializeField] private float sensitivityX = 1f;
-    [SerializeField] private float sensitivityY = 1f;
-    [SerializeField] private float minPitch = -40f;
-    [SerializeField] private float maxPitch = 70f;
-
-    [Header("Distance & Collision")]
-    [SerializeField] private float camDistance = 4f;
-    [SerializeField] private float camSmooth = 10f;
-    [SerializeField] private LayerMask collisionMask;
-
-    [Header("Offset Settings")]
-    [SerializeField] private float rightOffset = 0.5f;   // side offset
-    [SerializeField] private float upOffset = 0.2f;      // optional vertical offset
-
-    private float yaw;
-    private float pitch;
-    private Camera cam;
-    public bool disableCamRotation;
-
-    private void Awake()
+    //[RequireComponent(typeof(CinemachineCamera))]
+    public class PlayerCamera : MonoBehaviour
     {
-        cam = Camera.main;
-        playerInput = player.GetComponent<PlayerInput>();
-    }
+        [Header("References")]
+        [SerializeField] private Transform camPivot;// what follows the root
+        [SerializeField] private PlayerInput playerInput;
+        [SerializeField] private Transform player;          // player root
+        [SerializeField] private Transform orientation;     // used for player movement yaw
 
-    private void Start()
-    {
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-    }
+        [Header("Camera Settings")]
+        [SerializeField] private float sensitivityX = 1f;
+        [SerializeField] private float sensitivityY = 1f;
+        [SerializeField] private float minPitch = -40f;
+        [SerializeField] private float maxPitch = 70f;
 
-    private void Update()
-    {
-        if (!disableCamRotation) return;
-        
-        HandleRotation();
-    }
+        [Header("Distance & Collision")]
+        [SerializeField] private float camDistance = 4f;
+        [SerializeField] private float camSmooth = 10f;
+        [SerializeField] private LayerMask collisionMask;
 
-    private void LateUpdate()
-    {
-        HandleCameraCollision();
-    }
+        [Header("Offset Settings")]
+        [SerializeField] private float rightOffset = 0.5f;   // side offset
+        [SerializeField] private float upOffset = 0.2f;      // optional vertical offset
 
-    private void HandleRotation()
-    {
-        Vector2 look = playerInput.actions["Look"].ReadValue<Vector2>();
-        yaw += look.x * sensitivityX;
-        pitch -= look.y * sensitivityY;
-        pitch = Mathf.Clamp(pitch, minPitch, maxPitch);
+        private float yaw;
+        private float pitch;
+        private Camera cam;
+        public bool enableCamRotation = true;
 
-        // Rotate orientation for player movement (yaw only)
-        orientation.rotation = Quaternion.Euler(0f, yaw, 0f);
-
-        // Rotate camPivot for camera orbit (yaw + pitch)
-        camPivot.rotation = Quaternion.Euler(pitch, yaw, 0f);
-    }
-
-    private void HandleCameraCollision()
-    {
-        Vector3 pivotPos = camPivot.position + camPivot.up * upOffset;
-
-        // Sideways offset
-        Vector3 offset = camPivot.right * rightOffset;
-
-        // Desired camera position
-        Vector3 camDir = camPivot.forward;
-        Vector3 desiredPos = pivotPos + offset - camDir * camDistance;
-
-        // SphereCast for walls
-        if (Physics.SphereCast(pivotPos + offset, 0.2f, -camDir, out RaycastHit hit, camDistance, collisionMask))
+        private void Awake()
         {
-            float dist = Mathf.Clamp(hit.distance, 0.5f, camDistance);
-            desiredPos = pivotPos + offset - camDir * dist;
+            cam = Camera.main;
+            //orientation = camPivot.GetComponent<FollowTarget>().OrientationTarget;
+            //playerInput = camPivot.GetComponent<FollowTarget>().inputs;
         }
 
-        // Smooth camera movement
-        cam.transform.position = Vector3.Lerp(cam.transform.position, desiredPos, Time.deltaTime * camSmooth);
+        private void Start()
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
 
-        // Always look at pivot
-        cam.transform.rotation = camPivot.rotation;
+        private void Update()
+        {
+            if (!enableCamRotation) return;
+
+            HandleRotation();
+        }
+
+        private void LateUpdate()
+        {
+             HandleCameraCollision();
+        }
+
+        private void HandleRotation()
+        {
+            Vector2 look = playerInput.actions["Look"].ReadValue<Vector2>();
+            yaw += look.x * sensitivityX;
+            pitch -= look.y * sensitivityY;
+            pitch = Mathf.Clamp(pitch, minPitch, maxPitch);
+
+            // Rotate orientation for player movement (yaw only)
+            orientation.rotation = Quaternion.Euler(0f, yaw, 0f);
+
+            // // Rotate camPivot for camera orbit (yaw + pitch)
+            // camPivot.rotation = Quaternion.Euler(pitch, yaw, 0f);
+        }
+
+        private void HandleCameraCollision()
+        {
+            //Vector3 pivotPos = camPivot.position + camPivot.up * upOffset;
+
+            // Sideways offset
+            //Vector3 offset = camPivot.right * rightOffset;
+
+            // Desired camera position
+            Vector3 camDir = camPivot.forward;
+            //Vector3 desiredPos = pivotPos + offset - camDir * camDistance;
+
+            // SphereCast for walls
+          //  if (Physics.SphereCast(camPivot.position, 0.2f, -camDir, out RaycastHit hit, camDistance, collisionMask))
+          //  {
+          //      float dist = Mathf.Clamp(hit.distance, 0.5f, camDistance);
+          //      desiredPos = pivotPos + offset - camDir * dist;
+          //  }
+          //
+          //  // Smooth camera movement
+          //  cam.transform.position = Vector3.Lerp(cam.transform.position, desiredPos, Time.deltaTime * camSmooth);
+
+            // Always look at pivot
+            cam.transform.LookAt(player);
+        }
+
     }
 
-    /// <summary>
-    /// Optional: adjust offsets at runtime
-    /// </summary>
-    public void SetOffsets(float right, float up)
-    {
-        rightOffset = right;
-        upOffset = up;
-    }
-}
 
 
 
-    
+         /*[Header("References")]
+        [SerializeField] private CinemachineCamera vcam;
+        [SerializeField] private CinemachinePanTilt pov;
+        [SerializeField] private Transform followTarget;   // Empty GameObject pivot on player’s hips
+        [SerializeField] private Transform player;         // Actual player root
+
+        [Header("Rotation Settings")]
+        [SerializeField] private float sensitivity = 100f;
+        [SerializeField] private float minPitch = -30f;
+        [SerializeField] private float maxPitch = 70f;
+
+        [Header("Zoom Settings")]
+        [SerializeField] private float zoomSpeed = 5f;
+        [SerializeField] private float minFOV = 40f;
+        [SerializeField] private float maxFOV = 80f;
+
+        private PlayerInput playerInput;
+        private Vector2 look;
+        private float zoom;
+
+        private void Awake()
+        {
+            playerInput = GetComponent<PlayerInput>();
+
+            if (vcam != null && followTarget != null)
+            {
+                vcam.Follow = followTarget;
+            }
+        }
+
+        private void Update()
+        {
+            HandleLook();
+            HandleZoom();
+
+            // Rotate player to camera’s yaw
+            if (player != null && pov != null)
+            {
+                Vector3 yawRotation = new Vector3(0f, pov.PanAxis.Value, 0f);
+                player.rotation = Quaternion.Euler(yawRotation);
+            }
+        }
+
+        private void HandleLook()
+        {
+            look = playerInput.actions["Look"].ReadValue<Vector2>();
+
+            if (pov != null)
+            {
+                // Horizontal orbit (yaw)
+                pov.PanAxis.Value += look.x * sensitivity * Time.deltaTime;
+
+                // Vertical orbit (pitch)
+                float newTilt = pov.TiltAxis.Value - look.y * sensitivity * Time.deltaTime;
+                pov.TiltAxis.Value = Mathf.Clamp(newTilt, minPitch, maxPitch);
+            }
+        }
+
+        private void HandleZoom()
+        {
+    //      zoom = playerInput.actions["Zoom"].ReadValue<float>();
+
+            if (vcam != null)
+            {
+                float fov = vcam.Lens.FieldOfView;
+                fov -= zoom * zoomSpeed;
+                vcam.Lens.FieldOfView = Mathf.Clamp(fov, minFOV, maxFOV);
+            }
+        }
+    }*/
     /*
 
     [SerializeField] PlayerInput _playerInput;
@@ -138,4 +202,4 @@ public class PlayerCamera : MonoBehaviour
         if (Orientation != null)
             Orientation.rotation = Quaternion.Euler(0f, rotationY, 0f);
     }
-}*/
+    }*/

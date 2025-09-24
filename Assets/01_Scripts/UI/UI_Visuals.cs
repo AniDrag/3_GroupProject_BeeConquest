@@ -1,6 +1,7 @@
 ﻿using AniDrag.Utility;
 using System.Collections;
 using TMPro;
+using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
@@ -158,7 +159,7 @@ public class UI_Visuals : MonoBehaviour
         menuPanel.SetActive(true);
         optionsPanel.SetActive(false);
 
-        ControllPlayerCamAndMove();
+        CameraControlls();
         ApplyControlScheme(inputs.currentControlScheme);
 
         Debug.Log("Enable menu. activeUI =" + activeUI);
@@ -172,7 +173,7 @@ public class UI_Visuals : MonoBehaviour
         menuPanel.SetActive(false);
         optionsPanel.SetActive(false);
 
-        ControllPlayerCamAndMove();
+        CameraControlls();
         ApplyControlScheme(inputs.currentControlScheme);
 
         Debug.Log("Disable menu. activeUI =" +activeUI );
@@ -194,13 +195,19 @@ public class UI_Visuals : MonoBehaviour
     #endregion
     //───────────────────────────── Player Control
     #region ───────────────────────────── Player Control
-    public void ControllPlayerCamAndMove()
+    public void CameraControlls()
     {
         bool enableGameplay = !activeUI;
 
         // Example: disable movement + disable camera rotation
         // player.GetComponent<PlayerMovemant>().enabled = enableGameplay;
-        Camera.main.GetComponent<PlayerCamera>().disableCamRotation = enableGameplay;
+        Camera.main.GetComponent<CinemachineBrain>().enabled = enableGameplay;
+    }
+    public void PlayerControlls()
+    {
+        bool enableGameplay = !activeUI;
+        player.GetComponent<PlayerMovemant>().enabled = enableGameplay;
+        Debug.Log("Player Movement was: " + enableGameplay);
     }
     // ───────────────────────────── Input Switching
     private void OnControlsChanged(PlayerInput playerInput)
@@ -248,13 +255,13 @@ public class UI_Visuals : MonoBehaviour
     {
         if (menuOpen) return;
 
-        Debug.Log("Inventory action pressed!");
+       // Debug.Log("Inventory action pressed!");
         if (inventoryActive) UI_CloseInventory();
         else UI_OpenInventory();
     }
     public void UI_BTNToggleInventory()
     {
-        Debug.Log("BTN Inventory action pressed!");
+       // Debug.Log("BTN Inventory action pressed!");
         if (inventoryActive) UI_CloseInventory();
         else UI_OpenInventory();
     }
@@ -266,10 +273,10 @@ public class UI_Visuals : MonoBehaviour
 
         inventoryPanel.SetActive(true);
 
-        ControllPlayerCamAndMove();
+        CameraControlls();
         ApplyControlScheme(inputs.currentControlScheme);
 
-        Debug.Log("Enable Inventory. activeUI =" + activeUI);
+        //Debug.Log("Enable Inventory. activeUI =" + activeUI);
     }
 
     private void UI_CloseInventory()
@@ -279,9 +286,9 @@ public class UI_Visuals : MonoBehaviour
 
         inventoryPanel.SetActive(false);
 
-        ControllPlayerCamAndMove();
+        CameraControlls();
         ApplyControlScheme(inputs.currentControlScheme);
-        Debug.Log("Disable Inventory. activeUI =" + activeUI);
+        //Debug.Log("Disable Inventory. activeUI =" + activeUI);
     }
     #endregion
 
@@ -289,8 +296,15 @@ public class UI_Visuals : MonoBehaviour
     public void UI_BTNToggleShop()
     {
         if (inventoryActive|| menuOpen) return;
-        Debug.Log("BTN BeeShop action pressed!" + beeShopActive);
+       // Debug.Log("BTN BeeShop action pressed!" + beeShopActive);
         if (!beeShopActive) UI_OpenBeeShop();
+        else UI_CloseBeeShop();
+    }
+    public void UI_IInteractToggleShop(bool state)
+    {
+        if (inventoryActive || menuOpen) return;
+        //Debug.Log("BTN BeeShop action pressed!" + beeShopActive);
+        if (!state) UI_OpenBeeShop();
         else UI_CloseBeeShop();
     }
 
@@ -301,10 +315,10 @@ public class UI_Visuals : MonoBehaviour
 
         beeShopPanel.SetActive(true);
 
-        ControllPlayerCamAndMove();
+        CameraControlls();
         ApplyControlScheme(inputs.currentControlScheme);
-
-        Debug.Log("Enable Bee Shop. activeUI =" + activeUI);
+        PlayerControlls();
+        //Debug.Log("Enable Bee Shop. activeUI =" + activeUI);
     }
 
     private void UI_CloseBeeShop()
@@ -314,9 +328,10 @@ public class UI_Visuals : MonoBehaviour
 
         beeShopPanel.SetActive(false);
 
-        ControllPlayerCamAndMove();
+        CameraControlls();
         ApplyControlScheme(inputs.currentControlScheme);
-        Debug.Log("Disable Bee SHop. activeUI =" + activeUI);
+        PlayerControlls();
+       // Debug.Log("Disable Bee SHop. activeUI =" + activeUI);
     }
     #endregion
     #endregion

@@ -7,8 +7,11 @@ public class PlayerMovemant : MonoBehaviour
 {
     [Header("References")]
     public Transform orientation;
+    public Transform groundCheck;
     public PlayerInput input;
     private CharacterController controller;
+    [SerializeField, Range(0.5f,0.01f)] private float slopeCheckDistance = 0.2f;
+    [SerializeField] private float maxSlopeAngle;
 
     [Header("Speeds")]
     public float walkSpeed = 5f;
@@ -31,9 +34,12 @@ public class PlayerMovemant : MonoBehaviour
 
     [Header("States")]
     public MovementState currentState;
+
     private Vector2 moveInput;
     private Vector3 moveDir;
     private Vector3 velocity;
+    private RaycastHit slopeHit;
+
     [SerializeField] private bool isSprinting;
     [SerializeField] private bool isCrouching;
     [SerializeField] private bool jumped;
@@ -76,6 +82,7 @@ public class PlayerMovemant : MonoBehaviour
     private void FixedUpdate()
     {
         ApplyMovement();
+        GroundCheck();
     }
 
     // -----------------------------
@@ -83,6 +90,7 @@ public class PlayerMovemant : MonoBehaviour
     // -----------------------------
     void ReadInputs()
     {
+        //Debug.Log("reading input active");
         moveInput = moveAction.ReadValue<Vector2>();
         moveDir = orientation.forward * moveInput.y + orientation.right * moveInput.x;
         moveDir.Normalize();
@@ -122,7 +130,7 @@ public class PlayerMovemant : MonoBehaviour
     // -----------------------------
     void ApplyMovement()
     { // Horizontal movement
-        Vector3 horizontalMove = orientation.forward * moveInput.y + orientation.right * moveInput.x;
+        Vector3 horizontalMove = OnSlope() ? GetSlopeMoveDir(moveDir) : moveDir;// bro u made movemant here check it 2 times...
         horizontalMove.Normalize();
 
         float targetSpeed = walkSpeed;
@@ -161,13 +169,28 @@ public class PlayerMovemant : MonoBehaviour
         velocity.y = Mathf.Sqrt(jumpForce * -2f * gravity);
         jumped = true;
     }
+    void GroundCheck()
+    {
+        Physics.Raycast(transform.position, Vector3.down,
+            out slopeHit, slopeCheckDistance);
 
+    }
+    bool OnSlope()
+    {
+        if (!controller.isGrounded) return false;
+        float angle = Vector3.Angle(Vector3.up, slopeHit.normal);
+        return angle > 0f && angle <= maxSlopeAngle;
+    }
     private void ToggleCrouch()
     {
         if (isSprinting) isSprinting = false;
 
         isCrouching = !isCrouching;
         controller.height = isCrouching ? crouchHeight : originalHeight;
+    }
+    Vector3 GetSlopeMoveDir(Vector3 dir)
+    {
+        return Vector3.ProjectOnPlane(dir, slopeHit.normal).normalized;
     }
     private void OnDrawGizmosSelected()
     {
@@ -177,6 +200,7 @@ public class PlayerMovemant : MonoBehaviour
             Gizmos.DrawRay(transform.position, orientation.forward * 2f);
         }
     }
+
 }
 
 /*

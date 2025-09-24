@@ -28,7 +28,7 @@ public class BeeShop : MonoBehaviour
 {
     [Header("---------- Refrences ----------")]
     [SerializeField] private PlayerCore _player;
-    [SerializeField] private Transform beeSpawner;
+    [SerializeField] public Transform beeSpawner;
     [SerializeField] GameObject ShopItemPRF;
     [Space]
     [SerializeField]private ShopItem upgradeInventory;//[SerializeField]private ShopItem buyBees;
@@ -48,7 +48,7 @@ public class BeeShop : MonoBehaviour
     [Header("---------- Cell price settings ----------")]
     [SerializeField] private long cellStartPrice = 1000;
     [SerializeField] private float cellMulti = 4.23f;
-    [SerializeField] private Transform cellHolder;
+    [SerializeField] public Transform cellHolder;
     private long _currentCellPrice;
 
     [Header("---------- Inventory uprade price settings ----------")]
