@@ -72130,10 +72130,18 @@ MonoBehaviour:
   camFollow: {fileID: 1670033078}
   inputs: {fileID: 90349714}
   scrollSpeed: 40
-  minRange: 4
-  maxRange: 11
-  topMinHeight: 1
+  centerMinRadius: 2
+  centerMaxRadius: 10
+  centerMinHeight: 1
+  centerMaxHeight: 5
+  topMinHeight: 2
   topMaxHeight: 10
+  topMinRadius: 0.73
+  topMaxRadius: 3
+  bottomMinHeight: -1
+  bottomMaxHeight: -0.4
+  bottomMinRadius: 0.73
+  bottomMaxRadius: 5.5
 --- !u!1001 &1386657491
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -112289,6 +112297,10 @@ PrefabInstance:
     - target: {fileID: 4707397040240244669, guid: 34cd251d2900e8b4daf6a73c870ca3b1, type: 3}
       propertyPath: Orbits.Top.Height
       value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 4707397040240244669, guid: 34cd251d2900e8b4daf6a73c870ca3b1, type: 3}
+      propertyPath: Orbits.SplineCurvature
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 5049152118284881742, guid: 34cd251d2900e8b4daf6a73c870ca3b1, type: 3}
       propertyPath: m_Name
