@@ -72132,8 +72132,8 @@ MonoBehaviour:
   scrollSpeed: 40
   minRange: 4
   maxRange: 11
-  topMinHeight: 4
-  topMaxHeight: 5.5
+  topMinHeight: 1
+  topMaxHeight: 10
 --- !u!1001 &1386657491
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -112285,6 +112285,10 @@ PrefabInstance:
     - target: {fileID: 4662041155915824052, guid: 34cd251d2900e8b4daf6a73c870ca3b1, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4707397040240244669, guid: 34cd251d2900e8b4daf6a73c870ca3b1, type: 3}
+      propertyPath: Orbits.Top.Height
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 5049152118284881742, guid: 34cd251d2900e8b4daf6a73c870ca3b1, type: 3}
       propertyPath: m_Name
