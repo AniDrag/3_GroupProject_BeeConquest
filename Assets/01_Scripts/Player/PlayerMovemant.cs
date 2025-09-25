@@ -8,10 +8,10 @@ public class PlayerMovemant : MonoBehaviour
     [Header("References")]
     public Transform orientation;
     public Transform groundCheck;
+    public Transform playerMesh;
     public PlayerInput input;
     private CharacterController controller;
-    [SerializeField, Range(0.5f,0.01f)] private float slopeCheckDistance = 0.2f;
-    [SerializeField] private float maxSlopeAngle;
+
 
     [Header("Speeds")]
     public float walkSpeed = 5f;
@@ -28,6 +28,13 @@ public class PlayerMovemant : MonoBehaviour
     [Header("Crouch")]
     public float crouchHeight = 1f;
     private float originalHeight;
+    [Header("Ground and slope settings")]
+    [SerializeField, Range(0.01f, 0.5f)] private float slopeCheckDistance = 0.2f;
+    [SerializeField] private LayerMask groundMask;
+    [SerializeField] private float maxSlopeAngle = 45f;
+    private bool isGroundedCustom; private RaycastHit slopeHit;
+
+    private Quaternion targetRotation = Quaternion.identity;
 
 
     public enum MovementState { Idle, Walking, Sprinting, Crouching, Jumping, Falling }
@@ -38,7 +45,7 @@ public class PlayerMovemant : MonoBehaviour
     private Vector2 moveInput;
     private Vector3 moveDir;
     private Vector3 velocity;
-    private RaycastHit slopeHit;
+
 
     [SerializeField] private bool isSprinting;
     [SerializeField] private bool isCrouching;
@@ -48,7 +55,9 @@ public class PlayerMovemant : MonoBehaviour
     private InputAction moveAction;
     private InputAction jumpAction;
     private InputAction sprintAction;
-    private InputAction crouchAction;
+    private InputAction lockCameraAction;
+    // private InputAction crouchAction;
+    private bool lockCamera;
 
 
     private void Awake()
@@ -58,25 +67,30 @@ public class PlayerMovemant : MonoBehaviour
         moveAction = input.actions["Move"];
         jumpAction = input.actions["Jump"];
         sprintAction = input.actions["Sprint"];
-        crouchAction = input.actions["Crouch"];
+        lockCameraAction = input.actions["LockCamera"];
+
+        //crouchAction = input.actions["Crouch"];
 
         originalHeight = controller.height;
     }
     private void OnEnable()
     {
         jumpAction.performed += _ => Jump();
-        crouchAction.performed += _ => ToggleCrouch();
+        lockCameraAction.performed += _ => lockCamera = !lockCamera;
+        // crouchAction.performed += _ => ToggleCrouch();
     }
 
     private void OnDisable()
     {
         jumpAction.performed -= _ => Jump();
-        crouchAction.performed -= _ => ToggleCrouch();
+        lockCameraAction.performed -= _ => lockCamera = !lockCamera;
+        //crouchAction.performed -= _ => ToggleCrouch();
     }
     private void Update()
     {
         ReadInputs();
         StateHandler();
+        HandleRotation();
     }
 
     private void FixedUpdate()
@@ -130,27 +144,28 @@ public class PlayerMovemant : MonoBehaviour
     // -----------------------------
     void ApplyMovement()
     { // Horizontal movement
-        Vector3 horizontalMove = OnSlope() ? GetSlopeMoveDir(moveDir) : moveDir;// bro u made movemant here check it 2 times...
-        horizontalMove.Normalize();
+
+        Vector3 horizontalMove = moveDir;
+        if (OnSlope()) horizontalMove = GetSlopeMoveDir(moveDir);
 
         float targetSpeed = walkSpeed;
         if (isSprinting) targetSpeed = sprintSpeed;
         if (isCrouching) targetSpeed = crouchSpeed;
 
-        float accel = controller.isGrounded ? acceleration : acceleration * airControl;
+        float accel = isGroundedCustom ? acceleration : acceleration * airControl;
         Vector3 horizontalVelocity = new Vector3(velocity.x, 0, velocity.z);
         horizontalVelocity = Vector3.MoveTowards(horizontalVelocity, horizontalMove * targetSpeed, accel * Time.deltaTime);
 
         // Gravity
-        if (controller.isGrounded)
+        if (isGroundedCustom)
         {
-            if (velocity.y < 0)
-                velocity.y = -0.1f; // small negative to stick to ground
+            if (velocity.y < 0f) velocity.y = -2f; // keep player grounded, not bouncing
         }
         else
         {
             velocity.y += gravity * Time.deltaTime;
         }
+        
 
         // Apply horizontal velocity
         velocity.x = horizontalVelocity.x;
@@ -170,14 +185,12 @@ public class PlayerMovemant : MonoBehaviour
         jumped = true;
     }
     void GroundCheck()
-    {
-        Physics.Raycast(transform.position, Vector3.down,
-            out slopeHit, slopeCheckDistance);
-
+    { // shoot ray down from groundCheck
+        isGroundedCustom = Physics.Raycast(groundCheck.position, Vector3.down, out slopeHit, slopeCheckDistance, groundMask);
     }
     bool OnSlope()
     {
-        if (!controller.isGrounded) return false;
+        if (isGroundedCustom) return false;
         float angle = Vector3.Angle(Vector3.up, slopeHit.normal);
         return angle > 0f && angle <= maxSlopeAngle;
     }
@@ -192,16 +205,54 @@ public class PlayerMovemant : MonoBehaviour
     {
         return Vector3.ProjectOnPlane(dir, slopeHit.normal).normalized;
     }
-    private void OnDrawGizmosSelected()
+    void HandleRotation()
     {
-        if (orientation != null)
+        if (playerMesh == null) return;
+
+        Vector3 lookDir;
+        Vector3 oldLookDirection;
+
+        if (lockCamera && moveDir.sqrMagnitude > 0.001f)
         {
-            Gizmos.color = Color.blue;
-            Gizmos.DrawRay(transform.position, orientation.forward * 2f);
+            // Lock on: rotate mesh toward movement direction
+            lookDir = new Vector3(moveDir.x, 0f, moveDir.z);
+            targetRotation = Quaternion.LookRotation(lookDir, Vector3.up); // update target
         }
+        else
+        {
+            // Lock off: keep the last rotation
+            oldLookDirection = new Vector3(moveDir.x, 0f, moveDir.z);
+            if (targetRotation == Quaternion.identity)
+                targetRotation = playerMesh.rotation; // initialize first frame
+        }
+
+        // Smoothly apply rotation
+        playerMesh.rotation = Quaternion.Lerp(playerMesh.rotation, targetRotation, Time.deltaTime * 15f);
     }
 
+
+    // somewhere in the class
+#if UNITY_EDITOR
+    private void OnDrawGizmos()
+    {
+        if (groundCheck != null)
+        {
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawLine(groundCheck.position, groundCheck.position + Vector3.down * slopeCheckDistance);
+        }
+        if (slopeHit.collider != null)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawRay(slopeHit.point, slopeHit.normal);
+        }
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawRay(transform.position, moveDir * 2f);
+    }
+#endif
+
 }
+
+
 
 /*
 [Header("References")]
