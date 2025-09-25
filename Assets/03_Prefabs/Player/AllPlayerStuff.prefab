@@ -534,6 +534,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 960754552659188420, guid: b58ba411c67624d4c91df7169bebdf60, type: 3}
+      propertyPath: m_StepOffset
+      value: 0.45
+      objectReference: {fileID: 0}
     - target: {fileID: 1275623593523602115, guid: b58ba411c67624d4c91df7169bebdf60, type: 3}
       propertyPath: m_Navigation.m_SelectOnUp
       value: 
@@ -934,6 +938,10 @@ PrefabInstance:
       propertyPath: orientation
       value: 
       objectReference: {fileID: 1786371045422476968}
+    - target: {fileID: 8402048858071862956, guid: b58ba411c67624d4c91df7169bebdf60, type: 3}
+      propertyPath: acceleration
+      value: 35
+      objectReference: {fileID: 0}
     - target: {fileID: 8772295107456358130, guid: b58ba411c67624d4c91df7169bebdf60, type: 3}
       propertyPath: maxPollinStorage
       value: 100
