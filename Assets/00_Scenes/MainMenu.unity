@@ -5040,6 +5040,12 @@ PrefabInstance:
       propertyPath: m_hasFontAssetChanged
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6735835002000659658, guid: 24e66d2674a04514cb25140ec46daba6, type: 3}
+      propertyPath: m_text
+      value: 'Exit
+
+'
+      objectReference: {fileID: 0}
     - target: {fileID: 6770585026129223706, guid: 24e66d2674a04514cb25140ec46daba6, type: 3}
       propertyPath: m_Name
       value: Quit
@@ -5907,6 +5913,10 @@ PrefabInstance:
       value: 'Close
 
 '
+      objectReference: {fileID: 0}
+    - target: {fileID: 6735835002000659658, guid: 24e66d2674a04514cb25140ec46daba6, type: 3}
+      propertyPath: m_text
+      value: CLOSE
       objectReference: {fileID: 0}
     - target: {fileID: 6770585026129223706, guid: 24e66d2674a04514cb25140ec46daba6, type: 3}
       propertyPath: m_Name
@@ -8220,6 +8230,12 @@ PrefabInstance:
     - target: {fileID: 5927821213216251404, guid: 24e66d2674a04514cb25140ec46daba6, type: 3}
       propertyPath: m_hasFontAssetChanged
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6735835002000659658, guid: 24e66d2674a04514cb25140ec46daba6, type: 3}
+      propertyPath: m_text
+      value: 'About us
+
+'
       objectReference: {fileID: 0}
     - target: {fileID: 6770585026129223706, guid: 24e66d2674a04514cb25140ec46daba6, type: 3}
       propertyPath: m_Name
@@ -14177,9 +14193,19 @@ PrefabInstance:
       propertyPath: m_hasFontAssetChanged
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6735835002000659658, guid: 24e66d2674a04514cb25140ec46daba6, type: 3}
+      propertyPath: m_text
+      value: 'Options
+
+'
+      objectReference: {fileID: 0}
     - target: {fileID: 6770585026129223706, guid: 24e66d2674a04514cb25140ec46daba6, type: 3}
       propertyPath: m_Name
       value: Options
+      objectReference: {fileID: 0}
+    - target: {fileID: 6770585026129223706, guid: 24e66d2674a04514cb25140ec46daba6, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7796188642751833447, guid: 24e66d2674a04514cb25140ec46daba6, type: 3}
       propertyPath: m_Pivot.x
@@ -20239,6 +20265,12 @@ PrefabInstance:
     - target: {fileID: 5927821213216251404, guid: 24e66d2674a04514cb25140ec46daba6, type: 3}
       propertyPath: m_hasFontAssetChanged
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6735835002000659658, guid: 24e66d2674a04514cb25140ec46daba6, type: 3}
+      propertyPath: m_text
+      value: 'Play
+
+'
       objectReference: {fileID: 0}
     - target: {fileID: 6770585026129223706, guid: 24e66d2674a04514cb25140ec46daba6, type: 3}
       propertyPath: m_Name
