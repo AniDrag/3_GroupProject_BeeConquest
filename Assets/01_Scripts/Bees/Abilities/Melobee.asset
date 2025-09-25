@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Melobee
   m_EditorClassIdentifier: 
   AbilityName: Ability
-  abilityVisualPrefab: {fileID: 2585367033439125583, guid: 20d16ed37dfb0504a9df18de9ee6b4c6, type: 3}
-  sprite: {fileID: 0}
+  abilityVisualPrefab: {fileID: 422031431100467014, guid: 23942b648aeb5e9419aa57be8efdfe06, type: 3}
+  sprite: {fileID: 21300000, guid: 165acdb4ec844b0438ef76585bf08d01, type: 3}

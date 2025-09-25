@@ -14740,6 +14740,7 @@ GameObject:
   - component: {fileID: 330585544}
   - component: {fileID: 330585547}
   - component: {fileID: 330585548}
+  - component: {fileID: 330585549}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -14814,13 +14815,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.8, z: 0}
+  m_LocalRotation: {x: -0.21404004, y: -0.010477906, z: 0.0022960026, w: -0.976766}
+  m_LocalPosition: {x: -13.89, y: 78.76, z: 14.209999}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 24.72, y: -358.771, z: 0}
 --- !u!114 &330585547
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14877,10 +14878,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 046a4a31219f2b04db98403f1c8a1981, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  camPivot: {fileID: 921396511}
   playerInput: {fileID: 1624816717}
   player: {fileID: 1624816714}
   orientation: {fileID: 1319350651}
-  camPivot: {fileID: 921396511}
   sensitivityX: 1
   sensitivityY: 1
   minPitch: -40
@@ -14892,7 +14893,29 @@ MonoBehaviour:
     m_Bits: 63
   rightOffset: 1
   upOffset: 0.2
-  disableCamRotation: 0
+  enableCamRotation: 1
+--- !u!95 &330585549
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 330585543}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: a4d1a515f41481f4f97f4bb26e7b7f66, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!64 &332241868
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -69955,7 +69978,7 @@ GameObject:
   m_Icon: {fileID: -5442936267250999957, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1624816714
 Transform:
   m_ObjectHideFlags: 0
@@ -69991,6 +70014,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   orientation: {fileID: 1319350651}
+  groundCheck: {fileID: 0}
+  playerMesh: {fileID: 0}
   input: {fileID: 1624816717}
   walkSpeed: 4
   sprintSpeed: 8
@@ -70001,10 +70026,16 @@ MonoBehaviour:
   airControl: 0.5
   jumpResetTime: 0.3
   crouchHeight: 1
+  slopeCheckDistance: 0.2
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 0
+  maxSlopeAngle: 45
   currentState: 0
   isSprinting: 0
   isCrouching: 0
   jumped: 0
+  cam: {fileID: 0}
 --- !u!114 &1624816717
 MonoBehaviour:
   m_ObjectHideFlags: 0

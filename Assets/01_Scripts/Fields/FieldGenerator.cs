@@ -69,8 +69,10 @@ public class FieldGenerator : MonoBehaviour, IInteract
     {
         Debug.Log($"Player: {interactor.name} || Has entered field: {transform.name}");
 
+
         player = interactor.GetComponent<PlayerCore>();
         Game_Manager.instance.AsignCurrentFieldToPlayer(player.playerID, this);
+
         //interactor.GetComponent<PlayerCore>().AsignField(this);
     }
     public void DeInteract(GameObject interactor)

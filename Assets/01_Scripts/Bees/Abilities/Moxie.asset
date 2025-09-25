@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Moxie
   m_EditorClassIdentifier: 
   AbilityName: Moxie Ability
-  abilityVisualPrefab: {fileID: 2585367033439125583, guid: 20d16ed37dfb0504a9df18de9ee6b4c6, type: 3}
-  sprite: {fileID: 21300000, guid: ddc5cc7480c270b43aea7c57a403006a, type: 3}
+  abilityVisualPrefab: {fileID: 422031431100467014, guid: 23942b648aeb5e9419aa57be8efdfe06, type: 3}
+  sprite: {fileID: 21300000, guid: 9fb059f68d9786145a45a6c4c3c151f2, type: 3}

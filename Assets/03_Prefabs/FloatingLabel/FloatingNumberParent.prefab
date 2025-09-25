@@ -56,7 +56,7 @@ MonoBehaviour:
   tiltOscillationDegrees: 6
   tiltFrequency: 2
   valueMin: 1
-  valueMax: 100000
+  valueMax: 5000
   maxExtraHeightMultiplier: 12
   startRiseCap: 0.4
   startRisePeak: 0.1

@@ -16,9 +16,9 @@ public class MusicBee : BasicBee
         // Boost collection strenght flat stat
         //base.TriggerAbilityLogic();
         //bee.collectionStrength *= 2;
-        float increseChance = 25; //1. 10% increase to overall chance
+        float increseChance = (bee.Luck / 3); //1. 10% increase to overall chance
         float actualChance = 1 + increseChance / 100;
-        int flatStatincrease = 10;
+        int flatStatincrease = (bee.Dexterity / 2 * bee.Strength) + 300;
         float buffDuration = 30;
 
         GameObject explosion = AbilityVfxPooler.Instance.Get("MeloBeeAbility");

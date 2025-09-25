@@ -255,8 +255,12 @@ public class BasicBee : Stats
     [Button]
     public void SpawnAbility()
     {
-        GameObject ability = Instantiate(beeAbility.abilityVisualPrefab, transform.position, Quaternion.identity);
-        ability.transform.GetChild(0).GetComponent<Image>().sprite = beeAbility.sprite;
+        GameObject ability = Instantiate(beeAbility.abilityVisualPrefab, transform.position + Vector3.up, Quaternion.identity);
+
+        ability.transform.GetComponent<Renderer>().material.mainTexture = beeAbility.sprite.texture;
+
+        ability.transform.GetChild(0).GetComponent<Renderer>().material.mainTexture = beeAbility.sprite.texture;
+
         ability.GetComponent<Ability>().SetAbilityData(this, beeAbility.AbilityName);
     }
     #endregion

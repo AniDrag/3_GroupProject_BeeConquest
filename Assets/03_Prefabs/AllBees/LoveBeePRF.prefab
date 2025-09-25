@@ -63,11 +63,11 @@ MonoBehaviour:
   BeeSprite: {fileID: 21300000, guid: 43917d20232210e45ab4015bc910bcf0, type: 3}
   beeState: 0
   StateMachine: {fileID: 4164149923213995902}
-  beeVitality: 8
-  beeStrength: 4
-  beeDexterity: 4
-  beeAgility: 4
-  beeLuck: 8
+  beeVitality: 800
+  beeStrength: 400
+  beeDexterity: 400
+  beeAgility: 45
+  beeLuck: 800
   vitIncrease: 1
   strIncrease: 1
   dexIncrease: 1

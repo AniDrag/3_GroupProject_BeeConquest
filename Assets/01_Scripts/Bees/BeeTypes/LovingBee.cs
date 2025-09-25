@@ -20,7 +20,7 @@ public class LovingBee : BasicBee
         //base.TriggerAbilityLogic();
         //bee.collectionStrength *= 2;
         float increseChance = 1.1f; // 10% increase to overall chance
-        float buffDuration = 20;
+        float buffDuration = 20 + bee.Luck / 5;
         int flatStatincrease = 0;
 
         string auraKey = "LovingAura";

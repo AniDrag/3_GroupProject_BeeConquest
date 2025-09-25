@@ -57,7 +57,8 @@ public class PlayerCore : MonoBehaviour
     {
         PlayerServerData data = new PlayerServerData(playerID, transform, this, savedBees) { };
         Game_Manager.instance.JoinServer(playerID, data);
-        currentHoneyAmount = 100000;
+        currentHoneyAmount = 10000000;
+        maxPollinStorage = 9_823_872;
 
         _baseMaxPollinStorage = Math.Max(1L, maxPollinStorage);
     }
