@@ -32,6 +32,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1713910307851446442}
   - {fileID: 5523107332602640986}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -116,6 +117,68 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!1001 &3376504357462341031
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 6883813687364013706}
+    m_Modifications:
+    - target: {fileID: 3627957528055515063, guid: 17252ef727083054593ece22e2bbb56a, type: 3}
+      propertyPath: m_Name
+      value: bee_idle_Melobee1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4112569909022842125, guid: 17252ef727083054593ece22e2bbb56a, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -11.630398
+      objectReference: {fileID: 0}
+    - target: {fileID: 4112569909022842125, guid: 17252ef727083054593ece22e2bbb56a, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4112569909022842125, guid: 17252ef727083054593ece22e2bbb56a, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -46.066093
+      objectReference: {fileID: 0}
+    - target: {fileID: 4112569909022842125, guid: 17252ef727083054593ece22e2bbb56a, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4112569909022842125, guid: 17252ef727083054593ece22e2bbb56a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4112569909022842125, guid: 17252ef727083054593ece22e2bbb56a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4112569909022842125, guid: 17252ef727083054593ece22e2bbb56a, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4112569909022842125, guid: 17252ef727083054593ece22e2bbb56a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4112569909022842125, guid: 17252ef727083054593ece22e2bbb56a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4112569909022842125, guid: 17252ef727083054593ece22e2bbb56a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 17252ef727083054593ece22e2bbb56a, type: 3}
+--- !u!4 &1713910307851446442 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4112569909022842125, guid: 17252ef727083054593ece22e2bbb56a, type: 3}
+  m_PrefabInstance: {fileID: 3376504357462341031}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &5416912973666966961
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -275,6 +338,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 13358379d8171b54e9b41e97d9e304c1, type: 3}
       propertyPath: m_Name
       value: Melobee (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 13358379d8171b54e9b41e97d9e304c1, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1457036634244765357, guid: 13358379d8171b54e9b41e97d9e304c1, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
