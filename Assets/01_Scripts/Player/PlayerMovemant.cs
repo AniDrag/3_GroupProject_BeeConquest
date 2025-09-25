@@ -1,4 +1,5 @@
 using Unity.Cinemachine;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.InputSystem;
 [RequireComponent(typeof(CharacterController))]
@@ -89,14 +90,12 @@ public class PlayerMovemant : MonoBehaviour
     }
     private void Update()
     {
-        if (!lockCamera)
-        {
-            // Get the camera's yaw angle from the Cinemachine orbital follow
-            float yaw = cam.HorizontalAxis.Value;
+        // Get the camera's yaw angle from the Cinemachine orbital follow
+        float yaw = cam.HorizontalAxis.Value;
 
-            // Apply rotation only on the Y axis
-            orientation.rotation = Quaternion.Euler(0f, yaw, 0f);
-        }
+        // Apply rotation only on the Y axis
+        orientation.rotation = Quaternion.Euler(0f, yaw, 0f);
+
 
         ReadInputs();
         StateHandler();
@@ -221,11 +220,15 @@ public class PlayerMovemant : MonoBehaviour
 
         Vector3 lookDir;
 
-        if (moveDir.sqrMagnitude > 0.001f)
+        if (!lockCamera && moveDir.sqrMagnitude > 0.001f)
         {
             // Lock on: rotate mesh toward movement direction
             lookDir = new Vector3(moveDir.x, 0f, moveDir.z);
             targetRotation = Quaternion.LookRotation(lookDir, Vector3.up); // update target
+        }
+        else if(lockCamera)
+        {
+            targetRotation = orientation.rotation;
         }
 
         // Smoothly apply rotation
