@@ -175,7 +175,7 @@ public class PlayerMovemant : MonoBehaviour
         {
             velocity.y += gravity * Time.deltaTime;
         }
-        
+
 
         // Apply horizontal velocity
         velocity.x = horizontalVelocity.x;
@@ -190,7 +190,7 @@ public class PlayerMovemant : MonoBehaviour
     // -----------------------------
     private void Jump()
     {
-        if (!controller.isGrounded) return;
+        if (!isGroundedCustom) return;
         velocity.y = Mathf.Sqrt(jumpForce * -2f * gravity);
         jumped = true;
     }
