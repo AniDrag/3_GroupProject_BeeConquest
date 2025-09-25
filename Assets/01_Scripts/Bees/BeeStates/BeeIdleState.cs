@@ -11,7 +11,7 @@ public class BeeIdleState : BeeStates
     public override void EnterState() {
         
         bee.beeState = BeeState.Idle;
-        stateMachine.animator.SetTrigger(bee.beeState.ToString());  
+        //stateMachine.animator.SetTrigger(bee.beeState.ToString());  
         float waitDuration = Random.Range(minIdleTime, maxIdleTime);
         waitEndTime = Time.time + waitDuration;
         //Debug.Log("Bee is in Idle State, Wait time is:" +waitTime);
