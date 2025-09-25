@@ -1,3 +1,4 @@
+using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
 [RequireComponent(typeof(CharacterController))]
@@ -59,7 +60,7 @@ public class PlayerMovemant : MonoBehaviour
     // private InputAction crouchAction;
     private bool lockCamera;
 
-
+    [SerializeField] private CinemachineOrbitalFollow cam;
     private void Awake()
     {
         controller = GetComponent<CharacterController>();
@@ -67,7 +68,7 @@ public class PlayerMovemant : MonoBehaviour
         moveAction = input.actions["Move"];
         jumpAction = input.actions["Jump"];
         sprintAction = input.actions["Sprint"];
-        lockCameraAction = input.actions["LockCamera"];
+        lockCameraAction = input.actions["CamLock"];
 
         //crouchAction = input.actions["Crouch"];
 
@@ -88,6 +89,15 @@ public class PlayerMovemant : MonoBehaviour
     }
     private void Update()
     {
+        if (!lockCamera)
+        {
+            // Get the camera's yaw angle from the Cinemachine orbital follow
+            float yaw = cam.HorizontalAxis.Value;
+
+            // Apply rotation only on the Y axis
+            orientation.rotation = Quaternion.Euler(0f, yaw, 0f);
+        }
+
         ReadInputs();
         StateHandler();
         HandleRotation();
@@ -210,20 +220,12 @@ public class PlayerMovemant : MonoBehaviour
         if (playerMesh == null) return;
 
         Vector3 lookDir;
-        Vector3 oldLookDirection;
 
-        if (lockCamera && moveDir.sqrMagnitude > 0.001f)
+        if (moveDir.sqrMagnitude > 0.001f)
         {
             // Lock on: rotate mesh toward movement direction
             lookDir = new Vector3(moveDir.x, 0f, moveDir.z);
             targetRotation = Quaternion.LookRotation(lookDir, Vector3.up); // update target
-        }
-        else
-        {
-            // Lock off: keep the last rotation
-            oldLookDirection = new Vector3(moveDir.x, 0f, moveDir.z);
-            if (targetRotation == Quaternion.identity)
-                targetRotation = playerMesh.rotation; // initialize first frame
         }
 
         // Smoothly apply rotation
